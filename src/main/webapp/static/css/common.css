@@ -1,0 +1,77 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+h3{
+    font-family: monospace;
+    font-size: 30px;
+    color: #0066CC;
+    padding: 5px;
+}
+.heading1{
+    font-family: serif;
+    font-size: 24px;
+    color: blue
+}
+header,nav,section,aside,footer,article,hgroup{
+    display: block;
+}
+body{
+    text-align: center;
+}
+.wrapper{
+    padding:53px 0px 62px 0px;
+    /*
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    background-color: #FFF;
+    */
+}
+.content{
+    width: 100%;
+    padding: 10px;
+    background-color:aliceblue;
+    height: 550px;
+    overflow-y: scroll;
+}
+
+#nav{
+    margin:1px 0px;
+}
+
+#errorBox{
+    color: red;
+}
+#message{
+    color: red;
+    margin: 10px auto;
+}
+.align-center{
+    text-align: center;
+}
+.align-left{
+    text-align: left;
+}
+.align-right{
+    text-align: right;
+}
+#bordered-table th,#bordered-table td{
+    padding: 5px;
+}
+
+.link{
+    text-decoration: none;
+    color: #1b6d85;
+}
+.link:hover{
+    text-decoration: none;
+    color: #0099FF;
+}
+.red-color{
+    color: red;
+}
+.bold{
+    font-weight: bold;
+}
+

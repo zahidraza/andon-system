@@ -1,0 +1,18 @@
+#content{
+    width: 99%;
+    min-height: 300px;
+    margin: 5px auto;
+    padding: 20px;
+    background: #c4e3f3;
+    border-radius: 10px;
+    
+}
+#display_problem{
+    margin: 25px auto;
+}
+#add-tbl{
+    width: 100%;
+}
+#add-tbl td{
+    padding: 5px;
+}

@@ -1,0 +1,32 @@
+#content{
+    width: 99%;
+    min-height: 300px;
+    margin: 5px auto;
+    padding: 20px;
+    background: #c4e3f3;
+    border-radius: 10px;
+    
+}
+#display_users{
+    margin-top: 25px;
+}
+#add-tbl td{
+    width: 40%;
+    padding: 5px;
+}
+
+.user-view{
+    padding: 15px;
+}
+
+#display_table{
+    width: 100%;
+    text-align: left;
+    margin: 20px auto;
+
+    font-size: 16px;
+    color: #262626;
+}
+#display_table td{
+    
+}
