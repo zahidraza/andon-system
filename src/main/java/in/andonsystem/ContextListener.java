@@ -52,7 +52,7 @@ public class ContextListener implements ServletContextListener{
         DBTableService dbService = new DBTableService(conn);
         try{
             //Create Tables 
-            dbService.createUserTable();
+            //dbService.createUserTable();
             dbService.createDeptTable();
             dbService.createSectionTable();
             dbService.createProblemTable();

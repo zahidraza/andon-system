@@ -246,7 +246,7 @@ public class ProblemService {
         return list;
     }
     
-    public List<Problem> getProblems(int dept_id,int sec_id){
+    public List<Problem> getTeams(int dept_id,int sec_id){
         
         List<Problem> list = new ArrayList<Problem>();
         

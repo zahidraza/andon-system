@@ -2,6 +2,7 @@ package in.andonsystem;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import in.andonsystem.v2.dto.UserDto;
+import in.andonsystem.v2.enums.UserType;
 import in.andonsystem.v2.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class App/* extends SpringBootServletInitializer*/{
 
         return (args) -> {
             if(userService.count() == 0){
-                userService.save(new UserDto("Md Zahid Raza","zahid7292@gmail.com","ADMIN","8987525008"));
+                userService.save(new UserDto("Md Zahid Raza", "zahid7292@gmail.com", "ADMIN", "8987525008", UserType.MERCHANDISING.getValue()));
             }
         };
     }

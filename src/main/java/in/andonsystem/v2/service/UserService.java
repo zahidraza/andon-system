@@ -4,6 +4,8 @@ import in.andonsystem.v2.dto.UserDto;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.page.converter.UserConverter;
 import in.andonsystem.v2.respository.UserRespository;
+
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +36,15 @@ public class UserService {
         return mapper.map(userRepository.findOne(id), UserDto.class);
     }
 
-    public List<UserDto> findAll() {
+    public List<UserDto> findAllAfter(Long after) {
         logger.debug("findAll()");
-        return userRepository.findAll().stream()
+        List<User> users = null;
+        if(after > 0L){
+            users = userRepository.findByLastModifiedGreaterThan(new Date(after));
+        }else{
+            users = userRepository.findAll();
+        }
+        return users.stream()
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }

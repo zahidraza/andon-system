@@ -1,22 +1,22 @@
 package in.andonsystem.v2.dozer.converter;
 
-import in.andonsystem.v2.entity.Role;
+import in.andonsystem.v2.enums.UserType;
 import org.dozer.DozerConverter;
 
-public class RoleConverter extends DozerConverter<String, Role>{
+public class RoleConverter extends DozerConverter<String, UserType>{
 
     public RoleConverter() {
-        super(String.class, Role.class);
+        super(String.class, UserType.class);
     }
     
     @Override
-    public Role convertTo(String source, Role destination) {
+    public UserType convertTo(String source, UserType destination) {
         if(source == null) return null;
-        return Role.parse("ROLE_"+source);
+        return UserType.parse("ROLE_" + source);
     }
 
     @Override
-    public String convertFrom(Role source, String destination) {
+    public String convertFrom(UserType source, String destination) {
         if(source == null) return null;
         return source.name();
     }

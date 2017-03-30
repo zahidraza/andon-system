@@ -4,13 +4,13 @@ import in.andonsystem.v2.assembler.UserAssembler;
 import in.andonsystem.v2.dto.UserDto;
 import in.andonsystem.v2.service.UserService;
 import java.net.URI;
+import java.util.List;
 import javax.validation.Valid;
+
+import in.andonsystem.v2.utils.ApiV2Urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(ApiV2Urls.ROOT_URL_USERS)
 public class UserRestController{
     
     private final Logger logger = LoggerFactory.getLogger(UserRestController.class);
@@ -36,14 +37,14 @@ public class UserRestController{
     @Autowired UserAssembler userAssembler;
     
     @GetMapping
-    public ResponseEntity<?> listAllUsers(Pageable pageable, PagedResourcesAssembler assembler) {
+    public ResponseEntity<?> listAllUsers(@RequestParam(value = "after", defaultValue = "0") Long after) {
         logger.debug("listAllUsers()");
-        Page<UserDto> page = userService.findAllByPage(pageable);
-        return new ResponseEntity<>(assembler.toResource(page, userAssembler), HttpStatus.OK);
+        List<UserDto> list = userService.findAllAfter(after);
+        return new ResponseEntity<>(userAssembler.toResources(list), HttpStatus.OK);
     }
   
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getUser(@PathVariable("id") long id) {
+    @GetMapping(ApiV2Urls.URL_USERS_USER)
+    public ResponseEntity<?> getUser(@PathVariable("userId") long id) {
         logger.debug("getUser(): id = {}",id);
         UserDto user = userService.findOne(id);
         if (user == null) {
@@ -60,8 +61,8 @@ public class UserRestController{
         return ResponseEntity.created(URI.create(selfLink.getHref())).build();
     }
  
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") long id,@Validated @RequestBody UserDto user) {
+    @PutMapping(ApiV2Urls.URL_USERS_USER)
+    public ResponseEntity<?> updateUser(@PathVariable("userId") long id,@Validated @RequestBody UserDto user) {
         logger.debug("updateUser(): id = {} \n {}",id,user);
         if (!userService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -71,8 +72,8 @@ public class UserRestController{
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
     }
   
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) {
+    @DeleteMapping(ApiV2Urls.URL_USERS_USER)
+    public ResponseEntity<Void> deleteUser(@PathVariable("userId") long id) {
         logger.debug("deleteUser(): id = {}",id);
         if (!userService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

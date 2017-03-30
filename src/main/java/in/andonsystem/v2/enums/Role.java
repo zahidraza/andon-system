@@ -1,11 +1,14 @@
-package in.andonsystem.v2.entity;
+package in.andonsystem.v2.enums;
 
+/**
+ * Created by razamd on 3/30/2017.
+ */
 public enum Role {
-    ADMIN("ROLE_ADMIN"), MERCHANT("ROLE_MERCHANT"), USER("ROLE_USER");
+    ADMIN("ROLE_ADMIN"), USER("ROLE_USER");
 
     private String value;
 
-    private Role(String value) {
+    Role(String value) {
         this.value = value;
     }
 

@@ -5,13 +5,51 @@
    http://dozer.sourceforge.net/schema/beanmapping.xsd">
     
     <mapping >
-      <class-a>in.andonsystem.v2.dto.UserDto</class-a>
-      <class-b>in.andonsystem.v2.entity.User</class-b>
+      <class-a>in.andonsystem.v2.dto.IssueDto</class-a>
+      <class-b>in.andonsystem.v2.entity.Issue</class-b>
 
-      <field custom-converter="in.andonsystem.v2.dozer.converter.RoleConverter">
-         <a>role</a>
-         <b>role</b>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
+        <a>buyerId</a>
+        <b>buyer</b>
+      </field>
+
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+         <a>raisedBy</a>
+         <b>raisedBy</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+        <a>ackBy</a>
+        <b>ackBy</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+        <a>fixBy</a>
+        <b>fixBy</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+        <a>raisedAt</a>
+        <b>raisedAt</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+        <a>ackAt</a>
+        <b>ackAt</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+        <a>fixAt</a>
+        <b>fixAt</b>
+      </field>
+      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+        <a>lastModified</a>
+        <b>lastModified</b>
       </field>
       
-   </mapping> 
+   </mapping>
+
+  <mapping >
+    <class-a>in.andonsystem.v2.dto.UserDto</class-a>
+    <class-b>in.andonsystem.v2.entity.User</class-b>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <a>lastModified</a>
+      <b>lastModified</b>
+    </field>
+  </mapping>
 </mappings>

@@ -1,12 +1,17 @@
 package in.andonsystem.v2.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -18,7 +23,7 @@ public class User implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USERNAME", nullable = false)
+    @Column(name = "USER_NAME", nullable = false)
     private String name;
 
     @Column(name = "EMAIL", nullable = true, unique = true)
@@ -27,21 +32,27 @@ public class User implements Serializable{
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "MOBILE", nullable = true)
+    private String mobile;
+
     @Column(name = "ROLE", nullable = false)
     private String role;
 
-    @Column(name = "MOBILE", nullable = true)
-    private String mobile;
+    @Column(name = "USER_TYPE", nullable = false)
+    private String userType;
+
+    @Column(name = "LEVEL", nullable = true)
+    private String level;
+
+    @Version
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
 
     public User() {
     }
 
-    public User(String name, String email, String password, String role, String mobile) {
-        this.name = name;
-        this.email = email;
-        setPassword(password);
-        this.role = role;
-        this.mobile = mobile;
+    public User(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -77,14 +88,6 @@ public class User implements Serializable{
         this.password = encoder.encode(password);
     }
 
-    public Role getRole() {
-        return Role.parse(role);
-    }
-
-    public void setRole(Role role) {
-        this.role = role.getValue();
-    }
-
     public String getMobile() {
         return mobile;
     }
@@ -93,9 +96,49 @@ public class User implements Serializable{
         this.mobile = mobile;
     }
 
-    @Override
-    public String toString() {
-        return "User{" + "id=" + id + ", name=" + name + ", email=" + email + ", role=" + role + ", mobile=" + mobile + '}';
+    public String getRole() {
+        return role;
     }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", email='" + email + '\'' +
+               ", password='" + password + '\'' +
+               ", mobile='" + mobile + '\'' +
+               ", role='" + role + '\'' +
+               ", userType='" + userType + '\'' +
+               ", level='" + level + '\'' +
+               '}';
+    }
 }

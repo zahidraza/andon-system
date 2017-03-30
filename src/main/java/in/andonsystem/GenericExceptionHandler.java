@@ -36,8 +36,9 @@ public class GenericExceptionHandler {
                 .map(error -> {
                     return new FieldError(error.getField(),
                             error.getRejectedValue(),
-                            messageSource.getMessage(error.getCodes()[0], null, LocaleContextHolder.getLocale())
+                            messageSource.getMessage(error.getCodes()[0], null, error.getDefaultMessage(), LocaleContextHolder.getLocale())
                     );
+
                 })
                 .collect(Collectors.toList());
         return errors;

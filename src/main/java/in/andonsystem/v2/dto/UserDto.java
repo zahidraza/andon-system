@@ -1,6 +1,10 @@
 package in.andonsystem.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import in.andonsystem.v2.enums.Level;
+import in.andonsystem.v2.enums.Role;
+import in.andonsystem.v2.enums.UserType;
+import in.andonsystem.v2.validation.StringEnum;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -21,20 +25,32 @@ public class UserDto {
     private String password;
 
     @NotNull
+    @Pattern(regexp="[0-9]{10}", message="Incorrect mobile")
+    private String mobile;
+
+    @NotNull
+    @StringEnum(enumClass = Role.class)
     private String role;
 
     @NotNull
-    @Pattern(regexp="[0-9]{10}", message="Incorrect mobile")
-    private String mobile;
+    @StringEnum(enumClass = UserType.class)
+    private String userType;
+
+    @NotNull
+    @StringEnum(enumClass = Level.class)
+    private String level;
+
+    private Long lastModified;
 
     public UserDto() {
     }
 
-    public UserDto(String name, String email, String role, String mobile) {
+    public UserDto(String name, String email, String role, String mobile, String userType) {
         this.name = name;
         this.email = email;
         this.role = role;
         this.mobile = mobile;
+        this.userType = userType;
     }
 
     public Long getId() {
@@ -83,6 +99,30 @@ public class UserDto {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
     }
 
     @Override
