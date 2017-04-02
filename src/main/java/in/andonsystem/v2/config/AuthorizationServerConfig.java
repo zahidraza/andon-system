@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter implements EnvironmentAware{
     private static String REALM="MY_OAUTH_REALM";
-    private static final String ENV_OAUTH2 = "security.oauth2.client.";
+    private static final String ENV_OAUTH2 = "security.oauth2.";
     
     private RelaxedPropertyResolver propertyResolver;
     
@@ -31,13 +31,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
  
         clients.inMemory()
-            .withClient(propertyResolver.getProperty("client1-id"))
-            .authorizedGrantTypes("password", "authorization_code", "refresh_token", "implicit")
-            .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-            .scopes(propertyResolver.getProperty("client1-scope"))
-            .secret(propertyResolver.getProperty("client1-secret"))
-            .accessTokenValiditySeconds(propertyResolver.getProperty("access-token.validity.sec", Integer.class, 300))
-            .refreshTokenValiditySeconds(propertyResolver.getProperty("refresh-token.validity.sec", Integer.class, 600));
+                    .withClient(propertyResolver.getProperty("client1.id"))
+                    .authorizedGrantTypes("password","refresh_token")
+                    .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
+                    .scopes(propertyResolver.getProperty("client1.scope"))
+                    .secret(propertyResolver.getProperty("client1.secret"))
+                    .accessTokenValiditySeconds(propertyResolver.getProperty("client1.access-token.validity.sec", Integer.class, 300))
+                    .refreshTokenValiditySeconds(propertyResolver.getProperty("client1.refresh-token.validity.sec", Integer.class, 600))
+               .and()
+                   .withClient(propertyResolver.getProperty("client2.id"))
+                   .authorizedGrantTypes("password","refresh_token")
+                   .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
+                   .scopes(propertyResolver.getProperty("client2.scope"))
+                   .secret(propertyResolver.getProperty("client2.secret"))
+                   .accessTokenValiditySeconds(propertyResolver.getProperty("client2.access-token.validity.sec", Integer.class, 300))
+                   .refreshTokenValiditySeconds(propertyResolver.getProperty("client2.refresh-token.validity.sec", Integer.class, 600));
     }
  
     @Override

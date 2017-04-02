@@ -1,6 +1,7 @@
 package in.andonsystem.v2.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -15,14 +16,20 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+                .and()
                 .requestMatchers().antMatchers("/api/**")
-            .and()
-                .authorizeRequests()               
+                .and()
+                .authorizeRequests()
 //                    .antMatchers("/api/users","/api/users/**").access("hasRole('ADMIN')")
-//                    .antMatchers("/api/**").authenticated()
-                    .antMatchers("/api/**").permitAll()
-            .and()
+
+                .antMatchers(HttpMethod.GET,"/api/v2/teams").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v2/problems").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v2/buyers").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v2/users").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v2/misc/config").permitAll()
+                .antMatchers("/api/**").authenticated()
+//                .antMatchers("/api/**").permitAll()
+                .and()
                 .exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
 
     }

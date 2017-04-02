@@ -21,4 +21,8 @@ public class Constants {
     public static final String APP_VERSION = "app.version";
     public static final String APP_INITIALIZE = "app.initialize";
 
+    //Issue update operations
+    public static final String OP_ACK = "OP_ACK";
+    public static final String OP_FIX = "OP_FIX";
+
 }

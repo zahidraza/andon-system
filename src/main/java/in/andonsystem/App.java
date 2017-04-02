@@ -28,11 +28,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 @SpringBootApplication
 @Controller
 @ServletComponentScan
-public class App/* extends SpringBootServletInitializer*/{
+public class App extends SpringBootServletInitializer{
 
     private final Logger logger = LoggerFactory.getLogger(App.class);
 
@@ -40,10 +42,10 @@ public class App/* extends SpringBootServletInitializer*/{
         SpringApplication.run(App.class, args);
     }
 
-//    @Override
-//    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//        return application.sources(Application.class);
-//    }
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(App.class);
+    }
 
 
 

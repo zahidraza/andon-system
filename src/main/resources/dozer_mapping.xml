@@ -45,6 +45,46 @@
    </mapping>
 
   <mapping >
+    <class-a>in.andonsystem.v2.dto.IssuePatchDto</class-a>
+    <class-b>in.andonsystem.v2.entity.Issue</class-b>
+
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
+      <a>buyerId</a>
+      <b>buyer</b>
+    </field>
+
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <a>raisedBy</a>
+      <b>raisedBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <a>ackBy</a>
+      <b>ackBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <a>fixBy</a>
+      <b>fixBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <a>raisedAt</a>
+      <b>raisedAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <a>ackAt</a>
+      <b>ackAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <a>fixAt</a>
+      <b>fixAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <a>lastModified</a>
+      <b>lastModified</b>
+    </field>
+
+  </mapping>
+
+  <mapping >
     <class-a>in.andonsystem.v2.dto.UserDto</class-a>
     <class-b>in.andonsystem.v2.entity.User</class-b>
     <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
