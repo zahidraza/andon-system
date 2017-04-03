@@ -32,6 +32,8 @@ public class IssuePatchDto {
 
     private Long fixAt;
 
+    private Integer processingAt;
+
     private Long lastModified;
 
     public Long getId() {
@@ -104,6 +106,14 @@ public class IssuePatchDto {
 
     public void setFixAt(Long fixAt) {
         this.fixAt = fixAt;
+    }
+
+    public Integer getProcessingAt() {
+        return processingAt;
+    }
+
+    public void setProcessingAt(Integer processingAt) {
+        this.processingAt = processingAt;
     }
 
     public Long getLastModified() {

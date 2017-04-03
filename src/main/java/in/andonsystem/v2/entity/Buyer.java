@@ -8,9 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by razamd on 3/30/2017.
@@ -31,6 +34,9 @@ public class Buyer implements Serializable{
     @NotNull @Fixed(fixClass = TeamFixedValue.class)
     @Column(name = "team", nullable = false)
     private String team;
+
+    @ManyToMany(mappedBy = "buyers")
+    private Set<User> users = new HashSet<>();
 
     public Buyer() {
     }
@@ -61,5 +67,23 @@ public class Buyer implements Serializable{
 
     public void setTeam(String team) {
         this.team = team;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    @Override
+    public String toString() {
+        return "Buyer{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", team='" + team + '\'' +
+               ", users=" + users +
+               '}';
     }
 }

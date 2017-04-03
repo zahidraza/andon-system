@@ -17,7 +17,7 @@
     </encoder>
   </appender>
 
-  <logger name="com.example.spring.oauth2" level="DEBUG" additivity="false">
+  <logger name="in.andonsystem" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </logger>

@@ -60,12 +60,12 @@ public class UserService {
     }
     
     public UserDto findByUsername(String username) {
-        logger.debug("findByUsername(): name = " , username);
+        logger.debug("findByUsername(): name = {}" , username);
         return mapper.map(userRepository.findByName(username), UserDto.class);
     }
 
     public Boolean exists(Long id) {
-        logger.debug("exists(): id = ",id);
+        logger.debug("exists(): id = {}",id);
         return userRepository.exists(id);
     }
     

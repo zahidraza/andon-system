@@ -60,6 +60,9 @@ public class Issue implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date fixAt;
 
+    @Column(name = "processing_at")
+    private Integer processingAt;
+
     @Version
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified")
@@ -140,6 +143,14 @@ public class Issue implements Serializable{
         this.fixAt = fixAt;
     }
 
+    public Integer getProcessingAt() {
+        return processingAt;
+    }
+
+    public void setProcessingAt(Integer processingAt) {
+        this.processingAt = processingAt;
+    }
+
     public Date getLastModified() {
         return lastModified;
     }
@@ -154,5 +165,23 @@ public class Issue implements Serializable{
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Issue{" +
+               "id=" + id +
+               ", buyer=" + buyer +
+               ", problem='" + problem + '\'' +
+               ", description='" + description + '\'' +
+               ", raisedBy=" + raisedBy +
+               ", ackBy=" + ackBy +
+               ", fixBy=" + fixBy +
+               ", raisedAt=" + raisedAt +
+               ", ackAt=" + ackAt +
+               ", fixAt=" + fixAt +
+               ", processingAt=" + processingAt +
+               ", lastModified=" + lastModified +
+               '}';
     }
 }

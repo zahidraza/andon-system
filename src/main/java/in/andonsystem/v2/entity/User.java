@@ -2,11 +2,16 @@ package in.andonsystem.v2.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -47,6 +52,13 @@ public class User implements Serializable{
     @Version
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
+
+    @ManyToMany
+    @JoinTable(name = "USER_BUYER",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "BUYER_ID")
+    )
+    private Set<Buyer> buyers = new HashSet<>();
 
     public User() {
     }
@@ -118,6 +130,14 @@ public class User implements Serializable{
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public Set<Buyer> getBuyers() {
+        return buyers;
+    }
+
+    public void setBuyers(Set<Buyer> buyers) {
+        this.buyers = buyers;
     }
 
     public Date getLastModified() {
