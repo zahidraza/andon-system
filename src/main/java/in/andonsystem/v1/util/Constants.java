@@ -15,8 +15,11 @@ public class Constants {
     public static final String MAX_POOL_SIZE = "c3p0.maxPoolSize";
     public static final String MAX_IDLE_TIME = "c3p0.maxIdleTime.sec";
 
-    public static final String PROBLEMS = "problems";
-    public static final String TEAMS = "teams";
+    public static final String PROBLEMS = "app.v2.problems";
+    public static final String TEAMS = "app.v2.teams";
+
+    public static final String SECTIONS = "app.v1.sections";
+    public static final String DEPARTMENTS = "app.v1.departments";
 
     public static final String APP_VERSION = "app.version";
     public static final String APP_INITIALIZE = "app.initialize";

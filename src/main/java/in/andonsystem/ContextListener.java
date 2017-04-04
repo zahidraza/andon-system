@@ -39,120 +39,120 @@ public class ContextListener implements ServletContextListener{
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        taskManager = new FutureTaskManager();
-        taskManager.start();
-
-        ServletContext context = sce.getServletContext();
-        Connection conn = null;
-        try {
-            conn = ConnectionPool.getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        DBTableService dbService = new DBTableService(conn);
-        try{
-            //Create Tables 
-            //dbService.createUserTable();
-            dbService.createDeptTable();
-            dbService.createSectionTable();
-            dbService.createProblemTable();
-            dbService.createDesignationTable();
-            dbService.createDesignationLineTable();
-            dbService.createDesignationProblemTable();
-            dbService.createIssueTable();
-            dbService.createForgotPasswordTable();
-            dbService.createForgotPasswordEvent();
-            //dbService.addSections();
-            //dbService.addDepartments();
-
-            //Instantiate Services
-            MiscUtil miscUtil = MiscUtil.getInstance();
-            MiscService mService = new MiscService();
-            ProblemService pService = new ProblemService(conn);
-            DeptService dService = new DeptService(conn);
-            SectionService sService = new SectionService(conn);
-            DesignationService desgnService = new DesignationService(conn);
-
-            //Write the APP_LAUNCH time in properties file
-            long timeNow = System.currentTimeMillis();        //GMT time online
-            miscUtil.setConfigProperty(Preferences.APP_LAUNCH, "" + timeNow);
-
-            //Schedule automatic fixing of issue if left unfixed till factory close
-            long days = TimeUnit.MILLISECONDS.toDays(timeNow);
-            long millisToday = (timeNow - TimeUnit.DAYS.toMillis(days));  //GMT:This number of milliseconds after 12:00 today
-            int minutesToday = (int )TimeUnit.MILLISECONDS.toMinutes(millisToday);  //GMT       
-            minutesToday += (60*5) + 30;  //GMT+05:30 minutesToday 
-
-            int endHour = Integer.parseInt(miscUtil.getConfigProperty(Preferences.END_HOUR));
-            int endMinute = Integer.parseInt(miscUtil.getConfigProperty(Preferences.END_MINUTE));
-            int factoryCloseMinute = (60*endHour) + endMinute;
-
-            int initialDelay = 0;
-            if(minutesToday <= factoryCloseMinute){
-                initialDelay = (factoryCloseMinute - minutesToday) + 1;
-            }else{
-                initialDelay = ((24*60) - minutesToday) + factoryCloseMinute + 1;
-            }
-            System.out.println("Initial Schedule delay(in minutes): "+initialDelay);
-
-            ScheduledExecutorService scheduler = FutureTaskManager.getScheduler();
-
-            FixIssuesThread thread = new FixIssuesThread(endHour, endMinute);
-            fixIssueScheduler = scheduler.scheduleAtFixedRate(thread, initialDelay, (60*24), TimeUnit.MINUTES);
-
-
-            //Initialize Application Scope Attributes
-            //Set number of Lines
-            context.setAttribute(
-                    "lines",
-                    miscUtil.getConfigProperty(Preferences.LINES)
-            );
-            //Set all designation names
-            context.setAttribute("designations",desgnService.getDesgns());
-            //Set Problems
-            context.setAttribute("problems", pService.getProbs());
-            //Set Departments
-            context.setAttribute("depts", dService.getDepartments());
-            //Set Sections
-            context.setAttribute("sections", sService.getSections());
-            context.setAttribute("start_hour", miscUtil.getConfigProperty(Preferences.START_HOUR));
-            context.setAttribute("start_minute", miscUtil.getConfigProperty(Preferences.START_MINUTE));
-            context.setAttribute("end_hour", miscUtil.getConfigProperty(Preferences.END_HOUR));
-            context.setAttribute("end_minute", miscUtil.getConfigProperty(Preferences.END_MINUTE));
-
-            context.setAttribute("time_ack", miscUtil.getConfigProperty(Preferences.TIME_ACK));
-            context.setAttribute("time_level1", miscUtil.getConfigProperty(Preferences.TIME_LEVEL1));
-            context.setAttribute("time_level2", miscUtil.getConfigProperty(Preferences.TIME_LEVEL2));
-
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        finally{
-            try{
-                conn.close();
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        }
+//        taskManager = new FutureTaskManager();
+//        taskManager.start();
+//
+//        ServletContext context = sce.getServletContext();
+//        Connection conn = null;
+//        try {
+//            conn = ConnectionPool.getConnection();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        DBTableService dbService = new DBTableService(conn);
+//        try{
+//            //Create Tables
+//            dbService.createUserTable();
+//            dbService.createDeptTable();
+//            dbService.createSectionTable();
+//            dbService.createProblemTable();
+//            dbService.createDesignationTable();
+//            dbService.createDesignationLineTable();
+//            dbService.createDesignationProblemTable();
+//            dbService.createIssueTable();
+//            dbService.createForgotPasswordTable();
+//            dbService.createForgotPasswordEvent();
+//            dbService.addSections();
+//            dbService.addDepartments();
+//
+//            //Instantiate Services
+//            MiscUtil miscUtil = MiscUtil.getInstance();
+//            MiscService mService = new MiscService();
+//            ProblemService pService = new ProblemService(conn);
+//            DeptService dService = new DeptService(conn);
+//            SectionService sService = new SectionService(conn);
+//            DesignationService desgnService = new DesignationService(conn);
+//
+//            //Write the APP_LAUNCH time in properties file
+//            long timeNow = System.currentTimeMillis();        //GMT time online
+//            miscUtil.setConfigProperty(Preferences.APP_LAUNCH, "" + timeNow);
+//
+//            //Schedule automatic fixing of issue if left unfixed till factory close
+//            long days = TimeUnit.MILLISECONDS.toDays(timeNow);
+//            long millisToday = (timeNow - TimeUnit.DAYS.toMillis(days));  //GMT:This number of milliseconds after 12:00 today
+//            int minutesToday = (int )TimeUnit.MILLISECONDS.toMinutes(millisToday);  //GMT
+//            minutesToday += (60*5) + 30;  //GMT+05:30 minutesToday
+//
+//            int endHour = Integer.parseInt(miscUtil.getConfigProperty(Preferences.END_HOUR));
+//            int endMinute = Integer.parseInt(miscUtil.getConfigProperty(Preferences.END_MINUTE));
+//            int factoryCloseMinute = (60*endHour) + endMinute;
+//
+//            int initialDelay = 0;
+//            if(minutesToday <= factoryCloseMinute){
+//                initialDelay = (factoryCloseMinute - minutesToday) + 1;
+//            }else{
+//                initialDelay = ((24*60) - minutesToday) + factoryCloseMinute + 1;
+//            }
+//            System.out.println("Initial Schedule delay(in minutes): "+initialDelay);
+//
+//            ScheduledExecutorService scheduler = FutureTaskManager.getScheduler();
+//
+//            FixIssuesThread thread = new FixIssuesThread(endHour, endMinute);
+//            fixIssueScheduler = scheduler.scheduleAtFixedRate(thread, initialDelay, (60*24), TimeUnit.MINUTES);
+//
+//
+//            //Initialize Application Scope Attributes
+//            //Set number of Lines
+//            context.setAttribute(
+//                    "lines",
+//                    miscUtil.getConfigProperty(Preferences.LINES)
+//            );
+//            //Set all designation names
+//            context.setAttribute("designations",desgnService.getDesgns());
+//            //Set Problems
+//            context.setAttribute("problems", pService.getProbs());
+//            //Set Departments
+//            context.setAttribute("depts", dService.getDepartments());
+//            //Set Sections
+//            context.setAttribute("sections", sService.getSections());
+//            context.setAttribute("start_hour", miscUtil.getConfigProperty(Preferences.START_HOUR));
+//            context.setAttribute("start_minute", miscUtil.getConfigProperty(Preferences.START_MINUTE));
+//            context.setAttribute("end_hour", miscUtil.getConfigProperty(Preferences.END_HOUR));
+//            context.setAttribute("end_minute", miscUtil.getConfigProperty(Preferences.END_MINUTE));
+//
+//            context.setAttribute("time_ack", miscUtil.getConfigProperty(Preferences.TIME_ACK));
+//            context.setAttribute("time_level1", miscUtil.getConfigProperty(Preferences.TIME_LEVEL1));
+//            context.setAttribute("time_level2", miscUtil.getConfigProperty(Preferences.TIME_LEVEL2));
+//
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        finally{
+//            try{
+//                conn.close();
+//            }catch(Exception ex){
+//                ex.printStackTrace();
+//            }
+//        }
 
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        System.out.println("ContextDestroyed()");
-
-        Boolean result = fixIssueScheduler.cancel(true);
-        if(result){
-            System.out.println("Automatic Fix Thread Stopped Successfully");
-        }
-        FutureTaskManager.getScheduler().shutdownNow();
-        taskManager.shutdown();
-        try{
-            AbandonedConnectionCleanupThread.shutdown();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+//        System.out.println("ContextDestroyed()");
+//
+//        Boolean result = fixIssueScheduler.cancel(true);
+//        if(result){
+//            System.out.println("Automatic Fix Thread Stopped Successfully");
+//        }
+//        FutureTaskManager.getScheduler().shutdownNow();
+//        taskManager.shutdown();
+//        try{
+//            AbandonedConnectionCleanupThread.shutdown();
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
 
     }
 

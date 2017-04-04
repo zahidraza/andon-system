@@ -12,11 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import in.andonsystem.v1.entity.Designation;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -37,7 +39,7 @@ public class User implements Serializable{
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "MOBILE", nullable = true)
+    @Column(name = "MOBILE", nullable = false)
     private String mobile;
 
     @Column(name = "ROLE", nullable = false)
@@ -49,9 +51,9 @@ public class User implements Serializable{
     @Column(name = "LEVEL", nullable = true)
     private String level;
 
-    @Version
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModified;
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "DESGN_ID")
+    private Designation designation;
 
     @ManyToMany
     @JoinTable(name = "USER_BUYER",
@@ -59,6 +61,10 @@ public class User implements Serializable{
             inverseJoinColumns = @JoinColumn(name = "BUYER_ID")
     )
     private Set<Buyer> buyers = new HashSet<>();
+
+    @Version
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
 
     public User() {
     }
@@ -146,6 +152,14 @@ public class User implements Serializable{
 
     public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public Designation getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(Designation designation) {
+        this.designation = designation;
     }
 
     @Override

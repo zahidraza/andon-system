@@ -45,12 +45,13 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(String name, String email, String role, String mobile, String userType) {
+    public UserDto(String name, String email, String role, String mobile, String userType, String level) {
         this.name = name;
         this.email = email;
         this.role = role;
         this.mobile = mobile;
         this.userType = userType;
+        this.level = level;
     }
 
     public Long getId() {
