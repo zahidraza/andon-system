@@ -9,6 +9,7 @@
   "author": "Md Zahid Raza",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.0",
     "grommet": "^1.0.0",
     "grommet-addons": "^0.1.0",
     "react": "^15.0.2",

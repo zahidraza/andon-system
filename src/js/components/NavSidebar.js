@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux';
 import { localeData } from '../reducers/localization';
+import {USER_TYPE as u} from  '../utils/constants';
 
 import Sidebar from "grommet/components/Sidebar";
 import Header from "grommet/components/Header";
@@ -29,7 +30,13 @@ class NavSidebar extends Component {
   }
 
   render () {
-    const { items } = this.props.nav;
+    const { items: itemsCity, itemsFactory } = this.props.nav;
+    const { userType} = window.sessionStorage;
+
+    const items = (userType == u.FACTORY) ? itemsFactory : itemsCity;
+
+    console.log(items);
+
     var links = items.map( (page, index) => {
       var value = (page.path == this.props.routePath) ? 'active' : '';
       return (
