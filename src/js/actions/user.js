@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import {USER_CONSTANTS as c} from  '../utils/constants';
+import {getHeaders} from  '../utils/restUtil';
 
 export function authenticate (username, password) {
   console.log('authenticate');
@@ -40,7 +41,7 @@ export function addUser (user) {
 
   return function (dispatch) {
     console.log(user);
-    axios.post(window.serviceHost + '/users', JSON.stringify(user), {headers: {'Content-Type':'application/json'}})
+    axios.post(window.serviceHost + '/v2/users', JSON.stringify(user), {headers: getHeaders()})
     .then((response) => {
       console.log(response);
       if (response.status == 201) {
@@ -57,7 +58,7 @@ export function updateUser (user) {
   console.log('updateUser');
   return function (dispatch) {
     console.log(user);
-    axios.put(user._links.self.href, JSON.stringify(user),{headers: {'Content-Type':'application/json'}})
+    axios.put(window.serviceHost + '/v2/users/' + user.id, JSON.stringify(user), {headers: getHeaders()})
     .then((response) => {
       console.log(response);
       if (response.status == 200) {
@@ -75,7 +76,7 @@ export function removeUser (user) {
   return function (dispatch) {
     console.log(user);
 
-    axios.delete(user._links.self.href)
+    axios.delete(window.serviceHost + '/v2/users/' + user.id, {headers: getHeaders()})
     .then((response) => {
       console.log(response);
       dispatch({type: c.USER_REMOVE_SUCCESS, payload: {user: user}});

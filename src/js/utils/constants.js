@@ -1,3 +1,5 @@
+export const NAV_ACTIVATE = 'NAV_ACTIVATE';
+
 export const USER_ROLE = {
   ROLE_ADMIN: "ADMIN",
   ROLE_USER: "USER"
@@ -7,6 +9,14 @@ export const USER_TYPE = {
   MERCHANDISING: "MERCHANDISING",
   SAMPLING: "SAMPLING",
   FACTORY: "FACTORY"
+};
+
+export const USER_LEVEL = {
+  LEVEL0: "LEVEL0",
+  LEVEL1: "LEVEL1",
+  LEVEL2: "LEVEL2",
+  LEVEL3: "LEVEL3",
+  LEVEL4: "LEVEL4"
 };
 
 export const MISC_CONSTANTS = {

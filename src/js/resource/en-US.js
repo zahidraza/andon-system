@@ -4,6 +4,10 @@ module.exports = {
 
   /*/////////////////// Label /////////////////////*/
   "label_home": "Home",
+  "label_user": "User",
+  "label_team": "Team",
+  "label_problem": "Problem",
+  "label_buyer": "Buyer",
   "label_test": "Test Page",
 
 
@@ -14,5 +18,14 @@ module.exports = {
   "login_email_empty": "Email cannot be empty.",
   "login_password_empty": "Password cannot be empty.",
   "login_authentication_fail":"Incorrect email or password. Make sure credentials are correct.",
-  "login_error": "Some error occured logging."
+  "login_error": "Some error occured logging.",
+
+  /////////////////////// User ////////////////////////
+  "label_user_add": "Add User",
+  "label_user_edit": "Update User",
+  "user_add_btn": "Add",
+  "user_edit_btn": "Update",
+
+
+  "test": "test"
 };

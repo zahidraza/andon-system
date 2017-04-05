@@ -13,9 +13,9 @@ import Footer from 'grommet/components/Footer';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
-import Header from 'grommet/components/Header';
+//import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
-import Layer from 'grommet/components/Layer';
+//import Layer from 'grommet/components/Layer';
 import Spinning from 'grommet/components/icons/Spinning';
 
 class Login extends Component {
@@ -35,21 +35,23 @@ class Login extends Component {
   }
 
   componentWillMount () {
+    console.log('componentWillMount');
     this.props.dispatch(initialize());
   }
 
   componentWillReceiveProps (nextProps) {
+    console.log('componentWillReceiveProps');
     if (nextProps.misc.initialized) {
       this.setState({initializing: false});
     }
 
     if (nextProps.user.authenticated) {
+      console.log(nextProps);
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard1');
       } else {
         this.context.router.push('/dashboard2');
       }
-      
     }
   }
 
@@ -101,9 +103,9 @@ class Login extends Component {
 
   render () {
 
-    const { initializing, credential, errors,isForgot, changing } = this.state;
+    const { initializing, credential, errors,isForgot } = this.state;
 
-    if (initializing){
+    if (initializing) {
       return (
         <Box pad={{vertical: 'large'}}>
           <Box align='center' alignSelf='center' pad={{vertical: 'large'}}>
@@ -113,11 +115,11 @@ class Login extends Component {
       );
     }
     
-    const busy = changing ? <Spinning /> : null;
+    //const busy = changing ? <Spinning /> : null;
 
     const authProgress = false;
 
-    const layerForgotPassword = isFinite ? this._renderForgotPasswdLayer() : null;
+    const layerForgotPassword = isForgot ? this._renderForgotPasswdLayer() : null;
 
     const logging = authProgress ? <Spinning /> : null;
     return (

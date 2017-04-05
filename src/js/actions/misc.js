@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import {MISC_CONSTANTS as m, USER_CONSTANTS as u} from  '../utils/constants';
+import {MISC_CONSTANTS as m, USER_CONSTANTS as u, NAV_ACTIVATE} from  '../utils/constants';
 
 export function initialize () {
   console.log("initialize()");
@@ -30,4 +30,8 @@ export function initialize () {
     });
 
   };
+}
+
+export function navActivate (active) {
+  return { type: NAV_ACTIVATE, payload: {active}};
 }

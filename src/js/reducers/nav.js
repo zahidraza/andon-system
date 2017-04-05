@@ -24,7 +24,7 @@ export default function nav ( state = initialState, action) {
 
   switch ( action.type) {
     case NAV_ACTIVATE : {
-      state = {...state, active: action.active};
+      state = {...state, active: action.payload.active};
       break;
     }
   }

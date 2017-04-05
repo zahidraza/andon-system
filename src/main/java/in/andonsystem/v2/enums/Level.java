@@ -3,8 +3,8 @@ package in.andonsystem.v2.enums;
 /**
  * Created by razamd on 3/30/2017.
  */
-public enum Level {
-    LEVEL0("LEVEL 0"),LEVEL1("LEVEL 1"), LEVEL2("LEVEL 2"), LEVEL3("LEVEL 3"),LEVEL4("LEVEL 4");
+public enum Level{
+    LEVEL0("LEVEL0"),LEVEL1("LEVEL1"), LEVEL2("LEVEL2"), LEVEL3("LEVEL3"),LEVEL4("LEVEL4");
 
     private String value;
 

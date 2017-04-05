@@ -54,11 +54,11 @@ public class UserRestController{
     }
    
     @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody UserDto user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto user) {
         logger.debug("createUser():\n {}", user.toString());
         user = userService.save(user);
         Link selfLink = linkTo(UserRestController.class).slash(user.getId()).withSelfRel();
-        return ResponseEntity.created(URI.create(selfLink.getHref())).build();
+        return ResponseEntity.created(URI.create(selfLink.getHref())).body(user);
     }
  
     @PutMapping(ApiV2Urls.URL_USERS_USER)
