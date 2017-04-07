@@ -6,7 +6,7 @@
     
     <mapping >
       <class-a>in.andonsystem.v2.dto.IssueDto</class-a>
-      <class-b>in.andonsystem.v2.entity.Issue</class-b>
+      <class-b>in.andonsystem.v2.entity.Issue2</class-b>
 
       <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
         <a>buyerId</a>
@@ -46,7 +46,7 @@
 
   <mapping >
     <class-a>in.andonsystem.v2.dto.IssuePatchDto</class-a>
-    <class-b>in.andonsystem.v2.entity.Issue</class-b>
+    <class-b>in.andonsystem.v2.entity.Issue2</class-b>
 
     <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
       <a>buyerId</a>
@@ -84,12 +84,17 @@
 
   </mapping>
 
-  <mapping >
-    <class-a>in.andonsystem.v2.dto.UserDto</class-a>
-    <class-b>in.andonsystem.v2.entity.User</class-b>
+  <mapping>
+    <class-a>in.andonsystem.v2.entity.User</class-a>
+    <class-b>in.andonsystem.v2.dto.UserDto</class-b>
+
     <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
       <a>lastModified</a>
       <b>lastModified</b>
+    </field>
+    <field copy-by-reference="true">
+      <a>buyers</a>
+      <b>buyers</b>
     </field>
   </mapping>
 </mappings>

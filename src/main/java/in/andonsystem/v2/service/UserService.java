@@ -1,6 +1,7 @@
 package in.andonsystem.v2.service;
 
 import in.andonsystem.v2.dto.UserDto;
+import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.page.converter.UserConverter;
 import in.andonsystem.v2.respository.UserRespository;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.dozer.Mapper;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ public class UserService {
         }else{
             users = userRepository.findAll();
         }
+        users.forEach(user -> {
+            Hibernate.initialize(user.getBuyers());
+        });
         return users.stream()
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
@@ -87,7 +92,16 @@ public class UserService {
     public UserDto update(UserDto userDto) {
         logger.debug("update()");
         User user = userRepository.findOne(userDto.getId());
-        user = mapper.map(userDto, User.class);
+        if (userDto.getName() != null) user.setName(userDto.getName());
+        if (userDto.getEmail() != null) user.setEmail(userDto.getEmail());
+        if (userDto.getMobile() != null) user.setMobile(userDto.getMobile());
+        if (userDto.getLevel() != null) user.setLevel(userDto.getLevel());
+        if (userDto.getRole() != null) user.setRole(userDto.getRole());
+        if (userDto.getUserType() != null) user.setUserType(userDto.getUserType());
+        if (userDto.getBuyers() != null){
+            user.getBuyers().clear();
+            userDto.getBuyers().forEach(buyer -> user.getBuyers().add(buyer));
+        }
         return mapper.map(user, UserDto.class);
     }
     

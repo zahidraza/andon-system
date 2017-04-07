@@ -3,7 +3,7 @@ package in.andonsystem.v2.tasks;
 import in.andonsystem.v1.util.Constants;
 import in.andonsystem.v1.util.MiscUtil;
 import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.entity.Issue;
+import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.enums.Level;
 import in.andonsystem.v2.service.IssueService;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +34,7 @@ public class AckTask extends Thread {
         ApplicationContext context = ApplicationContextUtil.getApplicationContext();
         IssueService issueService = context.getBean(IssueService.class);
 
-        Issue issue = issueService.findOne(issueId,true);
+        Issue2 issue = issueService.findOne(issueId,true);
         System.out.println(issue);
 
         if(issue.getAckAt() == null){  //If not acknowldged yet
@@ -53,7 +52,7 @@ public class AckTask extends Thread {
             Long fixL2Time = Long.parseLong(MiscUtil.getInstance().getConfigProperty(Constants.APP_V2_FIX_L2_TIME, "30"));
             Scheduler.getInstance().submit(new FixTask(issue.getId(),2),fixL2Time);
         }else {
-            logger.debug("Ignoring AckTask as Issue is acknowledged. issueId = {}", issueId);
+            logger.debug("Ignoring AckTask as Issue1 is acknowledged. issueId = {}", issueId);
         }
 
 

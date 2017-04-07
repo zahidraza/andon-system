@@ -5,13 +5,11 @@ import in.andonsystem.v2.dto.FieldError;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.dto.RestError;
-import in.andonsystem.v2.entity.Issue;
 import in.andonsystem.v2.service.BuyerService;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.v2.service.UserService;
 import in.andonsystem.v2.utils.ApiV2Urls;
 import org.apache.commons.collections.map.HashedMap;
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,16 +94,16 @@ public class IssueRestController {
             IssuePatchDto issueDto){
         logger.info("updateIssue(): id = {}, operation = {}", issueId,operation);
         if(!issueService.exists(issueId)){
-            String msg = "Issue with issueId = " + issueId + " not found.";
+            String msg = "Issue1 with issueId = " + issueId + " not found.";
             return new ResponseEntity<Object>(new RestError(404,40401,msg,"",""),HttpStatus.NOT_FOUND);
         }
         List<FieldError> fieldErrors = new ArrayList<>();
         if(operation.equalsIgnoreCase(Constants.OP_ACK) && issueDto.getAckBy() == null){
-            fieldErrors.add(new FieldError("ackBy",null,"User acknowledging Issue cannot be null."));
+            fieldErrors.add(new FieldError("ackBy",null,"User acknowledging Issue1 cannot be null."));
             return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
         }
         else if(operation.equalsIgnoreCase(Constants.OP_FIX) && issueDto.getFixBy() == null){
-            fieldErrors.add(new FieldError("fixBy",null,"User fixing Issue cannot be null."));
+            fieldErrors.add(new FieldError("fixBy",null,"User fixing Issue1 cannot be null."));
             return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
         }
         issueDto.setId(issueId);

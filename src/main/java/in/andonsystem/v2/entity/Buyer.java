@@ -1,5 +1,6 @@
 package in.andonsystem.v2.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.andonsystem.v2.validation.Fixed;
 import in.andonsystem.v2.validation.TeamFixedValue;
 
@@ -35,6 +36,7 @@ public class Buyer implements Serializable{
     @Column(name = "team", nullable = false)
     private String team;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "buyers")
     private Set<User> users = new HashSet<>();
 

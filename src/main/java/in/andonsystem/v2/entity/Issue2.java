@@ -1,6 +1,4 @@
-package in.andonsystem.v1.entity;
-
-import in.andonsystem.v2.entity.User;
+package in.andonsystem.v2.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,72 +11,63 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by razamd on 4/5/2017.
+ * Created by razamd on 3/30/2017.
  */
 @Entity
-@Table(name = "ISSUE")
-public class Issue {
+public class Issue2 implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ISSUE_ID")
+    @Column(name = "issue_id", nullable = false)
     private Long id;
 
-    @Column(name = "LINE", nullable = false)
-    private Integer line;
-
     @ManyToOne(optional = false)
-    @JoinColumn(name = "PROB_ID")
-    private Problem problem;
+    @JoinColumn(name = "buyer_id")
+    private Buyer buyer;
 
-    @Column(name = "CRITICAL", length = 3)
-    private String critical;
+    @Column(name = "problem", nullable = false)
+    private String problem;
 
-    @Column(name = "OPERATOR_NO", length = 10)
-    private String operatorNo;
-
-    @Column(name = "DESCRIPTION")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "RAISED_BY")
+    @JoinColumn(name = "raised_by")
     private User raisedBy;
 
     @ManyToOne
-    @JoinColumn(name = "ACK_BY")
+    @JoinColumn(name = "ack_by")
     private User ackBy;
 
     @ManyToOne
-    @JoinColumn(name = "FIX_BY")
+    @JoinColumn(name = "fix_by")
     private User fixBy;
 
+    @Column(name = "raised_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "RAISED_AT")
     private Date raisedAt;
 
+    @Column(name = "ack_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "ACK_AT")
     private Date ackAt;
 
+    @Column(name = "fix_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "FIX_AT")
     private Date fixAt;
 
-    @Column(name = "PROCESSING_AT")
+    @Column(name = "processing_at")
     private Integer processingAt;
-
-    @Column(name = "SEEK_HELP")
-    private Integer seekHelp;
 
     @Version
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "LAST_MODIFIED")
+    @Column(name = "last_modified")
     private Date lastModified;
 
-    public Issue() {
+    public Issue2() {
     }
 
     public Long getId() {
@@ -89,44 +78,20 @@ public class Issue {
         this.id = id;
     }
 
-    public Integer getLine() {
-        return line;
+    public Buyer getBuyer() {
+        return buyer;
     }
 
-    public void setLine(Integer line) {
-        this.line = line;
+    public void setBuyer(Buyer buyer) {
+        this.buyer = buyer;
     }
 
-    public Problem getProblem() {
+    public String getProblem() {
         return problem;
     }
 
-    public void setProblem(Problem problem) {
+    public void setProblem(String problem) {
         this.problem = problem;
-    }
-
-    public String getCritical() {
-        return critical;
-    }
-
-    public void setCritical(String critical) {
-        this.critical = critical;
-    }
-
-    public String getOperatorNo() {
-        return operatorNo;
-    }
-
-    public void setOperatorNo(String operatorNo) {
-        this.operatorNo = operatorNo;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public User getRaisedBy() {
@@ -185,14 +150,6 @@ public class Issue {
         this.processingAt = processingAt;
     }
 
-    public Integer getSeekHelp() {
-        return seekHelp;
-    }
-
-    public void setSeekHelp(Integer seekHelp) {
-        this.seekHelp = seekHelp;
-    }
-
     public Date getLastModified() {
         return lastModified;
     }
@@ -201,14 +158,20 @@ public class Issue {
         this.lastModified = lastModified;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
-        return "Issue{" +
+        return "Issue1{" +
                "id=" + id +
-               ", line=" + line +
-               ", problem=" + problem +
-               ", critical='" + critical + '\'' +
-               ", operatorNo='" + operatorNo + '\'' +
+               ", buyer=" + buyer +
+               ", problem='" + problem + '\'' +
                ", description='" + description + '\'' +
                ", raisedBy=" + raisedBy +
                ", ackBy=" + ackBy +
@@ -217,7 +180,6 @@ public class Issue {
                ", ackAt=" + ackAt +
                ", fixAt=" + fixAt +
                ", processingAt=" + processingAt +
-               ", seekHelp=" + seekHelp +
                ", lastModified=" + lastModified +
                '}';
     }

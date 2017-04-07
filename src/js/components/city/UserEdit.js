@@ -21,6 +21,12 @@ import Button from 'grommet/components/Button';
 import CloseIcon from 'grommet/components/icons/base/Close';
 import Anchor from 'grommet/components/Anchor';
 
+import AddIcon from "grommet/components/icons/base/Add";
+import TrashIcon from 'grommet/components/icons/base/Trash';
+import Layer from 'grommet/components/Layer';
+import List from 'grommet/components/List';
+import ListItem from 'grommet/components/ListItem';
+
 
 class UserEdit extends Component {
 
@@ -30,7 +36,17 @@ class UserEdit extends Component {
     this.state = {
       initializing: false,
       user: {},
-      errors: []
+      errors: [],
+      team: 'Select Team',
+      teams: [],
+      layer: {
+        show: false,                             // name of layer under operation [section|supplier]
+        title: 'Add Buyer',
+        label: 'Buyers',
+        filterValue: 'Select Buyer',
+        filterItems: [],                    //Available items for selection
+        selectedItems: [] 
+      }
     };
 
     this.localeData = localeData();
@@ -42,7 +58,19 @@ class UserEdit extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }else{
-      this.setState({user: this.props.user.user});
+      let {team, teams, layer} = this.state;
+      const {user} = this.props.user;
+      const {buyers} = this.props.misc;
+      teams = this.props.misc.teams;
+
+      console.log(user);
+
+      if ( 'buyers' in user && user.buyers.length != 0) {
+        team = user.buyers[0].team;
+        layer.selectedItems = user.buyers;
+        layer.filterItems = buyers.filter(b => b.team == team).filter(b => ! user.buyers.map(b2 => b2.name).includes(b.name) ).map(b => b.name);
+      }
+      this.setState({teams, team, user, layer});
     }
   }
 
@@ -58,7 +86,15 @@ class UserEdit extends Component {
 
   _onSubmit (event) {
     event.preventDefault();
-    let {user} = this.state;
+    let {user,layer} = this.state;
+    
+    if (user.level == ul.LEVEL1 || user.level == ul.LEVEL2) {
+      user.buyers = layer.selectedItems;
+    } else if (user.level == ul.LEVEL3) {
+      user.buyers = this.props.misc.buyers;
+    } else {
+      user.buyers = [];
+    }
     console.log(user);
     this.props.dispatch(updateUser(user));
   }
@@ -89,6 +125,144 @@ class UserEdit extends Component {
     this.props.dispatch({type: c.USER_EDIT_FORM_TOGGLE, payload: {adding: false}});
   }
 
+  
+  _onLayerSubmit (event) {
+    event.preventDefault();
+    let {layer,team} = this.state;
+    const {misc: {buyers}} = this.props;
+
+    if (! layer.filterValue.includes('Select')) {   
+      layer.filterItems = layer.filterItems.filter(b => b != layer.filterValue);
+      layer.selectedItems = buyers.filter(b => b.team == team && !layer.filterItems.includes(b.name));
+    }
+
+    layer.filterValue = 'Select Buyer';
+    layer.show = false;
+    this.setState({layer: layer});
+  }
+
+  _onLayerClose () {
+    let {layer} = this.state;
+    layer.show = false;
+    layer.filterValue = 'Select Buyer';
+    this.setState({layer});
+  }
+
+  _onLayerSelect (event) {
+    let {layer} = this.state;
+    layer.filterValue = event.value;
+    this.setState({layer: layer});
+  }
+
+  _onRemove (index,event) {
+    let {layer} = this.state;
+    let rItem = layer.selectedItems[index];
+    layer.selectedItems = layer.selectedItems.filter(b => b.id != rItem.id);
+    layer.filterItems.push(rItem.name);
+    this.setState({layer: layer});
+  }
+
+  _onAdd (event) {   // On Section/Supplier Add Click. Show corresponding layer for adding.
+    console.log('_onAdd');
+    let {layer, team} = this.state;
+    if (team.includes('Select')) {
+      alert('First Select Team');
+      return;
+    }
+    layer.show = true;
+    this.setState({layer: layer});
+  }
+
+  _onTeamFilter (event) {
+    let {layer} = this.state;
+    const {buyers} = this.props.misc;
+
+    const team = event.value;
+
+    layer.filterItems = [];
+    layer.selectedItems = buyers.filter(b => b.team == team);
+
+    layer.filterValue = 'Select Buyer';
+    layer.show = false;
+    this.setState({layer,team});
+  }
+
+  _renderLayer () {
+    const {layer} = this.state;
+
+    let result;
+    if (layer.show) {
+      result = (
+        <Layer align="right" closer={true} onClose={this._onLayerClose.bind(this)}
+          a11yTitle={layer.title}>
+          
+          <Form onSubmit={this._onLayerSubmit.bind(this)} compact={false}>
+            <Header>
+              <Heading tag="h2" margin='none'>{layer.title}</Heading>
+            </Header>
+            <Box pad={{vertical: 'medium'}}/>
+            <FormFields>
+              <fieldset>
+                <FormField htmlFor="name" label={layer.label} error=''>
+                  <Select id="name" name="name"
+                    value={layer.filterValue}
+                    options={layer.filterItems}
+                    onChange={this._onLayerSelect.bind(this)} />
+                </FormField>
+              </fieldset>
+            </FormFields>
+            <Footer pad={{vertical: 'medium'}}>
+              <Button type="submit" primary={true} label="OK"
+                onClick={this._onLayerSubmit.bind(this)} />
+            </Footer>
+          </Form>
+        </Layer>
+      );
+    }
+    return result;
+  }
+
+  _renderFields () {
+    const {layer,teams,team,user} = this.state;
+
+    if (! (user.level == ul.LEVEL1 || user.level == ul.LEVEL2)) {
+      return null;
+    }
+
+    let selected = layer.selectedItems;
+
+    const selectedFields = selected.map((buyer, index) => {
+      return (
+        <ListItem key={index} justify="between" pad="none"
+          separator={index === 0 ? 'horizontal' : 'bottom'}
+          responsive={false}>
+          <span>{buyer.name}</span>
+          <Button icon={<TrashIcon />}
+            onClick={this._onRemove.bind(this,index)}
+            a11yTitle={`Remove Section`} />
+        </ListItem>
+      );
+    });
+
+    return (
+      <fieldset>
+        <Header size="small" justify="between">
+          <Heading tag="h3">{layer.label}</Heading>
+          <Button icon={<AddIcon />} onClick={this._onAdd.bind(this)}
+            a11yTitle={layer.title} />
+        </Header>
+        <FormField label="Team" htmlFor="team" error=''>
+          <Select id="team" name="team" options={teams}
+            value={team}  onChange={this._onTeamFilter.bind(this)} />
+        </FormField>
+        <List>
+          {selectedFields}
+        </List>
+      </fieldset>
+    );
+  }
+
+
 
   render () {
     const {user,errors,initializing} = this.state;
@@ -102,6 +276,10 @@ class UserEdit extends Component {
         </Box>
       );
     }
+
+    const layerControl = this._renderLayer();
+
+    const buyerFields = this._renderFields();
 
     const  levelFilter = user.role == ur.ROLE_ADMIN ? null : (
       <FormField label="User Level" htmlFor="level" error={errors[0]}>
@@ -141,6 +319,8 @@ class UserEdit extends Component {
                   </FormField>
                 </fieldset>
 
+                {buyerFields}
+
               </FormFields>
 
               <Footer pad={{vertical: 'medium'}}>
@@ -150,7 +330,7 @@ class UserEdit extends Component {
               </Footer>
             </Form>
           </Article>
-
+          {layerControl}
         </Section>
       </Box>
       

@@ -1,4 +1,6 @@
-package in.andonsystem.v2.entity;
+package in.andonsystem.v1.entity;
+
+import in.andonsystem.v2.entity.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,64 +13,71 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by razamd on 3/30/2017.
+ * Created by razamd on 4/5/2017.
  */
 @Entity
-@Table(name = "issue2")
-public class Issue implements Serializable{
+public class Issue1 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "issue_id", nullable = false)
+    @Column(name = "ISSUE_ID")
     private Long id;
 
+    @Column(name = "LINE", nullable = false)
+    private Integer line;
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "buyer_id")
-    private Buyer buyer;
+    @JoinColumn(name = "PROB_ID")
+    private Problem problem;
 
-    @Column(name = "problem", nullable = false)
-    private String problem;
+    @Column(name = "CRITICAL", length = 3)
+    private String critical;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "OPERATOR_NO", length = 10)
+    private String operatorNo;
+
+    @Column(name = "DESCRIPTION")
     private String description;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "raised_by")
+    @JoinColumn(name = "RAISED_BY")
     private User raisedBy;
 
     @ManyToOne
-    @JoinColumn(name = "ack_by")
+    @JoinColumn(name = "ACK_BY")
     private User ackBy;
 
     @ManyToOne
-    @JoinColumn(name = "fix_by")
+    @JoinColumn(name = "FIX_BY")
     private User fixBy;
 
-    @Column(name = "raised_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "RAISED_AT")
     private Date raisedAt;
 
-    @Column(name = "ack_at")
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ACK_AT")
     private Date ackAt;
 
-    @Column(name = "fix_at")
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "FIX_AT")
     private Date fixAt;
 
-    @Column(name = "processing_at")
+    @Column(name = "PROCESSING_AT")
     private Integer processingAt;
+
+    @Column(name = "SEEK_HELP")
+    private Integer seekHelp;
 
     @Version
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_modified")
+    @Column(name = "LAST_MODIFIED")
     private Date lastModified;
 
-    public Issue() {
+    public Issue1() {
     }
 
     public Long getId() {
@@ -79,20 +88,44 @@ public class Issue implements Serializable{
         this.id = id;
     }
 
-    public Buyer getBuyer() {
-        return buyer;
+    public Integer getLine() {
+        return line;
     }
 
-    public void setBuyer(Buyer buyer) {
-        this.buyer = buyer;
+    public void setLine(Integer line) {
+        this.line = line;
     }
 
-    public String getProblem() {
+    public Problem getProblem() {
         return problem;
     }
 
-    public void setProblem(String problem) {
+    public void setProblem(Problem problem) {
         this.problem = problem;
+    }
+
+    public String getCritical() {
+        return critical;
+    }
+
+    public void setCritical(String critical) {
+        this.critical = critical;
+    }
+
+    public String getOperatorNo() {
+        return operatorNo;
+    }
+
+    public void setOperatorNo(String operatorNo) {
+        this.operatorNo = operatorNo;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public User getRaisedBy() {
@@ -151,6 +184,14 @@ public class Issue implements Serializable{
         this.processingAt = processingAt;
     }
 
+    public Integer getSeekHelp() {
+        return seekHelp;
+    }
+
+    public void setSeekHelp(Integer seekHelp) {
+        this.seekHelp = seekHelp;
+    }
+
     public Date getLastModified() {
         return lastModified;
     }
@@ -159,20 +200,14 @@ public class Issue implements Serializable{
         this.lastModified = lastModified;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @Override
     public String toString() {
-        return "Issue{" +
+        return "Issue1{" +
                "id=" + id +
-               ", buyer=" + buyer +
-               ", problem='" + problem + '\'' +
+               ", line=" + line +
+               ", problem=" + problem +
+               ", critical='" + critical + '\'' +
+               ", operatorNo='" + operatorNo + '\'' +
                ", description='" + description + '\'' +
                ", raisedBy=" + raisedBy +
                ", ackBy=" + ackBy +
@@ -181,6 +216,7 @@ public class Issue implements Serializable{
                ", ackAt=" + ackAt +
                ", fixAt=" + fixAt +
                ", processingAt=" + processingAt +
+               ", seekHelp=" + seekHelp +
                ", lastModified=" + lastModified +
                '}';
     }

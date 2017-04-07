@@ -10,7 +10,8 @@ export function authenticate (username, password) {
 
     const config = {
       method: 'post',
-      url: "http://localhost:8001/oauth/token",
+      // url: "http://localhost:8001/oauth/token",
+      url: "http://zahidraza.in/andon-system/oauth/token",
       headers: {'Authorization': 'Basic ' + btoa('client-web:super-secret')},
       params: {
         grant_type: 'password',

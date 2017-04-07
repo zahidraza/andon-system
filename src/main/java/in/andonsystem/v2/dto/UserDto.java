@@ -1,6 +1,7 @@
 package in.andonsystem.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.enums.Level;
 import in.andonsystem.v2.enums.Role;
 import in.andonsystem.v2.enums.UserType;
@@ -8,6 +9,8 @@ import in.andonsystem.v2.validation.StringEnum;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Set;
 
 public class UserDto {
 
@@ -39,6 +42,8 @@ public class UserDto {
     @NotNull
     @StringEnum(enumClass = Level.class)
     private String level;
+
+    private Set<Buyer> buyers;
 
     private Long lastModified;
 
@@ -124,6 +129,14 @@ public class UserDto {
 
     public void setLastModified(Long lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public Set<Buyer> getBuyers() {
+        return buyers;
+    }
+
+    public void setBuyers(Set<Buyer> buyers) {
+        this.buyers = buyers;
     }
 
     @Override

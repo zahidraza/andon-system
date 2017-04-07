@@ -1,7 +1,7 @@
 package in.andonsystem.v2.tasks;
 
 import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.entity.Issue;
+import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.enums.Level;
 import in.andonsystem.v2.service.IssueService;
@@ -33,7 +33,7 @@ public class FixTask extends Thread{
         ApplicationContext context = ApplicationContextUtil.getApplicationContext();
         IssueService issueService = context.getBean(IssueService.class);
 
-        Issue issue = issueService.findOne(issueId,true);
+        Issue2 issue = issueService.findOne(issueId,true);
         System.out.println(issue);
 
         //If issue is not fixed yet and It is processing at level below or equal to checkProcessingAT

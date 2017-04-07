@@ -5,7 +5,7 @@ import in.andonsystem.v1.util.MiscUtil;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.entity.Issue;
+import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.respository.IssueRepository;
 import in.andonsystem.v2.respository.UserRespository;
 import in.andonsystem.v2.tasks.AckTask;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -46,8 +45,8 @@ public class IssueService {
         this.mapper = mapper;
     }
 
-    public Issue findOne(Long id,Boolean initUsers){
-        Issue issue = issueRepository.findOne(id);
+    public Issue2 findOne(Long id, Boolean initUsers){
+        Issue2 issue = issueRepository.findOne(id);
         if(initUsers){
             Buyer buyer = issue.getBuyer();
             Hibernate.initialize(buyer.getUsers());
@@ -56,6 +55,7 @@ public class IssueService {
     }
 
     public List<IssueDto> findAllAfter(Long after){
+        logger.debug("findAllAfter: after = " + after);
         Date date = in.andonsystem.v2.utils.MiscUtil.getTodayMidnight();
         //If after value is greater than today midnight value, then return issues after this value, else return issue after today's midnight
         if(after > date.getTime()){
@@ -76,7 +76,7 @@ public class IssueService {
 
     @Transactional
     public IssueDto save(IssueDto issueDto){
-        Issue issue = mapper.map(issueDto, Issue.class);
+        Issue2 issue = mapper.map(issueDto, Issue2.class);
         issue.setRaisedAt(new Date());
         issue.setRaisedBy(userRespository.findOne(issueDto.getRaisedBy()));
         issue.setProcessingAt(1);
@@ -99,7 +99,7 @@ public class IssueService {
 
     @Transactional
     public IssuePatchDto update(IssuePatchDto issuePatchDto, String operation){
-        Issue issue = issueRepository.findOne(issuePatchDto.getId());
+        Issue2 issue = issueRepository.findOne(issuePatchDto.getId());
 
         if(operation.equalsIgnoreCase(Constants.OP_ACK)){
             issue.setAckBy(userRespository.findOne(issuePatchDto.getAckBy()));
@@ -114,11 +114,11 @@ public class IssueService {
     @Transactional
     public void updateProcessingAt(Long issueId, Integer processinAt){
         logger.debug("updateProcessingAt(): issueId = {}, processingAt = {}", issueId, processinAt);
-        Issue issue = issueRepository.findOne(issueId);
+        Issue2 issue = issueRepository.findOne(issueId);
         if(issue != null){
             issue.setProcessingAt(processinAt);
         }else {
-            logger.warn("failed to update processingAt value since Issue with id = {} does not exist ",issueId);
+            logger.warn("failed to update processingAt value since Issue1 with id = {} does not exist ",issueId);
         }
     }
 
