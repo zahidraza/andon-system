@@ -1,4 +1,4 @@
-package in.andonsystem.v2.utils;
+package in.andonsystem.v2.util;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -1,4 +1,4 @@
-package in.andonsystem.v2.utils;
+package in.andonsystem.v2.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

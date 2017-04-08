@@ -1,7 +1,5 @@
-package in.andonsystem.v2.utils;
+package in.andonsystem.v2.util;
 
-import in.andonsystem.v1.models.Preferences;
-import in.andonsystem.v1.util.Constants;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

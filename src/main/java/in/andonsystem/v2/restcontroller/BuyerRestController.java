@@ -2,7 +2,7 @@ package in.andonsystem.v2.restcontroller;
 
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.service.BuyerService;
-import in.andonsystem.v2.utils.ApiV2Urls;
+import in.andonsystem.v2.util.ApiV2Urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

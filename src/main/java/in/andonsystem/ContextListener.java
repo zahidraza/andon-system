@@ -1,18 +1,8 @@
 package in.andonsystem;
 
-import com.mysql.jdbc.AbandonedConnectionCleanupThread;
-import in.andonsystem.v1.models.Preferences;
 import in.andonsystem.v1.scheduler.FutureTaskManager;
-import in.andonsystem.v1.services.DBTableService;
-import in.andonsystem.v1.services.DeptService;
-import in.andonsystem.v1.services.DesignationService;
 import in.andonsystem.v1.services.IssueService;
-import in.andonsystem.v1.services.MiscService;
-import in.andonsystem.v1.services.ProblemService;
-import in.andonsystem.v1.services.SchedulerService;
-import in.andonsystem.v1.services.SectionService;
 import in.andonsystem.v1.util.ConnectionPool;
-import in.andonsystem.v1.util.MiscUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,10 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;

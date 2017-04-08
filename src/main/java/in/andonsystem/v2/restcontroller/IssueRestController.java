@@ -8,7 +8,7 @@ import in.andonsystem.v2.dto.RestError;
 import in.andonsystem.v2.service.BuyerService;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.utils.ApiV2Urls;
+import in.andonsystem.v2.util.ApiV2Urls;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

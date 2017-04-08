@@ -1,4 +1,4 @@
-package in.andonsystem.v2.utils;
+package in.andonsystem.v2.util;
 
 /**
  * Created by razamd on 3/30/2017.

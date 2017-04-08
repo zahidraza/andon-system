@@ -2,7 +2,7 @@ package in.andonsystem.v2.restcontroller;
 
 import in.andonsystem.v1.util.Constants;
 import in.andonsystem.v1.util.MiscUtil;
-import in.andonsystem.v2.utils.ApiV2Urls;
+import in.andonsystem.v2.util.ApiV2Urls;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;

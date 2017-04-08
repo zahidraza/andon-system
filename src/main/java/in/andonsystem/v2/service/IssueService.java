@@ -10,7 +10,7 @@ import in.andonsystem.v2.respository.IssueRepository;
 import in.andonsystem.v2.respository.UserRespository;
 import in.andonsystem.v2.tasks.AckTask;
 import in.andonsystem.v2.tasks.FixTask;
-import in.andonsystem.v2.utils.Scheduler;
+import in.andonsystem.v2.util.Scheduler;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class IssueService {
 
     public List<IssueDto> findAllAfter(Long after){
         logger.debug("findAllAfter: after = " + after);
-        Date date = in.andonsystem.v2.utils.MiscUtil.getTodayMidnight();
+        Date date = in.andonsystem.v2.util.MiscUtil.getTodayMidnight();
         //If after value is greater than today midnight value, then return issues after this value, else return issue after today's midnight
         if(after > date.getTime()){
             date = new Date(after);
