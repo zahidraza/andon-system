@@ -1,5 +1,6 @@
 package in.andonsystem.v1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.andonsystem.v2.validation.DepartmentFixedValue;
 import in.andonsystem.v2.validation.Fixed;
 
@@ -34,6 +35,7 @@ public class Problem implements Serializable{
     @Column(name = "DEPARTMENT", nullable = false)
     private String department;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "problems")
     private Set<Designation> designations = new HashSet<>();
 
