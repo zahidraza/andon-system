@@ -29,3 +29,35 @@ INSERT INTO buyer (`buyer_id`,`name`,`team`) VALUES
 (28,'H&C','TL-Malini'),
 (29,'Other','TL-Malini');
 
+INSERT INTO problem (`prob_id`,`name`,`department`) VALUES
+(1,'Loading Problem','Cutting'),
+(2,'Re-Cutting Problem','Cutting'),
+(3,'Other Problem','Cutting'),
+(4,'Operator Discipline','Human Resource'),
+(5,'Unplanned Absenteeism','Human Resource'),
+(6,'Other Problem','Human Resource'),
+(7,'Allocated Operator Unavailable','Industrial Engineering'),
+(8,'Machine not available','Industrial Engineering'),
+(9,'Balancing Not Done','Industrial Engineering'),
+(10,'Other Problem','Industrial Engineering'),
+(11,'Machine Breakdown','Maintenance'),
+(12,'Machine Settings','Maintenance'),
+(13,'Other Problem','Maintenance'),
+(14,'Cutting Quality','Quality'),
+(15,'Sewing alteration','Quality'),
+(16,'Quality approval','Quality'),
+(17,'Other Problem','Quality'),
+(18,'Quality Problem','Trims'),
+(19,'Wrong Trims Issued','Trims'),
+(20,'Mixing Trims Problem','Trims'),
+(21,'Other Problem','Trims'),
+(22,'Operator Handling Problem','Training'),
+(23,'Skills Problem','Training'),
+(24,'Other Problem','Training'),
+(25,'No Pulling','Finishing'),
+(26,'Other Problem','Finishing'),
+(27,'No Monitoring','Production'),
+(28,'Feeding Helper Problem','Production'),
+(29,'Other Problem','Production');
+
+

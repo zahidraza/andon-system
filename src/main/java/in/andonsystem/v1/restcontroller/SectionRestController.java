@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 
 
-@RequestMapping(ApiV1Urls.URL_USERS_SECTIONS)
+@RequestMapping(ApiV1Urls.ROOT_URL_SECTIONS)
 public class SectionRestController {
     @Autowired
     SectionService sectionService;

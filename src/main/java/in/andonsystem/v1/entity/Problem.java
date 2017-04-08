@@ -1,5 +1,8 @@
 package in.andonsystem.v1.entity;
 
+import in.andonsystem.v2.validation.DepartmentFixedValue;
+import in.andonsystem.v2.validation.Fixed;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +30,7 @@ public class Problem implements Serializable{
     @Column(name = "NAME", nullable = false)
     private String name;
 
+    @NotNull @Fixed(fixClass = DepartmentFixedValue.class)
     @Column(name = "DEPARTMENT", nullable = false)
     private String department;
 
