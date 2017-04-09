@@ -15,4 +15,6 @@ public class ApiV2Urls {
     public static final String URL_ISSUES_ISSUE = "/{issueId}";
     public static final String ROOT_URL_MISCELLANEOUS = "/api/v2/misc";
     public static final String URL_MISCELLANEOUS_CONFIG = "/config";
+    public static final String URL_CURRENT_TIME = "/current_time";
+    public static final String URL_CHANGE_PASSWORD = "/change_password";
 }

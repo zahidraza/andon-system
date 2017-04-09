@@ -35,8 +35,6 @@ class NavSidebar extends Component {
 
     const items = (userType == u.FACTORY) ? itemsFactory : itemsCity;
 
-    console.log(items);
-
     var links = items.map( (page, index) => {
       var value = (page.path == this.props.routePath) ? 'active' : '';
       return (

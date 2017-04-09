@@ -1,4 +1,4 @@
-import { getLocaleData } from 'grommet/util/Locale';
+import { getLocaleData } from 'grommet/utils/Locale';
 
 getLocaleDataFromJson();
 

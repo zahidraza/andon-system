@@ -2,29 +2,26 @@ package in.andonsystem.v2.restcontroller;
 
 import in.andonsystem.v2.assembler.UserAssembler;
 import in.andonsystem.v2.dto.UserDto;
+import in.andonsystem.v2.dto.UserDtoPatch;
 import in.andonsystem.v2.service.UserService;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 
 import in.andonsystem.v2.util.ApiV2Urls;
+import org.apache.commons.collections.map.HashedMap;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping(ApiV2Urls.ROOT_URL_USERS)
@@ -35,12 +32,17 @@ public class UserRestController{
     @Autowired UserService userService;  //Service which will do all data retrieval/manipulation work
 
     @Autowired UserAssembler userAssembler;
+
+    @Autowired Mapper mapper;
     
     @GetMapping
     public ResponseEntity<?> listAllUsers(@RequestParam(value = "after", defaultValue = "0") Long after) {
         logger.debug("listAllUsers()");
         List<UserDto> list = userService.findAllAfter(after);
-        return new ResponseEntity<>(userAssembler.toResources(list), HttpStatus.OK);
+        Map<String, Object> response = new HashedMap();
+        response.put("users",list);
+        response.put("userSync", System.currentTimeMillis());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
   
     @GetMapping(ApiV2Urls.URL_USERS_USER)
@@ -70,6 +72,18 @@ public class UserRestController{
         user.setId(id);  
         user = userService.update(user);
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+    }
+
+    @PatchMapping(ApiV2Urls.URL_USERS_USER)
+    public ResponseEntity<?> patchUser(@PathVariable("userId") long id,@Validated @RequestBody UserDtoPatch user) {
+        logger.debug("updateUser(): id = {} \n {}",id,user);
+        if (!userService.exists(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        UserDto userDto = mapper.map(user, UserDto.class);
+        userDto.setId(id);
+        userDto = userService.update(userDto);
+        return ResponseEntity.ok(userDto);
     }
   
     @DeleteMapping(ApiV2Urls.URL_USERS_USER)

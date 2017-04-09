@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { localeData } from '../reducers/localization';
-import {initialize} from '../actions/misc';
+import {initialize,navActivate} from '../actions/misc';
 import {authenticate} from '../actions/user';
 import {USER_TYPE as u} from  '../utils/constants';
 
@@ -36,7 +36,9 @@ class Login extends Component {
 
   componentWillMount () {
     console.log('componentWillMount');
+    this.props.dispatch(navActivate(false));
     this.props.dispatch(initialize());
+    
   }
 
   componentWillReceiveProps (nextProps) {
@@ -45,8 +47,7 @@ class Login extends Component {
       this.setState({initializing: false});
     }
 
-    if (nextProps.user.authenticated) {
-      console.log(nextProps);
+    if (sessionStorage.session == 'true') {
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard1');
       } else {

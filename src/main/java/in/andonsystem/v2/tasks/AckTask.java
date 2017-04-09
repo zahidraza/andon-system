@@ -23,9 +23,11 @@ public class AckTask extends Thread {
     private final Logger logger = LoggerFactory.getLogger(AckTask.class);
 
     private Long issueId;
+    private String message;
 
-    public AckTask(Long issueId){
+    public AckTask(Long issueId, String message){
         this.issueId = issueId;
+        this.message = message;
     }
 
     @Override
@@ -46,11 +48,19 @@ public class AckTask extends Thread {
                                     .filter(user -> user.getLevel().equalsIgnoreCase(Level.LEVEL2.getValue()))
                                     .collect(Collectors.toList());
 
+            StringBuilder builder = new StringBuilder();
+            users.forEach(user -> builder.append(user.getMobile() + ","));
+            if (users.size() > 0){
+                builder.setLength(builder.length() - 1);
+                logger.debug("Sending sms to = {}, message = {}",builder.toString(), message);
+                in.andonsystem.v2.util.MiscUtil.sendSMS(builder.toString(),message);
+            }
+
             //Update processingAt
             issueService.updateProcessingAt(issue.getId(),2);
             //Submit FixTask(2 hrs, 2)
             Long fixL2Time = Long.parseLong(MiscUtil.getInstance().getConfigProperty(Constants.APP_V2_FIX_L2_TIME, "30"));
-            Scheduler.getInstance().submit(new FixTask(issue.getId(),2),fixL2Time);
+            Scheduler.getInstance().submit(new FixTask(issue.getId(),2, message),fixL2Time);
         }else {
             logger.debug("Ignoring AckTask as Issue1 is acknowledged. issueId = {}", issueId);
         }

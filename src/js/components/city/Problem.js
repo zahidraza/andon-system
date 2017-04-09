@@ -79,7 +79,7 @@ class Problem extends Component {
 }
 
 Problem.contextTypes = {
-  router: React.PropTypes.object
+  router: React.PropTypes.object.isRequired
 };
 
 let select = (store) => {

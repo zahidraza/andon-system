@@ -2,6 +2,7 @@ import Dashboard from "./components/Dashboard";
 import Main from "./components/Main";
 import Test from "./components/Test";
 import Login from "./components/Login";
+import Profile from "./components/Profile";
 import User2 from "./components/city/User";
 import UserAdd2 from "./components/city/UserAdd";
 import UserEdit2 from "./components/city/UserEdit";
@@ -21,6 +22,7 @@ export default {
     { path: 'team', component: Team},
     { path: 'buyer', component: Buyer},
     { path: 'problem2', component: Problem2},
+    { path: 'profile', component: Profile},
     { path: 'test', component: Test}
   ]
 };

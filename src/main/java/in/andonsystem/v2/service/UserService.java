@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,11 +100,23 @@ public class UserService {
         if (userDto.getLevel() != null) user.setLevel(userDto.getLevel());
         if (userDto.getRole() != null) user.setRole(userDto.getRole());
         if (userDto.getUserType() != null) user.setUserType(userDto.getUserType());
+        if (userDto.getPassword() != null) user.setPassword(userDto.getPassword());
         if (userDto.getBuyers() != null){
             user.getBuyers().clear();
             userDto.getBuyers().forEach(buyer -> user.getBuyers().add(buyer));
         }
         return mapper.map(user, UserDto.class);
+    }
+
+    @Transactional
+    public boolean changePassword(Long userId, String oldPassword, String newPassword){
+        User user = userRepository.findOne(userId);
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(newPassword);
+            return true;
+        }
+        return false;
     }
     
     @Transactional

@@ -21,10 +21,12 @@ public class FixTask extends Thread{
 
     private Long issueId;
     private Integer checkProcessingAt;
+    private String message;
 
-    public FixTask(Long issueId, Integer checkProcessingAt){
+    public FixTask(Long issueId, Integer checkProcessingAt, String message){
         this.issueId = issueId;
         this.checkProcessingAt = checkProcessingAt;
+        this.message = message;
     }
 
     @Override
@@ -47,6 +49,14 @@ public class FixTask extends Thread{
                                         else return user.getLevel().equalsIgnoreCase(Level.LEVEL3.getValue()) ;
                                     })
                                     .collect(Collectors.toList());
+
+            StringBuilder builder = new StringBuilder();
+            users.forEach(user -> builder.append(user.getMobile() + ","));
+            if (users.size() > 0){
+                builder.setLength(builder.length() - 1);
+                logger.debug("Sending sms to = {}, message = {}",builder.toString(), message);
+                in.andonsystem.v2.util.MiscUtil.sendSMS(builder.toString(),message);
+            }
 
             //update processing at value = (checkProcessingAt + 1)
             issueService.updateProcessingAt(issueId, (checkProcessingAt+1));

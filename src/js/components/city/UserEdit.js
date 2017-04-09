@@ -339,7 +339,7 @@ class UserEdit extends Component {
 }
 
 UserEdit.contextTypes = {
-  router: PropTypes.object
+  router: PropTypes.object.isRequired
 };
 
 let select = (store) => {

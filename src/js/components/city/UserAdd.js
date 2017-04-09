@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localeData } from '../../reducers/localization';
 import {addUser}  from '../../actions/user';
-import {USER_CONSTANTS as c, USER_ROLE as ur, USER_LEVEL as ul}  from '../../utils/constants';
+import {USER_CONSTANTS as c, USER_ROLE as ur, USER_LEVEL as ul, USER_TYPE as ut}  from '../../utils/constants';
 import {initialize} from '../../actions/misc';
 
 import AppHeader from '../AppHeader';
@@ -87,11 +87,20 @@ class UserAdd extends Component {
   _onSubmit (event) {
     event.preventDefault();
     let {user,layer} = this.state;
-    
-    if (user.level == ul.LEVEL1 || user.level == ul.LEVEL2) {
-      user.buyers = layer.selectedItems;
-    } else if (user.level == ul.LEVEL3) {
-      user.buyers = this.props.misc.buyers;
+
+    if (user.userType == ut.MERCHANDISING) {
+      if (user.level == ul.LEVEL1 || user.level == ul.LEVEL2) {
+        user.buyers = layer.selectedItems;
+      } else if (user.level == ul.LEVEL3) {
+        user.buyers = this.props.misc.buyers;
+      }
+    } else if (user.userType == ut.SAMPLING) {
+      if (user.role == ur.ROLE_ADMIN) {
+        user.level = ul.LEVEL4;
+      } else {
+        user.level = ul.LEVEL0;
+      }
+      delete user.buyers;
     }
     //console.log(user);
     this.props.dispatch(addUser(user));
@@ -113,7 +122,7 @@ class UserAdd extends Component {
     let {user} = this.state;
     user[event.target.getAttribute('name')] = event.value;
     if (event.value == ur.ROLE_ADMIN) {
-      user.label = ul.LEVEL4;
+      user.level = ul.LEVEL4;
     } else if (event.value == ur.ROLE_USER) {
       user.level = ul.LEVEL1;
     } 
@@ -224,6 +233,9 @@ class UserAdd extends Component {
   _renderFields () {
     const {layer,teams,team,user} = this.state;
 
+    if (user.role == ur.ROLE_ADMIN || sessionStorage.userType == ut.FACTORY || sessionStorage.userType == ut.SAMPLING)
+      return null;
+
     if (! (user.level == ul.LEVEL1 || user.level == ul.LEVEL2)) {
       return null;
     }
@@ -264,6 +276,7 @@ class UserAdd extends Component {
 
   render () {
     const {user,errors,initializing} = this.state;
+    const {userType} = window.sessionStorage;
 
     if (initializing) {
       return (
@@ -279,7 +292,7 @@ class UserAdd extends Component {
 
     const buyerFields = this._renderFields();
 
-    const  levelFilter = user.role == ur.ROLE_ADMIN ? null : (
+    const  levelFilter = (user.role == ur.ROLE_ADMIN || userType == ut.SAMPLING || userType == ut.FACTORY) ? null : (
       <FormField label="User Level" htmlFor="level" error={errors[0]}>
         <Select id="level" name="level" options={[ul.LEVEL1, ul.LEVEL2, ul.LEVEL3]}
           value={user.level}  onChange={this._onFilter.bind(this)} />
@@ -337,7 +350,7 @@ class UserAdd extends Component {
 }
 
 UserAdd.contextTypes = {
-  router: PropTypes.object
+  router: PropTypes.object.isRequired
 };
 
 let select = (store) => {

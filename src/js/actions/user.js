@@ -3,6 +3,17 @@ import axios from "axios";
 import {USER_CONSTANTS as c} from  '../utils/constants';
 import {getHeaders} from  '../utils/restUtil';
 
+axios.interceptors.response.use(function (response) {
+  // Do something with response data
+  console.log(response);
+  return response;
+}, function (error) {
+  if (error.response.status == 401) {
+    sessionStorage.session = false;
+  }
+  return Promise.reject(error);
+});
+
 export function authenticate (username, password) {
   console.log('authenticate');
 
@@ -68,6 +79,27 @@ export function updateUser (user) {
     }).catch( (err) => {
       console.log(err);
       dispatch({type: c.USER_EDIT_FAIL});
+    });
+  };
+}
+
+export function changePasswprd (credential) {
+  console.log('updateUser');
+  return function (dispatch) {
+    axios.put(window.serviceHost + '/v2/misc/change_password?userId=' +  credential.userId + "&oldPassword=" + credential.oldPassword + "&newPassword=" + credential.newPassword, null, {headers: getHeaders()})
+    .then((response) => {
+      console.log(response);
+      if (response.status == 200) {
+        if (response.data.status == "SUCCESS") {
+          dispatch({type: c.USER_CHANGE_PASSWD, payload: {message: 'Password changed successfully.'}});
+        }else{
+          dispatch({type: c.USER_CHANGE_PASSWD, payload: {message: 'Incorrect credential. try again!'}});
+        }
+        //dispatch({type: c.USER_EDIT_SUCCESS, payload: {user: response.data}});
+      }
+    }).catch( (err) => {
+      console.log(err);
+      dispatch({type: c.USER_CHANGE_PASSWD, payload: {message: 'Some error occured'}});
     });
   };
 }

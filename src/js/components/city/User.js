@@ -128,8 +128,11 @@ class User extends Component {
 
   _onRemoveClick (index) {
     console.log('_onRemoveClick');
+    let value = confirm('Are you sure to delete this User?');
+    if (!value) {
+      return;
+    }
     const {users} = this.state;
-
     this.props.dispatch(removeUser(users[index]));
   }
 
@@ -219,7 +222,7 @@ class User extends Component {
 }
 
 User.contextTypes = {
-  router: PropTypes.object
+  router: PropTypes.object.isRequired
 };
 
 let select = (store) => {

@@ -13,7 +13,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import TableHeader from 'grommet/components/TableHeader';
 
-class Team extends Component {
+class Buyer extends Component {
   
   constructor () {
     super();
@@ -48,7 +48,7 @@ class Team extends Component {
     let items = buyers.map((buyer,index) => {
       return (
         <TableRow key={index}  >
-          <td >{buyer.team}</td>
+          <td >{buyer.Buyer}</td>
           <td >{buyer.name}</td>
         </TableRow>
       );
@@ -76,7 +76,7 @@ class Team extends Component {
         <Section>
           <Box size="large" alignSelf="center" >
             <Table>
-              <TableHeader labels={['Team','Buyer']} />
+              <TableHeader labels={['Buyer','Buyer']} />
               <tbody>{items}</tbody>
             </Table>
           </Box>
@@ -86,12 +86,12 @@ class Team extends Component {
   }
 }
 
-Team.contextTypes = {
-  router: React.PropTypes.object
+Buyer.contextTypes = {
+  router: React.PropTypes.object.isRequired
 };
 
 let select = (store) => {
   return {misc: store.misc};
 };
 
-export default connect(select)(Team);
+export default connect(select)(Buyer);

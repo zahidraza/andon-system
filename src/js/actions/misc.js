@@ -21,7 +21,7 @@ export function initialize () {
       dispatch({type: m.INITIALIZE_TEAM, payload: { teams: teams.data }});
       dispatch({type: m.INITIALIZE_PROBLEM, payload: {problems:  problems.data }});
       dispatch({type: m.INITIALIZE_BUYER, payload: { buyers: buyers.data }});
-      dispatch({type: u.INITIALIZE_USER, payload: { users: users.data }});
+      dispatch({type: u.INITIALIZE_USER, payload: { users: users.data.users }});
       dispatch({type: m.STORE_INITIALIZED});
 
     }))

@@ -84,7 +84,7 @@ class Team extends Component {
 }
 
 Team.contextTypes = {
-  router: React.PropTypes.object
+  router: React.PropTypes.object.isRequired
 };
 
 let select = (store) => {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localeData } from '../reducers/localization';
 import { navActivate} from '../actions/misc';
-import { USER_CONSTANTS as u} from '../utils/constants';
+//import { USER_CONSTANTS as u} from '../utils/constants';
 
 import Anchor from 'grommet/components/Anchor';
 import Button from 'grommet/components/Button';
@@ -21,6 +21,11 @@ class AppHeader extends Component {
 
   componentWillMount () {
     this.setState({localeData: localeData()});
+    
+    if (sessionStorage.session == 'false') {
+      this.context.router.push("/");
+    }
+
   }
 
   _openMenu () {
@@ -34,8 +39,9 @@ class AppHeader extends Component {
     delete sessionStorage.username;
     delete sessionStorage.role;
     delete sessionStorage.userType;
-    this.props.dispatch(navActivate(false));
-    this.props.dispatch({type: u.USER_AUTH_FAIL});
+    // this.props.dispatch(navActivate(false));
+    // this.props.dispatch({type: u.USER_AUTH_FAIL});
+    sessionStorage.session = false;
   }
 
   render () {
@@ -74,6 +80,10 @@ class AppHeader extends Component {
     );
   }
 }
+
+AppHeader.contextTypes = {
+  router: React.PropTypes.object.isRequired
+};
 
 let select = (store) => {
   return { nav: store.nav};

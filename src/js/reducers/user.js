@@ -2,7 +2,6 @@ import { USER_CONSTANTS as c} from "../utils/constants";
 
 const initialState = {
   loaded: false,
-  authenticated: false,
   users: [],
   fetching: false,
   adding: false,
@@ -10,7 +9,8 @@ const initialState = {
   user: {},
   filter: {},
   sort: 'name:asc',
-  toggleStatus: true
+  toggleStatus: true,
+  message: ''
 };
 
 const handlers = { 
@@ -29,7 +29,8 @@ const handlers = {
     window.sessionStorage.refresh_token = action.payload.data.refresh_token;
     window.sessionStorage.role = user.role;
     window.sessionStorage.userType = user.userType;
-    return ({authenticated: true});
+    window.sessionStorage.session = true;
+    return ({});
   },
   [c.USER_AUTH_FAIL]: (_, action) => ({authenticated: false}),
   [c.USER_ADD_FORM_TOGGLE]: (_, action) => ({adding: action.payload.adding}),
@@ -52,7 +53,8 @@ const handlers = {
     return ({toggleStatus: !_.toggleStatus,users: users});
   },
   [c.USER_SORT]: (_, action) => ({sort: action.payload.sort, toggleStatus: !_.toggleStatus}),
-  [c.USER_FILTER]: (_, action) => ({filter: action.payload.filter, toggleStatus: !_.toggleStatus})
+  [c.USER_FILTER]: (_, action) => ({filter: action.payload.filter, toggleStatus: !_.toggleStatus}),
+  [c.USER_CHANGE_PASSWD]: (_, action) => ({message: action.payload.message})
 };
 
 export default function user (state = initialState, action) {

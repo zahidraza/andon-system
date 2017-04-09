@@ -6,6 +6,9 @@ import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.Issue2;
+import in.andonsystem.v2.entity.User;
+import in.andonsystem.v2.enums.Level;
+import in.andonsystem.v2.respository.BuyerRepository;
 import in.andonsystem.v2.respository.IssueRepository;
 import in.andonsystem.v2.respository.UserRespository;
 import in.andonsystem.v2.tasks.AckTask;
@@ -36,12 +39,17 @@ public class IssueService {
 
     private final UserRespository userRespository;
 
+    private final BuyerRepository buyerRepository;
+
     private final Mapper mapper;
 
     @Autowired
-    public IssueService(IssueRepository issueRepository, UserRespository userRespository, Mapper mapper) {
+    public IssueService(IssueRepository issueRepository, UserRespository userRespository,BuyerRepository
+            buyerRepository, Mapper
+                        mapper) {
         this.issueRepository = issueRepository;
         this.userRespository = userRespository;
+        this.buyerRepository = buyerRepository;
         this.mapper = mapper;
     }
 
@@ -74,8 +82,9 @@ public class IssueService {
                               .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional()
     public IssueDto save(IssueDto issueDto){
+        logger.debug("save()");
         Issue2 issue = mapper.map(issueDto, Issue2.class);
         issue.setRaisedAt(new Date());
         issue.setRaisedBy(userRespository.findOne(issueDto.getRaisedBy()));
@@ -90,9 +99,13 @@ public class IssueService {
         Long fixL1Time = Long.parseLong(miscUtil.getConfigProperty(Constants.APP_V2_FIX_L1_TIME,"180"));
         Long fixL2Time = Long.parseLong(miscUtil.getConfigProperty(Constants.APP_V2_FIX_L2_TIME,"120"));
 
-        scheduler.submit(new AckTask(issue.getId()), ackTime);
-        scheduler.submit(new FixTask(issue.getId(),1),fixL1Time);
-        scheduler.submit(new FixTask(issue.getId(),2),fixL1Time+ fixL2Time);
+        Buyer buyer = buyerRepository.findOne(issue.getBuyer().getId());
+        String message = generateMessage(issue, buyer);
+        sendMessage(buyer, message);
+
+        scheduler.submit(new AckTask(issue.getId(), message), ackTime);
+        scheduler.submit(new FixTask(issue.getId(),1, message),fixL1Time);
+        scheduler.submit(new FixTask(issue.getId(),2, message),fixL1Time+ fixL2Time);
 
         return mapper.map(issue,IssueDto.class);
     }
@@ -124,5 +137,30 @@ public class IssueService {
 
     public Boolean exists(Long id){
         return issueRepository.exists(id);
+    }
+
+    private String generateMessage(Issue2 issue, Buyer buyer){
+        StringBuilder builder = new StringBuilder();
+        builder.append("Problem raised with details-");
+        builder.append("\nTeam: " + buyer.getTeam());
+        builder.append("\nBuyer: " + buyer.getName());
+        builder.append("\nProblem: " + issue.getProblem());
+        builder.append("\nRemarks: " + issue.getDescription());
+        return builder.toString();
+    }
+
+    private void sendMessage(Buyer buyer, String message){
+
+
+        List<User> users = buyer.getUsers().stream()
+                .filter(user -> user.getLevel().equalsIgnoreCase(Level.LEVEL1.getValue()))
+                .collect(Collectors.toList());
+        StringBuilder builder = new StringBuilder();
+        users.forEach(user -> builder.append(user.getMobile() + ","));
+        if (users.size() > 0){
+            builder.setLength(builder.length() - 1);
+            logger.info("Sending sms to = {}, message = {}",builder.toString(), message);
+            in.andonsystem.v2.util.MiscUtil.sendSMS(builder.toString(),message);
+        }
     }
 }
