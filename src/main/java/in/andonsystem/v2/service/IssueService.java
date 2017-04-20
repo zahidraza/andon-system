@@ -101,7 +101,7 @@ public class IssueService {
 
         Buyer buyer = buyerRepository.findOne(issue.getBuyer().getId());
         String message = generateMessage(issue, buyer);
-        //sendMessage(buyer, message);
+        sendMessage(buyer, message);
 
         scheduler.submit(new AckTask(issue.getId(), message), ackTime);
         scheduler.submit(new FixTask(issue.getId(),1, message),fixL1Time);

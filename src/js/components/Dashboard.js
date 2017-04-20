@@ -47,7 +47,7 @@ class Dashboard extends Component {
       <Box>
         <AppHeader page={this.localeData.label_home} />
         <Section direction="column" pad={{vertical: 'large', horizontal:'small'}}>
-          <h1>Welcome to Inventory Control System Application</h1>
+          <h1>Welcome to Andon System Application</h1>
         </Section>
       </Box>
     );

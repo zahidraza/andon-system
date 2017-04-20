@@ -19,7 +19,7 @@ public class MiscUtil {
 
     public static Date getTodayMidnight(){
         Long time = new Date().getTime();
-        return new Date(time - time % (24 * 60 * 60 * 1000));
+        return new Date(time -((24 * 60 * 60 * 1000)+ time % (24 * 60 * 60 * 1000)));
     }
 
     public static Boolean sendSMS(String to,String message){
