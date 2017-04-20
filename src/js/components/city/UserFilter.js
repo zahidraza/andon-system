@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 //import { localeData } from '../reducers/localization';
-import {USER_CONSTANTS as c}  from '../../utils/constants';
+import {USER_CONSTANTS as c, USER_TYPE as ut, USER_LEVEL as ul}  from '../../utils/constants';
 
 //import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
@@ -24,12 +24,16 @@ class UserFilter extends Component {
   }
 
   componentWillMount () {
-    let levelSet = new Set();
-    this.props.user.users.forEach(u => levelSet.add(u.level));
+    let levels = [];
+    if (sessionStorage.userType == ut.SAMPLING) {
+      levels = [ul.LEVEL0,ul.LEVEL4];
+    }else if (sessionStorage.userType == ut.MERCHANDISING) {
+      levels = [ul.LEVEL1, ul.LEVEL2, ul.LEVEL3, ul.LEVEL4];
+    }
 
     let list = [];
     list.push({label: 'All', value: undefined});
-    levelSet.forEach(l => list.push({label: l, value: l}));
+    levels.forEach(l => list.push({label: l, value: l}));
     this.setState({levels: list});
   }
 

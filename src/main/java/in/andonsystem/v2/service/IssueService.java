@@ -101,7 +101,7 @@ public class IssueService {
 
         Buyer buyer = buyerRepository.findOne(issue.getBuyer().getId());
         String message = generateMessage(issue, buyer);
-        sendMessage(buyer, message);
+        //sendMessage(buyer, message);
 
         scheduler.submit(new AckTask(issue.getId(), message), ackTime);
         scheduler.submit(new FixTask(issue.getId(),1, message),fixL1Time);
@@ -118,8 +118,14 @@ public class IssueService {
             issue.setAckBy(userRespository.findOne(issuePatchDto.getAckBy()));
             issue.setAckAt(new Date());
         }else if(operation.equalsIgnoreCase(Constants.OP_FIX)){
-            issue.setFixBy(userRespository.findOne(issuePatchDto.getFixBy()));
+            User user = userRespository.findOne(issuePatchDto.getFixBy());
+            if (issue.getAckAt() == null){
+                issue.setAckAt(new Date());
+                issue.setAckBy(user);
+            }
+            issue.setFixBy(user);
             issue.setFixAt(new Date());
+            issue.setProcessingAt(4);
         }
         return mapper.map(issue,IssuePatchDto.class);
     }

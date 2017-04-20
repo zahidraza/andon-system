@@ -18,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.andonsystem.v1.entity.Designation;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,6 +56,7 @@ public class User implements Serializable{
     @JoinColumn(name = "DESGN_ID")
     private Designation designation;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "USER_BUYER",
             joinColumns = @JoinColumn(name = "USER_ID"),

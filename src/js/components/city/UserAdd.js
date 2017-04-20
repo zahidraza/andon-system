@@ -36,7 +36,7 @@ class UserAdd extends Component {
     this.state = {
       initializing: false,
       user: {},
-      errors: [],
+
       team: 'Select Team',
       teams: [],
       layer: {
@@ -187,8 +187,8 @@ class UserAdd extends Component {
 
     const team = event.value;
 
-    layer.filterItems = [];
-    layer.selectedItems = buyers.filter(b => b.team == team);
+    layer.filterItems = buyers.filter(b => b.team == team).map(b => b.name);
+    layer.selectedItems = [];
 
     layer.filterValue = 'Select Buyer';
     layer.show = false;
@@ -275,7 +275,8 @@ class UserAdd extends Component {
 
 
   render () {
-    const {user,errors,initializing} = this.state;
+    const {error} = this.props.user;
+    const {user,initializing} = this.state;
     const {userType} = window.sessionStorage;
 
     if (initializing) {
@@ -293,7 +294,7 @@ class UserAdd extends Component {
     const buyerFields = this._renderFields();
 
     const  levelFilter = (user.role == ur.ROLE_ADMIN || userType == ut.SAMPLING || userType == ut.FACTORY) ? null : (
-      <FormField label="User Level" htmlFor="level" error={errors[0]}>
+      <FormField label="User Level" htmlFor="level" error={error.level}>
         <Select id="level" name="level" options={[ul.LEVEL1, ul.LEVEL2, ul.LEVEL3]}
           value={user.level}  onChange={this._onFilter.bind(this)} />
       </FormField>
@@ -314,18 +315,18 @@ class UserAdd extends Component {
               <FormFields>
 
                 <fieldset>
-                  <FormField label="User Role" htmlFor="sType" error={errors[0]}>
+                  <FormField label="User Role" htmlFor="sType" error={error.role}>
                     <Select id="role" name="role" options={[ur.ROLE_ADMIN, ur.ROLE_USER]}
                       value={user.role}  onChange={this._onFilter.bind(this)} />
                   </FormField>
                   {levelFilter}
-                  <FormField label="User Name" error={errors[0]}>
+                  <FormField label="User Name" error={error.name}>
                     <input type="text" name="name" value={user.name} onChange={this._onChange.bind(this)} />
                   </FormField>
-                  <FormField label="Email" error={errors[0]}>
+                  <FormField label="Email" error={error.email}>
                     <input type="email" name="email" value={user.email} onChange={this._onChange.bind(this)} />
                   </FormField>
-                  <FormField label="Mobile Number" error={errors[0]}>
+                  <FormField label="Mobile Number" error={error.mobile}>
                     <input type="text" name="mobile" value={user.mobile} onChange={this._onChange.bind(this)} />
                   </FormField>
                 </fieldset>

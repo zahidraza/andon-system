@@ -39,9 +39,7 @@ class AppHeader extends Component {
     delete sessionStorage.username;
     delete sessionStorage.role;
     delete sessionStorage.userType;
-    // this.props.dispatch(navActivate(false));
-    // this.props.dispatch({type: u.USER_AUTH_FAIL});
-    sessionStorage.session = false;
+    delete sessionStorage.session;
   }
 
   render () {

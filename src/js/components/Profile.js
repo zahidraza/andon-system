@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { localeData } from '../reducers/localization';
 import { connect } from 'react-redux';
 import {initialize} from '../actions/misc';
-import {changePasswprd} from '../actions/user';
+import {changePassword} from '../actions/user';
 import {USER_CONSTANTS as c,USER_TYPE as ut}  from '../utils/constants';
 
 import AppHeader from './AppHeader';
@@ -84,7 +84,7 @@ class Profile extends Component {
     }
 
     credential.userId = user.id;
-    this.props.dispatch(changePasswprd(credential));
+    this.props.dispatch(changePassword(credential));
     this.setState({changingPassword: false, credential: {}});
   }
 

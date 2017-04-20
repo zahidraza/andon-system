@@ -1,6 +1,7 @@
 import { USER_CONSTANTS as c} from "../utils/constants";
 
 const initialState = {
+  authProgress: false,
   loaded: false,
   users: [],
   fetching: false,
@@ -10,11 +11,13 @@ const initialState = {
   filter: {},
   sort: 'name:asc',
   toggleStatus: true,
-  message: ''
+  message: '',
+  error: {}
 };
 
 const handlers = { 
   [c.INITIALIZE_USER]: (_, action) => ({users: action.payload.users, loaded: true, toggleStatus: !_.toggleStatus}),
+  [c.USER_AUTH_PROGRESS]: (_, action) => ({authProgress: true}),
   [c.USER_AUTH_SUCCESS]: (_, action) => {
     let users = _.users;
     if (users.length == 0) {
@@ -30,17 +33,23 @@ const handlers = {
     window.sessionStorage.role = user.role;
     window.sessionStorage.userType = user.userType;
     window.sessionStorage.session = true;
-    return ({});
+    return ({authProgress: false});
   },
-  [c.USER_AUTH_FAIL]: (_, action) => ({authenticated: false}),
-  [c.USER_ADD_FORM_TOGGLE]: (_, action) => ({adding: action.payload.adding}),
+  [c.USER_AUTH_FAIL]: (_, action) => ({authProgress: false}),
+  [c.USER_ADD_FORM_TOGGLE]: (_, action) => ({adding: action.payload.adding, error:{}}),
   [c.USER_ADD_SUCCESS]: (_, action) => {
     let users = _.users;
     users.push(action.payload.user);
     return ({adding: false,toggleStatus: !_.toggleStatus, users: users});
   },
-  [c.USER_ADD_FAIL]: (_, action) => ({adding: false}),
-  [c.USER_EDIT_FORM_TOGGLE]: (_, action) => ({editing: action.payload.editing, user: action.payload.user}),
+  [c.USER_BAD_REQUEST]: (_, action) => {
+    let error = {};
+    action.payload.errors.forEach(err => {
+      error[err.field] = err.message;
+    });
+    return ({error});
+  },
+  [c.USER_EDIT_FORM_TOGGLE]: (_, action) => ({editing: action.payload.editing, user: action.payload.user, error: {}}),
   [c.USER_EDIT_SUCCESS]: (_, action) => {
     let users = _.users;
     let i = users.findIndex(u => u.id == action.payload.user.id);

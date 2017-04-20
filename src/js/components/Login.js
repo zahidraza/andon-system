@@ -27,7 +27,8 @@ class Login extends Component {
       errors: [],
       isForgot: false,
       email: '',
-      changing: false  //changing password
+      changing: false,  //changing password
+      errorMsg: ''
     };
 
     this.localeData = localeData();
@@ -47,6 +48,10 @@ class Login extends Component {
       this.setState({initializing: false});
     }
 
+    if (this.props.user.authProgress && !nextProps.user.authProgress && sessionStorage.session == undefined) {
+      this.setState({errorMsg: "Incorrect email or password, try again!"});
+    }
+
     if (sessionStorage.session == 'true') {
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard1');
@@ -54,6 +59,7 @@ class Login extends Component {
         this.context.router.push('/dashboard2');
       }
     }
+
   }
 
   _login () {
@@ -104,7 +110,7 @@ class Login extends Component {
 
   render () {
 
-    const { initializing, credential, errors,isForgot } = this.state;
+    const { initializing, credential, errors,isForgot, errorMsg } = this.state;
 
     if (initializing) {
       return (
@@ -140,7 +146,7 @@ class Login extends Component {
                 </FormField>
               </FormFields>
               <a style={{color:'blue'}} onClick={this._forgotPasswordClick.bind(this)}>Forgot password?</a>
-              {/*<p style={{color:'red'}} >{error}</p>*/}
+              <p style={{color:'red'}} >{errorMsg}</p>
               <Footer pad={{"vertical": "small"}}>
                 <Button label="Login" fill={true} primary={true}  onClick={this._login.bind(this)} />
               </Footer>

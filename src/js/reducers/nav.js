@@ -5,8 +5,7 @@ const initialState = {
   items:[
     { path: '/dashboard2', label: 'Home'},
     { path: '/user2', label: 'User'},
-    { path: '/team', label: 'Team'},
-    { path: '/buyer', label: 'Buyer'},
+    { path: '/buyer', label: 'Mapping'},
     { path: '/problem2', label: 'Problem'},
     { path: '/test', label: 'Test Page'}
   ],

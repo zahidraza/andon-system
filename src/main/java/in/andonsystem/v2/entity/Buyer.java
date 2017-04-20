@@ -36,7 +36,6 @@ public class Buyer implements Serializable{
     @Column(name = "team", nullable = false)
     private String team;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "buyers")
     private Set<User> users = new HashSet<>();
 

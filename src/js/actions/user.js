@@ -9,7 +9,7 @@ axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   if (error.response.status == 401) {
-    sessionStorage.session = false;
+    delete sessionStorage.session;
   }
   return Promise.reject(error);
 });
@@ -18,11 +18,11 @@ export function authenticate (username, password) {
   console.log('authenticate');
 
   return function (dispatch) {
-
+    dispatch({type: c.USER_AUTH_PROGRESS});
     const config = {
       method: 'post',
-      // url: "http://localhost:8001/oauth/token",
-      url: "http://zahidraza.in/andon-system/oauth/token",
+      url: "http://localhost:8001/oauth/token",
+      // url: "http://zahidraza.in/andon-system/oauth/token",
       headers: {'Authorization': 'Basic ' + btoa('client-web:super-secret')},
       params: {
         grant_type: 'password',
@@ -61,7 +61,9 @@ export function addUser (user) {
       }
     }).catch( (err) => {
       console.log(err);
-      dispatch({type: c.USER_ADD_FAIL});
+      if (err.response.status == 400) {
+        dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }
     });
   };
 }
@@ -78,14 +80,17 @@ export function updateUser (user) {
       }
     }).catch( (err) => {
       console.log(err);
-      dispatch({type: c.USER_EDIT_FAIL});
+      if (err.response.status == 400) {
+        dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }
     });
   };
 }
 
-export function changePasswprd (credential) {
+export function changePassword (credential) {
   console.log('updateUser');
   return function (dispatch) {
+    dispatch({type: u.USER_AUTH});
     axios.put(window.serviceHost + '/v2/misc/change_password?userId=' +  credential.userId + "&oldPassword=" + credential.oldPassword + "&newPassword=" + credential.newPassword, null, {headers: getHeaders()})
     .then((response) => {
       console.log(response);

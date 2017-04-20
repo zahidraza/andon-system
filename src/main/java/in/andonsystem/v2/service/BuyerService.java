@@ -2,6 +2,7 @@ package in.andonsystem.v2.service;
 
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.respository.BuyerRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,9 @@ public class BuyerService {
     }
 
     public List<Buyer> findAll(){
-        return buyerRepository.findAll();
+        List<Buyer> buyers = buyerRepository.findAll();
+        buyers.forEach(buyer -> Hibernate.initialize(buyer.getUsers()));
+        return buyers;
     }
 
     public boolean exists(Long id){

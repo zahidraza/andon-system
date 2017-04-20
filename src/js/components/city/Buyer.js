@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { localeData } from '../../reducers/localization';
 import { connect } from 'react-redux';
 import {initialize} from '../../actions/misc';
+import {USER_LEVEL as ul}  from '../../utils/constants';
 
 import AppHeader from '../AppHeader';
 import Box from 'grommet/components/Box';
@@ -45,14 +46,6 @@ class Buyer extends Component {
     const {initializing} = this.state;
     const {buyers} = this.props.misc;
 
-    let items = buyers.map((buyer,index) => {
-      return (
-        <TableRow key={index}  >
-          <td >{buyer.Buyer}</td>
-          <td >{buyer.name}</td>
-        </TableRow>
-      );
-    });
 
 
     if (initializing) {
@@ -65,6 +58,25 @@ class Buyer extends Component {
       );
     }
 
+    
+    let items = buyers.map((buyer,index) => {
+      let level1 = '  ';
+      buyer.users.filter(u => u.level == ul.LEVEL1).forEach(user => level1 = level1 + user.name + ", ");
+      let level2 = '  ';
+      buyer.users.filter(u => u.level == ul.LEVEL2).forEach(user => level2 = level2 + user.name + ", ");
+      let level3 = '  ';
+      buyer.users.filter(u => u.level == ul.LEVEL3).forEach(user => level3 = level3 + user.name + ", ");
+      return (
+        <TableRow key={index}  >
+          <td >{buyer.team}</td>
+          <td >{buyer.name}</td>
+          <td>{level1.substring(0,level1.length-2).trim()}</td>
+          <td>{level2.substring(0,level2.length-2).trim()}</td>
+          <td>{level3.substring(0,level3.length-2).trim()}</td>
+        </TableRow>
+      );
+    });
+
     return (
       <Box>
         <AppHeader page={this.localeData.label_test}/>
@@ -74,9 +86,9 @@ class Buyer extends Component {
           </Title>
         </Header>
         <Section>
-          <Box size="large" alignSelf="center" >
+          <Box full="horizontal" wrap={true} size='full'>
             <Table>
-              <TableHeader labels={['Buyer','Buyer']} />
+              <TableHeader labels={['Team','Buyer','Level 1', 'Level 2', 'Level 3']} />
               <tbody>{items}</tbody>
             </Table>
           </Box>

@@ -23,16 +23,12 @@ public class MiscRestController {
     @Autowired UserService userService;
 
     @GetMapping(ApiV2Urls.URL_MISCELLANEOUS_CONFIG)
-    public ResponseEntity<?> getAppConfig(@RequestParam(value = "version", defaultValue = "") String version){
+    public ResponseEntity<?> getAppConfig(@RequestParam(value = "version") String version){
         Boolean initialize = Boolean.parseBoolean(MiscUtil.getInstance().getConfigProperty(Constants.APP_INITIALIZE, "false"));
 
         Map<String, Object> response = new HashedMap();
         response.put("initialize", initialize);
-        if(!version.equals("")){
-            response.put("update",checkAppUpdate(version));
-        }else {
-            response.put("version", MiscUtil.getInstance().getConfigProperty(Constants.APP_VERSION));
-        }
+        response.put("update",checkAppUpdate(version));
         return ResponseEntity.ok(response);
     }
 
