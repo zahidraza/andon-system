@@ -9,6 +9,7 @@ import in.andonsystem.v2.service.BuyerService;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.v2.service.UserService;
 import in.andonsystem.v2.util.ApiV2Urls;
+import in.andonsystem.v2.util.MiscUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,18 @@ public class IssueRestController {
     @PostMapping
     public ResponseEntity<?> saveIssue(@Valid @RequestBody IssueDto issueDto){
         logger.info("saveIssue()");
+        int value = MiscUtil.checkApp2Closed();
+        Map<String,Object> resp = new HashedMap();
+        if (value == -1){
+            resp.put("status","OFFICE_NOT_OPENED");
+            resp.put("message","City Office not opened yet.");
+            return ResponseEntity.ok(resp);
+        }else if (value == 1){
+            resp.put("status","OFFICE_CLOSED");
+            resp.put("message","City Office closed.");
+            return ResponseEntity.ok(resp);
+        }
+        ////////////////////////////////////////////////////
         if(!buyerService.exists(issueDto.getBuyerId())){
             String msg = "Buyer with buyerId = " + issueDto.getBuyerId() + " not found.";
             return new ResponseEntity<Object>(new RestError(404,40401,msg,"",""),HttpStatus.NOT_FOUND);
@@ -93,6 +106,18 @@ public class IssueRestController {
     public ResponseEntity<?> updateIssue(@PathVariable("issueId") Long issueId, @RequestParam("operation") String operation, @Valid @RequestBody
             IssuePatchDto issueDto){
         logger.info("updateIssue(): id = {}, operation = {}", issueId,operation);
+        int value = MiscUtil.checkApp2Closed();
+        Map<String,Object> resp = new HashedMap();
+        if (value == -1){
+            resp.put("status","210");
+            resp.put("message","City Office not opened yet.");
+            return ResponseEntity.ok(resp);
+        }else if (value == 1){
+            resp.put("status","211");
+            resp.put("message","City Office closed.");
+            return ResponseEntity.ok(resp);
+        }
+        /////////////////////////////////////////
         if(!issueService.exists(issueId)){
             String msg = "Issue1 with issueId = " + issueId + " not found.";
             return new ResponseEntity<Object>(new RestError(404,40401,msg,"",""),HttpStatus.NOT_FOUND);

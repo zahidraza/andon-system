@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from "axios";
 
 import { localeData } from '../reducers/localization';
 import {initialize,navActivate} from '../actions/misc';
@@ -13,9 +14,9 @@ import Footer from 'grommet/components/Footer';
 import Form from 'grommet/components/Form';
 import FormField from 'grommet/components/FormField';
 import FormFields from 'grommet/components/FormFields';
-//import Header from 'grommet/components/Header';
+import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
-//import Layer from 'grommet/components/Layer';
+import Layer from 'grommet/components/Layer';
 import Spinning from 'grommet/components/icons/Spinning';
 
 class Login extends Component {
@@ -24,11 +25,12 @@ class Login extends Component {
     this.state = {
       initializing: true,
       credential: {},
-      errors: [],
-      isForgot: false,
+      error: {},
       email: '',
       changing: false,  //changing password
-      errorMsg: ''
+      errorMsg: '',
+      otpSent: false,
+      otpVerified: false
     };
 
     this.localeData = localeData();
@@ -64,15 +66,103 @@ class Login extends Component {
 
   _login () {
     const {credential} = this.state;
+    this.setState({errorMsg: ""});
     this.props.dispatch(authenticate(credential.email, credential.password));
   }
 
   _forgotPasswordClick () {
-
+    this.setState({changing: true});
   }
 
-  _forgotPassword () {
+  _forgotPassword (operation,event) {
+    const {credential} = this.state;
+    let error = {};
 
+    if (operation == "SEND_OTP") {
+      if (credential.email == undefined || credential.email == '') {
+        error.email = "Email Id cannot be blank";
+        this.setState({error});
+        return;
+      }
+      axios.put(window.serviceHost + '/v2/misc/forgot_password/send_otp?email=' + credential.email)
+      .then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          if (response.data.status == "SUCCESS") {
+            alert("OTP sent to your registered mobile");
+            this.setState({otpSent: true});
+          }
+        }
+      }).catch( (err) => {
+        console.log(err);
+        if (err.response.status == 404) {
+          alert("No user found for email Id : " + credential.email);
+        }else{
+          alert("Some error occured.");
+        }
+      });
+
+    }else if (operation == "VERIFY_OTP") {
+
+      if (credential.email == undefined || credential.email == '') {
+        error.email = "Email Id cannot be blank.";
+        this.setState({error});
+        return;
+      }else if (credential.otp == undefined || credential.otp == '') {
+        error.otp = "OTP cannot be balnk.";
+        this.setState({error});
+        return;
+      }
+      axios.put(window.serviceHost + '/v2/misc/forgot_password/verify_otp?email=' + credential.email + '&otp=' + credential.otp)
+      .then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          if (response.data.status == "SUCCESS") {
+            this.setState({otpVerified: true});
+          } else if (response.data.status == "FAIL") {
+            alert(response.data.message);
+          }
+        }
+      }).catch( (err) => {
+        console.log(err);
+        if (err.response.status == 404) {
+          alert("No user found for email Id : " + credential.email);
+        }else{
+          alert("Some error occured.");
+        }
+      });
+
+    }else if (operation == "CHANGE_PASSWORD") {
+
+      if (credential.email == undefined || credential.email == '') {
+        error.email = "Email Id cannot be blank.";
+        this.setState({error});
+        return;
+      }else if (credential.newPassword == undefined || credential.newPassword == '') {
+        error.newPassword = "New Password cannot be balnk.";
+        this.setState({error});
+        return;
+      }
+      axios.put(window.serviceHost + '/v2/misc/forgot_password/change_password?email=' + credential.email + '&otp=' + credential.otp + '&newPassword=' + credential.newPassword)
+      .then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          if (response.data.status == "SUCCESS") {
+            this.setState({changing: false,credential: {}});
+            alert('Password Changed Successfully.');
+          } else if (response.data.status == "FAIL") {
+            alert('Error Changing password.');
+          }
+        }
+      }).catch( (err) => {
+        console.log(err);
+        if (err.response.status == 404) {
+          alert("No user found for email Id : " + credential.email);
+        }else{
+          alert("Some error occured.");
+        }
+      });
+    }
   }
 
   _onChange (event) {
@@ -86,31 +176,69 @@ class Login extends Component {
   }
 
   _onCloseLayer () {
-    this.setState({isForgot: false, errors:[]});
+    this.setState({changing: false});
   }
 
   _renderForgotPasswdLayer () {
-    return null;
-    /*return (
-      <Layer onClose={this._onCloseLayer.bind(this)}  closer={true} align="center">
-        <Form>
-          <Header><Heading tag="h3" strong={true}>Forgot Password</Heading></Header>
-          <FormFields>
-              <FormField label="Email Id" error={this.state.errors[0]} >
-                <input type="email" value={this.state.email} onChange={this._onChangeInput.bind(this)} />
+    const {credential,changing,error,otpSent,otpVerified} = this.state;
+    console.log(this.state);
+    if (changing) {
+
+      let forgotBtnControl;
+      if (!otpSent && !otpVerified) {
+        forgotBtnControl = <Button label="Submit" primary={true}  onClick={this._forgotPassword.bind(this,"SEND_OTP")} />;
+      } else if (otpSent && !otpVerified) {
+        forgotBtnControl = <Button label="Verify OTP" primary={true}  onClick={this._forgotPassword.bind(this,"VERIFY_OTP")} />;
+      } else if (otpSent && otpVerified) {
+        forgotBtnControl = <Button label="Change Password" primary={true}  onClick={this._forgotPassword.bind(this,"CHANGE_PASSWORD")} />;
+      } 
+      let otpInput;
+      if (otpSent && !otpVerified) {
+        otpInput = (
+          <FormField label="OTP" error={error.otp} >
+            <input type="text" name="otp" value={credential.otp} onChange={this._onChange.bind(this)} />
+          </FormField>
+        );
+      } else{
+        otpInput = null;
+      }
+      let newPasswdInput;
+      if (otpSent && otpVerified) {
+        newPasswdInput = (
+          <FormField label="New Password" error={error.newPassword} >
+            <input type="password" name="newPassword" value={credential.newPassword} onChange={this._onChange.bind(this)} />
+          </FormField>
+        );
+      } else{
+        newPasswdInput = null;
+      }
+
+      return (
+        <Layer onClose={this._onCloseLayer.bind(this)}  closer={true} align="top">
+          <Form>
+            <Header><Heading tag="h3" strong={true}>Forgot Password</Heading></Header>
+            <FormFields>
+              <FormField label="Email Id" error={error.email} >
+                <input type="email" name="email" value={credential.email} onChange={this._onChange.bind(this)} />
               </FormField>
-          </FormFields>
-          <Footer pad={{"vertical": "medium"}} >
-            <Button icon={busy} label="Submit" primary={true}  onClick={this._forgotPassword.bind(this)} />
-          </Footer>
-        </Form>
-      </Layer>
-    );*/
+              {otpInput}
+              {newPasswdInput}
+            </FormFields>
+            
+            <Footer pad={{"vertical": "medium"}} >
+              {forgotBtnControl}
+            </Footer>
+          </Form>
+        </Layer>
+      );
+    }else{
+      return null;
+    }
   }
 
   render () {
 
-    const { initializing, credential, errors,isForgot, errorMsg } = this.state;
+    const { initializing,credential,errorMsg,error } = this.state;
 
     if (initializing) {
       return (
@@ -126,7 +254,7 @@ class Login extends Component {
 
     const authProgress = false;
 
-    const layerForgotPassword = isForgot ? this._renderForgotPasswdLayer() : null;
+    const layerForgotPassword = this._renderForgotPasswdLayer();
 
     const logging = authProgress ? <Spinning /> : null;
     return (
@@ -138,10 +266,10 @@ class Login extends Component {
             {logging}
             <Form>
               <FormFields>
-                <FormField label={this.localeData.login_email} error={errors[0]}>
+                <FormField label={this.localeData.login_email} error={error.email}>
                   <input type="text" name="email" value={credential.email} onChange={this._onChange.bind(this)} />
                 </FormField>
-                <FormField label={this.localeData.login_password} error={errors[1]}>
+                <FormField label={this.localeData.login_password} error={error.password}>
                   <input type="password" name="password" value={credential.password} onChange={this._onChange.bind(this)} />
                 </FormField>
               </FormFields>

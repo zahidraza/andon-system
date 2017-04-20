@@ -17,4 +17,8 @@ public class ApiV2Urls {
     public static final String URL_MISCELLANEOUS_CONFIG = "/config";
     public static final String URL_CURRENT_TIME = "/current_time";
     public static final String URL_CHANGE_PASSWORD = "/change_password";
+    public static final String URL_FORGOT_PASSWORD_SEND_OTP = "/forgot_password/send_otp";
+    public static final String URL_FORGOT_PASSWORD_VERIFY_OTP = "/forgot_password/verify_otp";
+    public static final String URL_FORGOT_PASSWORD_CHANGE_PASSWORD = "/forgot_password/change_password";
+
 }

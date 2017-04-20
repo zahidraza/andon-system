@@ -29,6 +29,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers(HttpMethod.GET,"/api/v2/users").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v2/misc/config").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v2/misc/current_time").permitAll()
+                    .antMatchers("/api/v2/misc/forgot_password/**").permitAll()
                     .antMatchers("/api/**").authenticated()
 //                .antMatchers("/api/**").permitAll()
                 .and()

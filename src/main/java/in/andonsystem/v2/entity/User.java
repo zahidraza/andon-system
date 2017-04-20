@@ -56,6 +56,9 @@ public class User implements Serializable{
     @JoinColumn(name = "DESGN_ID")
     private Designation designation;
 
+    @Column(name = "OTP")
+    private String otp;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "USER_BUYER",
@@ -63,6 +66,7 @@ public class User implements Serializable{
             inverseJoinColumns = @JoinColumn(name = "BUYER_ID")
     )
     private Set<Buyer> buyers = new HashSet<>();
+
 
     @Version
     @Temporal(TemporalType.TIMESTAMP)
@@ -162,6 +166,14 @@ public class User implements Serializable{
 
     public void setDesignation(Designation designation) {
         this.designation = designation;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
     }
 
     @Override

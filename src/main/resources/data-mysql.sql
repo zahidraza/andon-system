@@ -1,7 +1,7 @@
 INSERT INTO buyer (`buyer_id`,`name`,`team`) VALUES
 (1,'Landmark','TL-Rajeshwari'),
 (2,'UCB','TL-Rajeshwari'),
-(3,'Strong Sui','TL-Rajeshwari'),
+(3,'Strong Suit','TL-Rajeshwari'),
 (4,'Edifice','TL-Rajeshwari'),
 (5,'Other','TL-Rajeshwari'),
 (6,'TML - Formal','TL-Amit'),

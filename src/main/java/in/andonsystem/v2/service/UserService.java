@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import in.andonsystem.v2.util.MiscUtil;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -109,11 +110,39 @@ public class UserService {
     }
 
     @Transactional
-    public boolean changePassword(Long userId, String oldPassword, String newPassword){
-        User user = userRepository.findOne(userId);
+    public boolean changePassword(String email, String oldPassword, String newPassword){
+        User user = userRepository.findByEmail(email);
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         if (encoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(newPassword);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public void sendOTP(String email){
+        String otp = MiscUtil.getOtp(6);
+        User user = userRepository.findByEmail(email);
+        user.setOtp(otp);
+        MiscUtil.sendSMS(user.getMobile(),"OTP to reset password in ANDON SYSTEM APPLICATION is: " + otp);
+    }
+
+    @Transactional
+    public boolean verifyOtp(String email, String otp){
+        User user = userRepository.findByEmail(email);
+        if (user.getOtp() != null && user.getOtp().equals(otp)){
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean changeForgotPassword(String email, String otp, String newPassword){
+        User user = userRepository.findByEmail(email);
+        if (user.getOtp() != null && user.getOtp().equals(otp)){
+            user.setPassword(newPassword);
+            user.setOtp(null);
             return true;
         }
         return false;

@@ -32,4 +32,13 @@ public class Constants {
     public static final String APP_V2_FIX_L1_TIME = "app.v2.fix.level1.time.min";
     public static final String APP_V2_FIX_L2_TIME = "app.v2.fix.level2.time.min";
 
+    public static final String APP_V2_START_HOUR = "app.v2.start.hour";
+    public static final String APP_V2_START_MINUTE = "app.v2.start.minute";
+    public static final String APP_V2_END_HOUR = "app.v2.end.hour";
+    public static final String APP_V2_END_MINUTE = "app.v2.end.minute";
+
+
+
+
+
 }

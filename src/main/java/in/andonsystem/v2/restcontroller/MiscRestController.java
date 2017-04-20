@@ -40,14 +40,14 @@ public class MiscRestController {
     }
 
     @PutMapping(ApiV2Urls.URL_CHANGE_PASSWORD)
-    public ResponseEntity<?> changePassword(@RequestParam("userId") Long userId,
-                                            @RequestParam("oldPassword") String oldPassword,
+    public ResponseEntity<?> changePassword(@RequestParam("email") String email,
+                                            @RequestParam(value = "oldPassword") String oldPassword,
                                             @RequestParam("newPassword") String newPassword){
-        if (! userService.exists(userId)){
-            return new ResponseEntity<Object>(new RestError(404,404,"User with id = " + userId + " not found.", "", ""), HttpStatus.NOT_FOUND);
+        if (userService.findByEmail(email) == null){
+            return new ResponseEntity<Object>(new RestError(404,404,"User with email id = " + email + " not found.", "", ""), HttpStatus.NOT_FOUND);
         }
         Map<String, Object> response = new HashedMap();
-        boolean res = userService.changePassword(userId, oldPassword, newPassword);
+        boolean res = userService.changePassword(email, oldPassword, newPassword);
         if(res){
             response.put("status", "SUCCESS");
         }else {
@@ -55,6 +55,54 @@ public class MiscRestController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_SEND_OTP)
+    public ResponseEntity<?> forgotPasswordSendOTP(@RequestParam("email") String email){
+
+        if (userService.findByEmail(email) == null){
+            return new ResponseEntity<Object>(new RestError(404,404,"User with email id = " + email + " not found.", "", ""), HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> response = new HashedMap();
+        userService.sendOTP(email);
+        response.put("status", "SUCCESS");
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_VERIFY_OTP)
+    public ResponseEntity<?> forgotPasswordVerifyOTP(@RequestParam("email") String email,
+                                                   @RequestParam("otp") String otp){
+        if (userService.findByEmail(email) == null){
+            return new ResponseEntity<Object>(new RestError(404,404,"User with email id = " + email + " not found.", "", ""), HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> response = new HashedMap();
+        boolean res = userService.verifyOtp(email, otp);
+        if(res){
+            response.put("status", "SUCCESS");
+            response.put("message","OTP verified.");
+        }else {
+            response.put("status", "FAIL");
+            response.put("message","Incorrect OTP");
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_CHANGE_PASSWORD)
+    public ResponseEntity<?> changeForgotPassword(@RequestParam("email") String email,
+                                            @RequestParam(value = "otp") String otp,
+                                            @RequestParam("newPassword") String newPassword){
+        if (userService.findByEmail(email) == null){
+            return new ResponseEntity<Object>(new RestError(404,404,"User with email id = " + email + " not found.", "", ""), HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> response = new HashedMap();
+        boolean res = userService.changeForgotPassword(email, otp, newPassword);
+        if(res){
+            response.put("status", "SUCCESS");
+        }else {
+            response.put("status", "FAIL");
+        }
+        return ResponseEntity.ok(response);
+    }
+
 
     private Boolean checkAppUpdate(String version) {
         MiscUtil miscUtil = MiscUtil.getInstance();
