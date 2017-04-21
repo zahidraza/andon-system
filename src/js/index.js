@@ -11,7 +11,7 @@ import store from "./store";
 (function () {
   const baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
   window.serviceHost = baseUrl + "/andon-system/api";
-  // window.serviceHost = "http://localhost:8001/api";
+// window.serviceHost = "http://localhost:8001/api";
 })();
 
 let element = document.getElementById('content');

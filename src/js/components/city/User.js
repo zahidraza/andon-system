@@ -50,8 +50,8 @@ class User extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }else {
-      const users = this._filterUserByUserType(this.props.user.users);
-      this.setState({users, filteredCount: users.length, unfilteredCount: users.length});
+      const {users,filter,sort} = this.props.user;
+      this._loadUser(this._filterUserByUserType(users),filter,sort);
     }
     let tableHeaders = ['Name','Email','Role','Level','Mobile'];
     if (sessionStorage.role == ur.ROLE_ADMIN) {
@@ -101,8 +101,14 @@ class User extends Component {
     return result;
   }
 
-  _onSearch () {
+  _onSearch (event) {
     console.log('_onSearch');
+    let value = event.target.value;
+
+    let users = this.props.user.users.filter(u => u.name.includes(value) || u.email.includes(value));
+
+    this.setState({searchText: value, users});
+
   }
 
   _onFilterActivate () {

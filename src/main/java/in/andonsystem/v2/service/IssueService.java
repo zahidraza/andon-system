@@ -77,7 +77,7 @@ public class IssueService {
     public List<IssueDto> findAllBetween(Long start, Long end){
         Date date1 = new Date(start);
         Date date2 = new Date(end);
-        return issueRepository.findByLastModifiedBetween(date1,date2).stream()
+        return issueRepository.findByLastModifiedBetweenOrderByRaisedAtDesc(date1,date2).stream()
                               .map(issue -> mapper.map(issue, IssueDto.class))
                               .collect(Collectors.toList());
     }

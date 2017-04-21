@@ -21,8 +21,8 @@ export function authenticate (username, password) {
     dispatch({type: c.USER_AUTH_PROGRESS});
     const config = {
       method: 'post',
-      url: "http://localhost:8001/oauth/token",
-      // url: "http://zahidraza.in/andon-system/oauth/token",
+      //url: "http://localhost:8001/oauth/token",
+      url: "http://zahidraza.in/andon-system/oauth/token",
       headers: {'Authorization': 'Basic ' + btoa('client-web:super-secret')},
       params: {
         grant_type: 'password',
@@ -52,7 +52,7 @@ export function addUser (user) {
   console.log('addUser');
 
   return function (dispatch) {
-    console.log(user);
+    dispatch({type: c.USER_BUSY});
     axios.post(window.serviceHost + '/v2/users', JSON.stringify(user), {headers: getHeaders()})
     .then((response) => {
       console.log(response);
@@ -63,6 +63,8 @@ export function addUser (user) {
       console.log(err);
       if (err.response.status == 400) {
         dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }else {
+        dispatch({type: c.USER_ADD_FAIL});
       }
     });
   };
@@ -71,7 +73,7 @@ export function addUser (user) {
 export function updateUser (user) {
   console.log('updateUser');
   return function (dispatch) {
-    console.log(user);
+    dispatch({type: c.USER_BUSY});
     axios.put(window.serviceHost + '/v2/users/' + user.id, JSON.stringify(user), {headers: getHeaders()})
     .then((response) => {
       console.log(response);
@@ -82,6 +84,8 @@ export function updateUser (user) {
       console.log(err);
       if (err.response.status == 400) {
         dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }else {
+        dispatch({type: c.USER_EDIT_FAIL});
       }
     });
   };
@@ -90,8 +94,8 @@ export function updateUser (user) {
 export function changePassword (credential) {
   console.log('updateUser');
   return function (dispatch) {
-    dispatch({type: u.USER_AUTH});
-    axios.put(window.serviceHost + '/v2/misc/change_password?userId=' +  credential.userId + "&oldPassword=" + credential.oldPassword + "&newPassword=" + credential.newPassword, null, {headers: getHeaders()})
+    //dispatch({type: c.USER_AUTH_PROGRESS});
+    axios.put(window.serviceHost + '/v2/misc/change_password?email=' +  credential.email + "&oldPassword=" + credential.oldPassword + "&newPassword=" + credential.newPassword, null, {headers: getHeaders()})
     .then((response) => {
       console.log(response);
       if (response.status == 200) {

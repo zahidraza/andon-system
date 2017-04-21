@@ -264,7 +264,7 @@ class UserEdit extends Component {
 
 
   render () {
-    const {error} = this.props.user;
+    const {error,busy} = this.props.user;
     const {user,initializing} = this.state;
 
     if (initializing) {
@@ -276,6 +276,8 @@ class UserEdit extends Component {
         </Box>
       );
     }
+
+    const busyIcon = busy ? <Spinning /> : null;
 
     const layerControl = this._renderLayer();
 
@@ -326,7 +328,7 @@ class UserEdit extends Component {
               <Footer pad={{vertical: 'medium'}}>
                 <span />
                 <Button type="submit" primary={true} label={this.localeData.user_edit_btn}
-                  onClick={this._onSubmit.bind(this)} />
+                  icon={busyIcon} onClick={this._onSubmit.bind(this)} />
               </Footer>
             </Form>
           </Article>

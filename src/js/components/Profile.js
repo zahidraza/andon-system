@@ -83,7 +83,7 @@ class Profile extends Component {
       return;
     }
 
-    credential.userId = user.id;
+    credential.email = user.email;
     this.props.dispatch(changePassword(credential));
     this.setState({changingPassword: false, credential: {}});
   }

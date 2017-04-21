@@ -27,7 +27,9 @@ INSERT INTO buyer (`buyer_id`,`name`,`team`) VALUES
 (26,'Mango','TL-Malini'),
 (27,'Peter Jackson','TL-Malini'),
 (28,'H&C','TL-Malini'),
-(29,'Other','TL-Malini');
+(29,'Other','TL-Malini'),
+(29,'Indian Terrain','TL-Smitha'),
+(29,'Other','TL-Smitha');
 
 INSERT INTO problem (`prob_id`,`name`,`department`) VALUES
 (1,'Loading Problem','Cutting'),

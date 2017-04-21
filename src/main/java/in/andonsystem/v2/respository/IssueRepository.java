@@ -13,5 +13,5 @@ public interface IssueRepository extends JpaRepository<Issue2, Long> {
 
     List<Issue2> findByLastModifiedGreaterThan(Date date);
 
-    List<Issue2> findByLastModifiedBetween(Date start, Date end);
+    List<Issue2> findByLastModifiedBetweenOrderByRaisedAtDesc(Date start, Date end);
 }

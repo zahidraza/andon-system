@@ -19,17 +19,16 @@ import Heading from 'grommet/components/Heading';
 import Layer from 'grommet/components/Layer';
 import Select from 'grommet/components/Select';
 import Sidebar from 'grommet/components/Sidebar';
-import Sort from 'grommet-addons/components/Sort';
 import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import TableHeader from 'grommet/components/TableHeader';
 import FilterControl from 'grommet-addons/components/FilterControl';
-//import HelpIcon from 'grommet/components/icons/base/Help';
 import Search from 'grommet/components/Search';
 import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import DateTime from 'grommet/components/DateTime';
+import DownloadIcon from 'grommet/components/icons/base/Download';
 
 class Report extends Component {
   
@@ -38,8 +37,8 @@ class Report extends Component {
     this.state = {
       initializing: false,
       showFilter: false,
+      issuesNotAvailable: false,
       filter: {},
-      sort: "buyer:asc",
       filteredCount: 0,
       unfilteredCount: 0,
       searchText: "",
@@ -47,11 +46,16 @@ class Report extends Component {
         start: new Date(),
         end: new Date()
       },
-      issues: []
+      issues: [],
+      filteredIssues: [],
+      teams:[],
+      buyers: [],
+      page: 1
     };
     this.localeData = localeData();
     this._renderFilterLayer = this._renderFilterLayer.bind(this);
     this._getReport = this._getReport.bind(this);
+    this._loadIssues = this._loadIssues.bind(this);
   }
 
   componentWillMount () {
@@ -60,6 +64,12 @@ class Report extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }else{
+      let teams = [], buyers = [];
+      teams.push({label: 'All', value: undefined});
+      buyers.push({label: 'All', value: undefined});
+      this.props.misc.teams.forEach(t => teams.push({label: t, value: t}));
+      this.props.misc.buyers.forEach(b => buyers.push({label: b.name, value: b.name}));
+      this.setState({teams,buyers});
       this._getReport(this.state.date);
     }
 
@@ -89,20 +99,20 @@ class Report extends Component {
           if (!(issue.fixBy == null || issue.fixBy == 'null')) {
             fixBy = users.find(u => u.id == issue.fixBy).name;
           }
-          const raisedAt = moment(new Date(issue.raisedAt)).format('DD/MM/YYYY hh:mm a');
+          const raisedAt = moment(new Date(issue.raisedAt)).utcOffset('+00:00').format('DD/MM/YYYY, hh:mm A');
           let ackAt = '-',fixAt = '-',downtime = '-';
           if (!(issue.ackAt == null || issue.ackAt == 'null')) {
-            ackAt = moment(new Date(issue.ackAt)).format('DD/MM/YYYY hh:mm a');
+            ackAt = moment(new Date(issue.ackAt)).utcOffset('+00:00').format('DD/MM/YYYY, hh:mm A');
           }
           if (!(issue.fixAt == null || issue.fixAt == 'null')) {
-            fixAt = moment(new Date(issue.fixAt)).format('DD/MM/YYYY hh:mm a');
+            fixAt = moment(new Date(issue.fixAt)).utcOffset('+00:00').format('DD/MM/YYYY, hh:mm A');
             downtime = Math.trunc((issue.fixAt - issue.raisedAt)/(1000*60));
           }
           return {Team: buyer.team, Buyer: buyer.name,Problem: issue.problem, Description: issue.description,  raisedBy, ackBy,fixBy,raisedAt,ackAt,fixAt,downtime};
         });
-        console.log(issues);
 
         this.setState({issues});
+        this._loadIssues(this.state.page);
       }
     }).catch( (err) => {
       console.log(err);
@@ -114,6 +124,31 @@ class Report extends Component {
         this.context.router.push('/');
       }
     });
+  }
+
+  _loadIssues (page) {
+    let {filter,issues} = this.state;
+    let filteredCount, unfilteredCount = issues.length, issuesNotAvailable = false;
+    if ('team' in filter) {
+      const teamFilter = filter.team;
+      issues = issues.filter(issue => teamFilter.includes(issue.Team));   
+    } 
+    if ('buyer' in filter) {
+      const buyerFilter = filter.buyer;
+      issues = issues.filter(issue => buyerFilter.includes(issue.Buyer));   
+    } 
+    filteredCount = issues.length;
+    if (filteredCount == 0) {
+      issuesNotAvailable = true;
+    }
+    issues = issues.slice(0,20*page);
+    this.setState({filteredIssues: issues, filteredCount, unfilteredCount, issuesNotAvailable, page}); 
+  }
+
+  _onMoreIssues () {
+    let page = this.state.page;
+    page = page+1;
+    this._loadIssues(page);
   }
 
   _onFilterActivate () {
@@ -160,17 +195,14 @@ class Report extends Component {
       }
     }
     this.setState({filter});
+    this._loadIssues(this.state.page);
   }
 
-  _onChangeSort (sort) {
-    let sortString = `${sort.value}:${sort.direction}`;
-    this.setState({sort: sortString});
-  }
+
 
   _renderFilterLayer () {
-    const {showFilter,filter,sort,date} = this.state;
+    const {showFilter,filter,date,teams,buyers} = this.state;
     console.log(this.state);
-    const [sortProperty, sortDirection] = sort.split(':');
 
     if (showFilter) {
       return (
@@ -204,14 +236,11 @@ class Report extends Component {
               </Form>
               <Section pad={{ horizontal: 'large', vertical: 'small' }}>
                 <Heading tag='h3'>Team</Heading>
-                <Select inline={true} multiple={true} options={this.props.misc.teams} value={filter.team} onChange={this._onChange.bind(this,'team')} />
+                <Select inline={true} multiple={true} options={teams} value={filter.team} onChange={this._onChange.bind(this,'team')} />
               </Section>
               <Section pad={{ horizontal: 'large', vertical: 'small' }}>
-                <Heading tag='h2'>Sort</Heading>
-                <Sort options={[
-                  { label: 'Buyer', value: 'buyer', direction: 'asc' }
-                ]} value={sortProperty} direction={sortDirection}
-                onChange={this._onChangeSort.bind(this)} />
+                <Heading tag='h3'> Buyer</Heading>
+                <Select inline={true} multiple={true} options={buyers} value={filter.buyer} onChange={this._onChange.bind(this,'buyer')} />
               </Section>
             </div>
           </Sidebar>
@@ -221,7 +250,10 @@ class Report extends Component {
   }
 
   render() {
-    const {initializing,filteredCount,unfilteredCount,searchText,issues} = this.state;
+    const {initializing,filteredCount,unfilteredCount,searchText,filteredIssues,issuesNotAvailable,date} = this.state;
+
+    const start = moment(new Date(date.start)).format('DDMMYYYY');
+    const end = moment(new Date(date.end)).format('DDMMYYYY');
 
     if (initializing) {
       return (
@@ -235,7 +267,7 @@ class Report extends Component {
 
     const layerFilter = this._renderFilterLayer();
 
-    const items = issues.map((issue,i) => {
+    const items = filteredIssues.map((issue,i) => {
       return (
         <TableRow key={i}  >
           <td >{issue.Team}</td>
@@ -253,6 +285,14 @@ class Report extends Component {
       );
     });
 
+    let issueItems = issuesNotAvailable ? <Box size="medium" alignSelf="center" pad={{horizontal:'medium'}}><h3>No Issues available</h3></Box>: (
+      <Table scrollable={true} onMore={this._onMoreIssues.bind(this)}>
+        <TableHeader labels={['Team','Buyer','Problem','Description','Raised By','Ack By','Fix By', 'Raised At', 'Ack At', 'Fix At', 'Downtime (minutes)']} />
+        
+        <tbody>{items}</tbody>
+      </Table>
+    );
+
     return (
       <Box full='horizontal'>
         <AppHeader/>
@@ -263,19 +303,15 @@ class Report extends Component {
           </Title>
           <Search inline={true} fill={true} size='medium' placeHolder='Search'
             value={searchText} onDOMChange={this._onSearch.bind(this)} />
+          <CSVLink data={filteredIssues} filename={'Report_' + start + '_' + end + '.csv'}  ><DownloadIcon /></CSVLink>
           <FilterControl filteredTotal={filteredCount}
             unfilteredTotal={unfilteredCount}
-            onClick={this._onFilterActivate.bind(this)} />
+            onClick={this._onFilterActivate.bind(this)} />         
         </Header>
 
         <Section direction="column" pad={{vertical: 'large', horizontal:'small'}}>
           <Box >
-            <CSVLink data={issues} filename="report.csv" >download</CSVLink>
-            <Table>
-              <TableHeader labels={['Team','Buyer','Problem','Description','Raised By','Ack By','Fix By', 'Raised At', 'Ack At', 'Fix At', 'Downtime (minutes)']} />
-              
-              <tbody>{items}</tbody>
-            </Table>
+            {issueItems}
           </Box>
         </Section>
         {layerFilter}

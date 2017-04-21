@@ -14,10 +14,6 @@ export function initialize () {
       axios.get(window.serviceHost + '/v2/users')
     ])
     .then(axios.spread(function (teams, problems,buyers, users) {
-      // console.log(teams);
-      // console.log(problems);
-      // console.log(buyers);
-      // console.log(users);
       dispatch({type: m.INITIALIZE_TEAM, payload: { teams: teams.data }});
       dispatch({type: m.INITIALIZE_PROBLEM, payload: {problems:  problems.data }});
       dispatch({type: m.INITIALIZE_BUYER, payload: { buyers: buyers.data }});

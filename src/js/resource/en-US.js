@@ -8,6 +8,7 @@ module.exports = {
   "label_team": "Team",
   "label_problem": "Problem",
   "label_buyer": "Buyer",
+  "label_report": "Report",
   "label_test": "Test Page",
 
 

@@ -38,7 +38,9 @@ public class UserService {
 
     public UserDto findOne(Long id) {
         logger.debug("findOne(): id = {}",id);
-        return mapper.map(userRepository.findOne(id), UserDto.class);
+        User user = userRepository.findOne(id);
+        if (user == null) return null;
+        return mapper.map(user, UserDto.class);
     }
 
     public List<UserDto> findAllAfter(Long after) {
@@ -64,12 +66,16 @@ public class UserService {
 
     public UserDto findByEmail(String email) {
         logger.debug("findByEmail(): email = {}",email);
-        return mapper.map(userRepository.findByEmail(email), UserDto.class);
+        User user = userRepository.findByEmail(email);
+        if (user == null) return null;
+        return mapper.map(user, UserDto.class);
     }
     
     public UserDto findByUsername(String username) {
         logger.debug("findByUsername(): name = {}" , username);
-        return mapper.map(userRepository.findByName(username), UserDto.class);
+        User user = userRepository.findByName(username);
+        if (user == null) return null;
+        return mapper.map(user, UserDto.class);
     }
 
     public Boolean exists(Long id) {

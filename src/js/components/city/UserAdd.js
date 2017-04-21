@@ -275,7 +275,7 @@ class UserAdd extends Component {
 
 
   render () {
-    const {error} = this.props.user;
+    const {error,busy} = this.props.user;
     const {user,initializing} = this.state;
     const {userType} = window.sessionStorage;
 
@@ -288,6 +288,8 @@ class UserAdd extends Component {
         </Box>
       );
     }
+
+    const busyIcon = busy ? <Spinning /> : null;
 
     const layerControl = this._renderLayer();
 
@@ -338,7 +340,7 @@ class UserAdd extends Component {
               <Footer pad={{vertical: 'medium'}}>
                 <span />
                 <Button type="submit" primary={true} label={this.localeData.user_add_btn}
-                  onClick={this._onSubmit.bind(this)} />
+                  icon={busyIcon} onClick={this._onSubmit.bind(this)} />
               </Footer>
             </Form>
           </Article>

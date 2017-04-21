@@ -148,7 +148,7 @@ class Login extends Component {
         console.log(response);
         if (response.status == 200) {
           if (response.data.status == "SUCCESS") {
-            this.setState({changing: false,credential: {}});
+            this.setState({changing: false,otpSent:false,otpVerified:false, credential: {}});
             alert('Password Changed Successfully.');
           } else if (response.data.status == "FAIL") {
             alert('Error Changing password.');
@@ -239,6 +239,7 @@ class Login extends Component {
   render () {
 
     const { initializing,credential,errorMsg,error } = this.state;
+    const {authProgress} = this.props.user;
 
     if (initializing) {
       return (
@@ -249,10 +250,6 @@ class Login extends Component {
         </Box>
       );
     }
-    
-    //const busy = changing ? <Spinning /> : null;
-
-    const authProgress = false;
 
     const layerForgotPassword = this._renderForgotPasswdLayer();
 
