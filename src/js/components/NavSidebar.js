@@ -11,7 +11,7 @@ import Menu from "grommet/components/Menu";
 import Close from "grommet/components/icons/base/Close";
 import Anchor from 'grommet/components/Anchor';
 
-import { navActivate } from '../actions';
+import { navActivate } from '../actions/misc';
 
 class NavSidebar extends Component {
 

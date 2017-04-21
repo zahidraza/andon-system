@@ -8,6 +8,7 @@ import UserAdd2 from "./components/city/UserAdd";
 import UserEdit2 from "./components/city/UserEdit";
 import Buyer from "./components/city/Buyer";
 import Problem2 from "./components/city/Problem";
+import Report2 from "./components/city/Report";
 
 export default {
   path: '/',
@@ -21,6 +22,7 @@ export default {
     { path: 'buyer', component: Buyer},
     { path: 'problem2', component: Problem2},
     { path: 'profile', component: Profile},
+    { path: 'report2', component: Report2},
     { path: 'test', component: Test}
   ]
 };

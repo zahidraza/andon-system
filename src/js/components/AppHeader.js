@@ -22,7 +22,7 @@ class AppHeader extends Component {
   componentWillMount () {
     this.setState({localeData: localeData()});
     
-    if (sessionStorage.session == 'false') {
+    if (sessionStorage.session == undefined) {
       this.context.router.push("/");
     }
 

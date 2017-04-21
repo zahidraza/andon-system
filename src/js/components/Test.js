@@ -24,6 +24,7 @@ class Test extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }
+    console.log(new Date(1492108200000));
   }
 
   componentWillReceiveProps (nextProps) {
