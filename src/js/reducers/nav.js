@@ -4,11 +4,10 @@ const initialState = {
   active: false,
   items:[
     { path: '/dashboard2', label: 'Home'},
+    { path: '/report2', label: 'Report'},
     { path: '/user2', label: 'User'},
     { path: '/buyer', label: 'Mapping'},
-    { path: '/problem2', label: 'Problem'},
-    { path: '/report2', label: 'Report'},
-    { path: '/test', label: 'Test Page'}
+    { path: '/problem2', label: 'Problem'}
   ],
   itemsFactory: [
     { path: '/dashboard1', label: 'Home'},

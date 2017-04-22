@@ -24,7 +24,7 @@ public class MiscRestController {
 
     @GetMapping(ApiV2Urls.URL_MISCELLANEOUS_CONFIG)
     public ResponseEntity<?> getAppConfig(@RequestParam(value = "version") String version){
-        Boolean initialize = Boolean.parseBoolean(MiscUtil.getInstance().getConfigProperty(Constants.APP_INITIALIZE, "false"));
+        Boolean initialize = Boolean.parseBoolean(MiscUtil.getInstance().getConfigProperty(Constants.APP_INITIALIZE, "false").trim());
 
         Map<String, Object> response = new HashedMap();
         response.put("initialize", initialize);

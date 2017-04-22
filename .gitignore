@@ -4,7 +4,6 @@ target/
 
 
 node_modules/
-data/
 node/
 logs/
 stable/
