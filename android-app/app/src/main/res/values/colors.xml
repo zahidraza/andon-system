@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#006666</color>
+    <color name="colorPrimaryDark">#004d4d</color>
+    <color name="colorAccent">#3d3fb9</color>
+    <color name="black">#000</color>
+    <color name="slide_background">#3D5C5C</color>
+    <color name="slide_header">#004D4D</color>
+    <color name="mediumBlue">#0000CD</color>
+    <color name="darkGrey">#303030</color>
+    <color name="dimGrey">#696969</color>
+    <color name="blue">#1E90FF</color>
+    <color name="tomato">#FF6347</color>
+    <color name="limeGreen">#32CD32</color>
+    <color name="whiteSmoke">#F5F5F5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="silver">#C0C0C0</color>
+    <color name="grey">#DCDCDC</color>
+    <color name="yellow">#ffbb33</color>
+
+    <color name="color1">#99cc00</color>
+    <color name="color2">#33b5e5</color>
+    <color name="color3">#0099cc</color>
+    <color name="color4">#547bca</color>
+    <color name="color5">#aa66cc</color>
+    <color name="color6">#9933cc</color>
+    <color name="color7">#669900</color>
+    <color name="color8">#aeb857</color>
+    <color name="color9">#cc0000</color>
+    <color name="color10">#df5948</color>
+    <color name="color11">#ff4444</color>
+    <color name="color12">#ae6b23</color>
+    <color name="color13">#ff8800</color>
+    <color name="color14">#e5ae4f</color>
+    <color name="color16">#cccccc</color>
+    <color name="color17">#888888</color>
+
+    <color name="pressed_color">#4d90fe</color>
+</resources>
