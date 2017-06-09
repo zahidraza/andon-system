@@ -19,6 +19,7 @@ import java.util.Date;
  * Created by razamd on 4/5/2017.
  */
 @Entity
+@Table(name = "issue1")
 public class Issue1 {
 
     @Id

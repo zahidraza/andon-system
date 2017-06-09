@@ -2,7 +2,7 @@ package in.andonsystem.v2.restcontroller;
 
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.service.BuyerService;
-import in.andonsystem.v2.util.ApiV2Urls;
+import in.andonsystem.v2.ApiUrls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.List;
  * Created by razamd on 3/30/2017.
  */
 @RestController
-@RequestMapping(ApiV2Urls.ROOT_URL_BUYERS)
+@RequestMapping(ApiUrls.ROOT_URL_BUYERS)
 public class BuyerRestController {
 
     private final Logger logger = LoggerFactory.getLogger(BuyerRestController.class);
@@ -40,7 +40,7 @@ public class BuyerRestController {
         return new ResponseEntity<>(buyers, HttpStatus.OK);
     }
 
-    @GetMapping(ApiV2Urls.URL_BUYERS_BUYER)
+    @GetMapping(ApiUrls.URL_BUYERS_BUYER)
     public ResponseEntity<?> getBuyer(@PathVariable("buyerId") Long id){
         logger.debug("getBuyer(): buyerId = {}", id);
         if(!buyerService.exists(id)){

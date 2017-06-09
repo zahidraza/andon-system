@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 
-import in.andonsystem.v2.util.ApiV2Urls;
+import in.andonsystem.v2.ApiUrls;
 import org.apache.commons.collections.map.HashedMap;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import org.springframework.validation.annotation.Validated;
 
 @RestController
-@RequestMapping(ApiV2Urls.ROOT_URL_USERS)
+@RequestMapping(ApiUrls.ROOT_URL_USERS)
 public class UserRestController{
     
     private final Logger logger = LoggerFactory.getLogger(UserRestController.class);
@@ -45,7 +45,7 @@ public class UserRestController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
   
-    @GetMapping(ApiV2Urls.URL_USERS_USER)
+    @GetMapping(ApiUrls.URL_USERS_USER)
     public ResponseEntity<?> getUser(@PathVariable("userId") long id) {
         logger.debug("getUser(): id = {}",id);
         UserDto user = userService.findOne(id);
@@ -63,7 +63,7 @@ public class UserRestController{
         return ResponseEntity.created(URI.create(selfLink.getHref())).body(user);
     }
  
-    @PutMapping(ApiV2Urls.URL_USERS_USER)
+    @PutMapping(ApiUrls.URL_USERS_USER)
     public ResponseEntity<?> updateUser(@PathVariable("userId") long id,@Validated @RequestBody UserDto user) {
         logger.debug("updateUser(): id = {} \n {}",id,user);
         if (!userService.exists(id)) {
@@ -74,7 +74,7 @@ public class UserRestController{
         return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
     }
 
-    @PatchMapping(ApiV2Urls.URL_USERS_USER)
+    @PatchMapping(ApiUrls.URL_USERS_USER)
     public ResponseEntity<?> patchUser(@PathVariable("userId") long id,@Validated @RequestBody UserDtoPatch user) {
         logger.debug("updateUser(): id = {} \n {}",id,user);
         if (!userService.exists(id)) {
@@ -86,7 +86,7 @@ public class UserRestController{
         return ResponseEntity.ok(userDto);
     }
   
-    @DeleteMapping(ApiV2Urls.URL_USERS_USER)
+    @DeleteMapping(ApiUrls.URL_USERS_USER)
     public ResponseEntity<Void> deleteUser(@PathVariable("userId") long id) {
         logger.debug("deleteUser(): id = {}",id);
         if (!userService.exists(id)) {

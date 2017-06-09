@@ -1,7 +1,7 @@
 package in.andonsystem.v1.restcontroller;
 
 import in.andonsystem.v1.service.DepartmentService;
-import in.andonsystem.v1.util.ApiV1Urls;
+import in.andonsystem.v1.ApiUrls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 
-@RequestMapping(ApiV1Urls.ROOT_URL_DEPARTMENTS)
+@RequestMapping(ApiUrls.ROOT_URL_DEPARTMENTS)
 public class DepartmentRestController {
 
     @Autowired

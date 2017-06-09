@@ -1,10 +1,10 @@
 package in.andonsystem.v2.restcontroller;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 import in.andonsystem.v2.dto.RestError;
 import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.ApiV2Urls;
+import in.andonsystem.v2.ApiUrls;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,14 +17,14 @@ import java.util.Map;
  * Created by razamd on 3/31/2017.
  */
 @RestController
-@RequestMapping(ApiV2Urls.ROOT_URL_MISCELLANEOUS)
+@RequestMapping(ApiUrls.ROOT_URL_MISCELLANEOUS)
 public class MiscRestController {
 
     @Autowired UserService userService;
 
-    @GetMapping(ApiV2Urls.URL_MISCELLANEOUS_CONFIG)
+    @GetMapping(ApiUrls.URL_MISCELLANEOUS_CONFIG)
     public ResponseEntity<?> getAppConfig(@RequestParam(value = "version") String version){
-        Boolean initialize = Boolean.parseBoolean(MiscUtil.getInstance().getConfigProperty(Constants.APP_INITIALIZE, "false").trim());
+        Boolean initialize = Boolean.parseBoolean(ConfigUtility.getInstance().getConfigProperty(Constants.APP_INITIALIZE, "false").trim());
 
         Map<String, Object> response = new HashedMap();
         response.put("initialize", initialize);
@@ -32,14 +32,14 @@ public class MiscRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(ApiV2Urls.URL_CURRENT_TIME)
+    @GetMapping(ApiUrls.URL_CURRENT_TIME)
     public ResponseEntity<?> getCurrentTime(){
         Map<String, Object> response = new HashedMap();
         response.put("currentTime", System.currentTimeMillis());
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(ApiV2Urls.URL_CHANGE_PASSWORD)
+    @PutMapping(ApiUrls.URL_CHANGE_PASSWORD)
     public ResponseEntity<?> changePassword(@RequestParam("email") String email,
                                             @RequestParam(value = "oldPassword") String oldPassword,
                                             @RequestParam("newPassword") String newPassword){
@@ -56,7 +56,7 @@ public class MiscRestController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_SEND_OTP)
+    @PutMapping(ApiUrls.URL_FORGOT_PASSWORD_SEND_OTP)
     public ResponseEntity<?> forgotPasswordSendOTP(@RequestParam("email") String email){
 
         if (userService.findByEmail(email) == null){
@@ -68,7 +68,7 @@ public class MiscRestController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_VERIFY_OTP)
+    @PutMapping(ApiUrls.URL_FORGOT_PASSWORD_VERIFY_OTP)
     public ResponseEntity<?> forgotPasswordVerifyOTP(@RequestParam("email") String email,
                                                    @RequestParam("otp") String otp){
         if (userService.findByEmail(email) == null){
@@ -86,7 +86,7 @@ public class MiscRestController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(ApiV2Urls.URL_FORGOT_PASSWORD_CHANGE_PASSWORD)
+    @PutMapping(ApiUrls.URL_FORGOT_PASSWORD_CHANGE_PASSWORD)
     public ResponseEntity<?> changeForgotPassword(@RequestParam("email") String email,
                                             @RequestParam(value = "otp") String otp,
                                             @RequestParam("newPassword") String newPassword){
@@ -105,8 +105,8 @@ public class MiscRestController {
 
 
     private Boolean checkAppUpdate(String version) {
-        MiscUtil miscUtil = MiscUtil.getInstance();
-        String ver = miscUtil.getConfigProperty(Constants.APP_VERSION);
+        ConfigUtility configUtility = ConfigUtility.getInstance();
+        String ver = configUtility.getConfigProperty(Constants.APP_VERSION);
         String[] v1 = ver.split("-");
 
         int currVer = (100 * Integer.parseInt(v1[0])) + (10 * Integer.parseInt(v1[1])) + Integer.parseInt(v1[2]);

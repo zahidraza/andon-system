@@ -1,6 +1,6 @@
 package in.andonsystem.v2.restcontroller;
 
-import in.andonsystem.v1.util.Constants;
+import in.andonsystem.Constants;
 import in.andonsystem.v2.dto.FieldError;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
@@ -8,8 +8,8 @@ import in.andonsystem.v2.dto.RestError;
 import in.andonsystem.v2.service.BuyerService;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.ApiV2Urls;
-import in.andonsystem.v2.util.MiscUtil;
+import in.andonsystem.v2.ApiUrls;
+import in.andonsystem.util.MiscUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ import java.util.Map;
  * Created by razamd on 3/30/2017.
  */
 @RestController
-@RequestMapping(ApiV2Urls.ROOT_URL_ISSUES)
+@RequestMapping(ApiUrls.ROOT_URL_ISSUES)
 public class IssueRestController {
 
     private final Logger logger = LoggerFactory.getLogger(IssueRestController.class);
@@ -102,7 +102,7 @@ public class IssueRestController {
         return ResponseEntity.created(URI.create(selfLink.getHref())).body(issueDto);
     }
 
-    @PatchMapping(ApiV2Urls.URL_ISSUES_ISSUE)
+    @PatchMapping(ApiUrls.URL_ISSUES_ISSUE)
     public ResponseEntity<?> updateIssue(@PathVariable("issueId") Long issueId, @RequestParam("operation") String operation, @Valid @RequestBody
             IssuePatchDto issueDto){
         logger.info("updateIssue(): id = {}, operation = {}", issueId,operation);

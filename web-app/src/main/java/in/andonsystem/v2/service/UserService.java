@@ -1,7 +1,6 @@
 package in.andonsystem.v2.service;
 
 import in.andonsystem.v2.dto.UserDto;
-import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.page.converter.UserConverter;
 import in.andonsystem.v2.respository.UserRespository;
@@ -10,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import in.andonsystem.v2.util.MiscUtil;
+import in.andonsystem.util.MiscUtil;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package in.andonsystem.v2.validation;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 
 /**
  * Created by razamd on 3/30/2017.
@@ -9,6 +9,6 @@ import in.andonsystem.v1.util.MiscUtil;
 public class ProblemFixedValue implements FixedValue {
     @Override
     public String[] getFixedValues() {
-        return MiscUtil.getInstance().getConfigProperty(Constants.PROBLEMS).split(";");
+        return ConfigUtility.getInstance().getConfigProperty(Constants.PROBLEMS).split(";");
     }
 }

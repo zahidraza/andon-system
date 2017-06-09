@@ -2,7 +2,7 @@ package in.andonsystem.v1.restcontroller;
 
 import in.andonsystem.v1.entity.Problem;
 import in.andonsystem.v1.service.ProblemService;
-import in.andonsystem.v1.util.ApiV1Urls;
+import in.andonsystem.v1.ApiUrls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Md Jawed Akhtar on 08-04-2017.
  */
 @RestController(value = "problemController")
-@RequestMapping(ApiV1Urls.Root_URL_PROBLEMS)
+@RequestMapping(ApiUrls.Root_URL_PROBLEMS)
 public class ProblemRestController {
 
     @Autowired

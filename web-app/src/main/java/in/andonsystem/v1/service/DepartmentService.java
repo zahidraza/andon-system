@@ -1,7 +1,7 @@
 package in.andonsystem.v1.service;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class DepartmentService {
     public String[] getDepartments(){
 
-        return MiscUtil.getInstance().getConfigProperty(Constants.DEPARTMENTS).split(";");
+        return ConfigUtility.getInstance().getConfigProperty(Constants.DEPARTMENTS).split(";");
     }
 }

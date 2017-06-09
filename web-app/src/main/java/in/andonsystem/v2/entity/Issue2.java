@@ -18,6 +18,7 @@ import java.util.Date;
  * Created by razamd on 3/30/2017.
  */
 @Entity
+@Table(name = "issue2")
 public class Issue2 implements Serializable{
 
     @Id

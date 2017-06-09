@@ -1,7 +1,7 @@
 package in.andonsystem.v2.service;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
 public class ProblemService {
 
     public String[] getProblems(){
-        return MiscUtil.getInstance().getConfigProperty(Constants.PROBLEMS).split(";");
+        return ConfigUtility.getInstance().getConfigProperty(Constants.PROBLEMS).split(";");
     }
 }

@@ -1,13 +1,13 @@
 package in.andonsystem.v2.service;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TeamService {
 
     public String[] getTeams(){
-        return MiscUtil.getInstance().getConfigProperty(Constants.TEAMS).split(";");
+        return ConfigUtility.getInstance().getConfigProperty(Constants.TEAMS).split(";");
     }
 }

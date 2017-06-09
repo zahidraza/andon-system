@@ -1,7 +1,7 @@
 package in.andonsystem.v2.service;
 
-import in.andonsystem.v1.util.Constants;
-import in.andonsystem.v1.util.MiscUtil;
+import in.andonsystem.Constants;
+import in.andonsystem.util.ConfigUtility;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.entity.Buyer;
@@ -13,7 +13,7 @@ import in.andonsystem.v2.respository.IssueRepository;
 import in.andonsystem.v2.respository.UserRespository;
 import in.andonsystem.v2.tasks.AckTask;
 import in.andonsystem.v2.tasks.FixTask;
-import in.andonsystem.v2.util.Scheduler;
+import in.andonsystem.util.Scheduler;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class IssueService {
 
     public List<IssueDto> findAllAfter(Long after){
         logger.debug("findAllAfter: after = " + after);
-        Date date = in.andonsystem.v2.util.MiscUtil.getTodayMidnight();
+        Date date = in.andonsystem.util.MiscUtil.getTodayMidnight();
         //If after value is greater than today midnight value, then return issues after this value, else return issue after today's midnight
         if(after > date.getTime()){
             date = new Date(after);
@@ -94,10 +94,10 @@ public class IssueService {
         //Submit tasks to scheduler
         Scheduler scheduler = Scheduler.getInstance();
 
-        MiscUtil miscUtil = MiscUtil.getInstance();
-        Long ackTime = Long.parseLong(miscUtil.getConfigProperty(Constants.APP_V2_ACK_TIME,"30"));
-        Long fixL1Time = Long.parseLong(miscUtil.getConfigProperty(Constants.APP_V2_FIX_L1_TIME,"180"));
-        Long fixL2Time = Long.parseLong(miscUtil.getConfigProperty(Constants.APP_V2_FIX_L2_TIME,"120"));
+        ConfigUtility configUtility = ConfigUtility.getInstance();
+        Long ackTime = Long.parseLong(configUtility.getConfigProperty(Constants.APP_V2_ACK_TIME,"30"));
+        Long fixL1Time = Long.parseLong(configUtility.getConfigProperty(Constants.APP_V2_FIX_L1_TIME,"180"));
+        Long fixL2Time = Long.parseLong(configUtility.getConfigProperty(Constants.APP_V2_FIX_L2_TIME,"120"));
 
         Buyer buyer = buyerRepository.findOne(issue.getBuyer().getId());
         String message = generateMessage(issue, buyer);
@@ -130,7 +130,7 @@ public class IssueService {
             String to = issue.getRaisedBy().getMobile();
             String message = generateMessage(issue,buyerRepository.findOne(issue.getBuyer().getId()));
             message = message.replace("raised","fixed");
-            in.andonsystem.v2.util.MiscUtil.sendSMS(to,message);
+            in.andonsystem.util.MiscUtil.sendSMS(to,message);
         }
         return mapper.map(issue,IssuePatchDto.class);
     }
@@ -171,7 +171,7 @@ public class IssueService {
         if (users.size() > 0){
             builder.setLength(builder.length() - 1);
             logger.info("Sending sms to = {}, message = {}",builder.toString(), message);
-            in.andonsystem.v2.util.MiscUtil.sendSMS(builder.toString(),message);
+            in.andonsystem.util.MiscUtil.sendSMS(builder.toString(),message);
         }
     }
 }

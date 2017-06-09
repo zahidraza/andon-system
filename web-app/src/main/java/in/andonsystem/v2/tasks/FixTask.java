@@ -1,11 +1,12 @@
 package in.andonsystem.v2.tasks;
 
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.enums.Level;
 import in.andonsystem.v2.service.IssueService;
-import in.andonsystem.v2.util.ApplicationContextUtil;
+import in.andonsystem.util.ApplicationContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +56,7 @@ public class FixTask extends Thread{
             if (users.size() > 0){
                 builder.setLength(builder.length() - 1);
                 logger.debug("Sending sms to = {}, message = {}",builder.toString(), message);
-                in.andonsystem.v2.util.MiscUtil.sendSMS(builder.toString(),message);
+                MiscUtil.sendSMS(builder.toString(),message);
             }
 
             //update processing at value = (checkProcessingAt + 1)
