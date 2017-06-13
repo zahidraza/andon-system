@@ -34,7 +34,17 @@ public class IssuePatchDto {
 
     private Integer processingAt;
 
+    private Boolean deleted;
+
     private Long lastModified;
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
     public Long getId() {
         return id;

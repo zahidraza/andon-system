@@ -11,12 +11,20 @@ export function initialize () {
       axios.get(window.serviceHost + '/v2/teams'),
       axios.get(window.serviceHost + '/v2/problems'),
       axios.get(window.serviceHost + '/v2/buyers'),
+      axios.get(window.serviceHost + '/v1/sections'),
+      axios.get(window.serviceHost + '/v1/departments'),
+      axios.get(window.serviceHost + '/v1/problems'),
+      axios.get(window.serviceHost + '/v1/designations'),
       axios.get(window.serviceHost + '/v2/users')
     ])
-    .then(axios.spread(function (teams, problems,buyers, users) {
+    .then(axios.spread(function (teams, problems, buyers, sections, departments, problms, designations, users) {
       dispatch({type: m.INITIALIZE_TEAM, payload: { teams: teams.data }});
       dispatch({type: m.INITIALIZE_PROBLEM, payload: {problems:  problems.data }});
       dispatch({type: m.INITIALIZE_BUYER, payload: { buyers: buyers.data }});
+      dispatch({type: m.INITIALIZE_SECTION, payload: { sections: sections.data }});
+      dispatch({type: m.INITIALIZE_DEPARTMENT, payload: {departments:  departments.data }});
+      dispatch({type: m.INITIALIZE_PROBLM, payload: { problms: problms.data }});
+      dispatch({type: m.INITIALIZE_DESGN, payload: { desgns: designations.data }});
       dispatch({type: u.INITIALIZE_USER, payload: { users: users.data.users }});
       dispatch({type: m.STORE_INITIALIZED});
 

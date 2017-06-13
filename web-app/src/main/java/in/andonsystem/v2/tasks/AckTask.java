@@ -59,7 +59,7 @@ public class AckTask extends Thread {
             //Update processingAt
             issueService.updateProcessingAt(issue.getId(),2);
             //Submit FixTask(2 hrs, 2)
-            Long fixL2Time = Long.parseLong(ConfigUtility.getInstance().getConfigProperty(Constants.APP_V2_FIX_L2_TIME, "30"));
+            Long fixL2Time = Long.parseLong(ConfigUtility.getInstance().getConfigProperty(Constants.APP_V2_FIX_L2_TIME, "120"));
             Scheduler.getInstance().submit(new FixTask(issue.getId(),2, message),fixL2Time);
         }else {
             logger.debug("Ignoring AckTask as Issue1 is acknowledged. issueId = {}", issueId);

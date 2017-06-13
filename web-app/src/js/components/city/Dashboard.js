@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { localeData } from '../reducers/localization';
-import {initialize} from '../actions/misc';
+import { localeData } from '../../reducers/localization';
+import {initialize} from '../../actions/misc';
 
-import AppHeader from './AppHeader';
 import Box from 'grommet/components/Box';
 import Section from 'grommet/components/Section';
 import Spinning from 'grommet/components/icons/Spinning';
@@ -45,7 +44,6 @@ class Dashboard extends Component {
     }
     return (
       <Box>
-        <AppHeader page={this.localeData.label_home} />
         <Section direction="column" pad={{vertical: 'large', horizontal:'small'}}>
           <h1>Welcome to Andon System Application</h1>
         </Section>

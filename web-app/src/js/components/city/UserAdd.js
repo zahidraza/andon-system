@@ -5,7 +5,6 @@ import {addUser}  from '../../actions/user';
 import {USER_CONSTANTS as c, USER_ROLE as ur, USER_LEVEL as ul, USER_TYPE as ut}  from '../../utils/constants';
 import {initialize} from '../../actions/misc';
 
-import AppHeader from '../AppHeader';
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
@@ -36,6 +35,7 @@ class UserAdd extends Component {
     this.state = {
       initializing: false,
       user: {},
+      desgns: [], 
 
       team: 'Select Team',
       teams: [],
@@ -45,12 +45,13 @@ class UserAdd extends Component {
         label: 'Buyers',
         filterValue: 'Select Buyer',
         filterItems: [],                    //Available items for selection
-        selectedItems: [] 
+        selectedItems: []
       }
     };
 
     this.localeData = localeData();
     this._initUser = this._initUser.bind(this);
+    this._initDesgns = this._initDesgns.bind(this);
   }
 
   componentWillMount () {
@@ -60,8 +61,9 @@ class UserAdd extends Component {
       this.props.dispatch(initialize());
     }else{
       this._initUser();
-      const {teams} = this.props.misc;
+      const {teams,desgns} = this.props.misc;
       this.setState({teams});
+      this._initDesgns(desgns);
     }
   }
 
@@ -69,10 +71,16 @@ class UserAdd extends Component {
     if (!this.props.misc.initialized && nextProps.misc.initialized) {
       this.setState({initializing: false});
       this._initUser();
+      this._initDesgns(nextProps.misc.desgns);
     }
     if (!nextProps.user.adding) {
-      this.context.router.push('/user2');
+      this.context.router.push('/user');
     }
+  }
+
+  _initDesgns (designations) {
+    let desgns = designations.map(d => d.name);
+    this.setState({desgns});
   }
 
   /*Initialize UserType, role flter and level filter */
@@ -81,6 +89,7 @@ class UserAdd extends Component {
     user.userType = sessionStorage.userType;
     user.role = ur.ROLE_USER;
     user.level = ul.LEVEL1;
+    user.designation = 'Select Designation';
     this.setState({user});
   }
 
@@ -94,15 +103,26 @@ class UserAdd extends Component {
       } else if (user.level == ul.LEVEL3) {
         user.buyers = this.props.misc.buyers;
       }
+      delete user.designation;
     } else if (user.userType == ut.SAMPLING) {
       if (user.role == ur.ROLE_ADMIN) {
         user.level = ul.LEVEL4;
       } else {
         user.level = ul.LEVEL0;
       }
-      delete user.buyers;
+      delete user.designation;
+    } else if (user.userType == ut.FACTORY) {
+      if (user.role == ur.ROLE_ADMIN) {
+        delete user.designation;
+      } else {
+        if (user.designation.includes('Select')) {
+          alert('Select Designation first.');
+          return;
+        }
+        delete user.level;
+      }
     }
-    //console.log(user);
+    console.log(user);
     this.props.dispatch(addUser(user));
   }
 
@@ -121,15 +141,16 @@ class UserAdd extends Component {
   _onFilter (event) {
     let {user} = this.state;
     user[event.target.getAttribute('name')] = event.value;
+
     if (event.value == ur.ROLE_ADMIN) {
       user.level = ul.LEVEL4;
     } else if (event.value == ur.ROLE_USER) {
       user.level = ul.LEVEL1;
+      user.designation = 'Select Designation';
     } 
     this.setState({user});
   }
   
-
   _onClose (event) {
     this.props.dispatch({type: c.USER_ADD_FORM_TOGGLE, payload: {adding: false}});
   }
@@ -273,10 +294,9 @@ class UserAdd extends Component {
     );
   }
 
-
   render () {
     const {error,busy} = this.props.user;
-    const {user,initializing} = this.state;
+    const {user,initializing, desgns} = this.state;
     const {userType} = window.sessionStorage;
 
     if (initializing) {
@@ -298,20 +318,26 @@ class UserAdd extends Component {
     const  levelFilter = (user.role == ur.ROLE_ADMIN || userType == ut.SAMPLING || userType == ut.FACTORY) ? null : (
       <FormField label="User Level" htmlFor="level" error={error.level}>
         <Select id="level" name="level" options={[ul.LEVEL1, ul.LEVEL2, ul.LEVEL3]}
-          value={user.level}  onChange={this._onFilter.bind(this)} />
+          value={user.level}  onChange={this._onFilter.bind(this, 'level')} />
+      </FormField>
+    );
+
+    const desgnFilter = (user.role == ur.ROLE_ADMIN || userType != ut.FACTORY )? null : (
+      <FormField label="User Designation" htmlFor="level" error={error.level}>
+        <Select id="level" name="designation" options={desgns}
+          value={user.designation}  onChange={this._onFilter.bind(this)} />
       </FormField>
     );
 
     return (
       <Box>
-        <AppHeader/>
         <Section>
           <Article align="center" pad={{horizontal: 'medium'}} primary={true}>
             <Form onSubmit={this._onSubmit}>
 
               <Header size="large" justify="between" pad="none">
                 <Heading tag="h2" margin="none" strong={true}>{this.localeData.label_user_add}</Heading>
-                <Anchor icon={<CloseIcon />} path="/user2" a11yTitle='Close Add User Form' onClick={this._onClose.bind(this)} />
+                <Anchor icon={<CloseIcon />} path="/user" a11yTitle='Close Add User Form' onClick={this._onClose.bind(this)} />
               </Header>
 
               <FormFields>
@@ -322,10 +348,11 @@ class UserAdd extends Component {
                       value={user.role}  onChange={this._onFilter.bind(this)} />
                   </FormField>
                   {levelFilter}
-                  <FormField label="User Name" error={error.name}>
+                  {desgnFilter}
+                  <FormField label="Full Name" error={error.name}>
                     <input type="text" name="name" value={user.name} onChange={this._onChange.bind(this)} />
                   </FormField>
-                  <FormField label="Email" error={error.email}>
+                  <FormField label="Email/Username" error={error.email}>
                     <input type="email" name="email" value={user.email} onChange={this._onChange.bind(this)} />
                   </FormField>
                   <FormField label="Mobile Number" error={error.mobile}>

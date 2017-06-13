@@ -25,18 +25,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "USER")
-public class User implements Serializable{
+public class User implements Serializable {
     @Id
     @Column(name = "USER_ID", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USER_NAME", nullable = false)
+    @Column(name = "NAME", nullable = false)
     private String name;
 
-    @Column(name = "EMAIL", nullable = true, unique = true)
+    @Column(name = "EMAIL", unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
@@ -52,12 +53,19 @@ public class User implements Serializable{
     @Column(name = "LEVEL", nullable = true)
     private String level;
 
+    @JsonIgnore
     @ManyToOne(optional = true)
     @JoinColumn(name = "DESGN_ID")
     private Designation designation;
 
     @Column(name = "OTP")
     private String otp;
+
+    @Column(name = "retry_count")
+    private Integer retryCount;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active;
 
     @JsonIgnore
     @ManyToMany
@@ -73,6 +81,22 @@ public class User implements Serializable{
     private Date lastModified;
 
     public User() {
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public User(Long id) {

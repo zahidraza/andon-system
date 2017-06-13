@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { localeData } from '../../reducers/localization';
 import {initialize} from '../../actions/misc';
 import {removeUser}  from '../../actions/user';
-import {USER_CONSTANTS as c,USER_ROLE as ur}  from '../../utils/constants';
+import {USER_CONSTANTS as c,USER_ROLE as ur, USER_TYPE as ut}  from '../../utils/constants';
 
-import AppHeader from '../AppHeader';
 import Add from "grommet/components/icons/base/Add";
 import Anchor from 'grommet/components/Anchor';
 import Box from 'grommet/components/Box';
@@ -53,11 +52,6 @@ class User extends Component {
       const {users,filter,sort} = this.props.user;
       this._loadUser(this._filterUserByUserType(users),filter,sort);
     }
-    let tableHeaders = ['Name','Email','Role','Level','Mobile'];
-    if (sessionStorage.role == ur.ROLE_ADMIN) {
-      tableHeaders.push('ACTION');
-    }
-    this.setState({tableHeaders});
   }
 
   componentWillReceiveProps (nextProps) {
@@ -77,16 +71,18 @@ class User extends Component {
   }
 
   _loadUser (users,filter,sort) {
-    console.log("_loadUser()");
+    let unfilteredCount = users.length;
     if ('level' in filter) {
       const levelFilter = filter.level;
-      let list1 = users.filter(u => levelFilter.includes(u.level));
-      list1 = this._userSort(list1,sort);
-      this.setState({users: list1, filteredCount: list1.length, unfilteredCount: users.length});    
-    } else {
-      users = this._userSort(users,sort);
-      this.setState({users: users, filteredCount: users.length, unfilteredCount: users.length}); 
+      users = users.filter(u => levelFilter.includes(u.level));      
     }
+    if ('desgn' in filter) {
+      const desgnFilter = filter.desgn;
+      users = users.filter(u => desgnFilter.includes(u.designation));      
+    }
+    let filteredCount = users.length;
+    users = this._userSort(users,sort);
+    this.setState({users, filteredCount, unfilteredCount});    
   }
 
   _userSort (users,sort) {
@@ -102,18 +98,20 @@ class User extends Component {
   }
 
   _onSearch (event) {
-    console.log('_onSearch');
+    const {users,filter,sort} = this.props.user;
     let value = event.target.value;
+    let usrs = this._filterUserByUserType(users);
+    usrs = usrs.filter(u => u.name.toLowerCase().includes(value.toLowerCase()) || u.email.toLowerCase().includes(value.toLowerCase()));
 
-    let users = this.props.user.users.filter(u => u.name.includes(value) || u.email.includes(value));
-
-    this.setState({searchText: value, users});
-
+    this.setState({searchText: value});
+    if (value.length == 0) {
+      this._loadUser(usrs,filter,sort);
+    }else{
+      this._loadUser(usrs,{},sort);
+    }
   }
 
   _onFilterActivate () {
-    console.log(this.props.user.filter);
-    console.log(this.props.user.sort);
     this.setState({filterActive: true});
   }
 
@@ -145,8 +143,8 @@ class User extends Component {
   _onEditClick (index) {
     console.log('_onEditClick');
     const {users} = this.state;
-    this.props.dispatch({type: c.USER_EDIT_FORM_TOGGLE, payload:{editing: true,user: users[index]}});
-    this.context.router.push('/user2/edit');
+    this.props.dispatch({type: c.USER_EDIT_FORM_TOGGLE, payload:{editing: true,user: {...users[index]}}});
+    this.context.router.push('/user/edit');
   }
 
 //  _onHelpClick () {
@@ -154,7 +152,7 @@ class User extends Component {
 //  }
 
   render() {
-    const {users, searchText, filterActive,filteredCount,unfilteredCount,tableHeaders, initializing } = this.state;
+    const {users, searchText, filterActive,filteredCount,unfilteredCount,initializing } = this.state;
 
     if (initializing) {
       return (
@@ -164,6 +162,16 @@ class User extends Component {
           </Box>
         </Box>
       );
+    }
+
+    let tableHeaders = ['Name','Username','Level','Mobile'];
+    if (sessionStorage.userType == ut.FACTORY) {
+      tableHeaders.push('Designation');
+    } else {
+      tableHeaders.push('Role');
+    }
+    if (sessionStorage.role == ur.ROLE_ADMIN) {
+      tableHeaders.push('ACTION');
     }
 
     const items = users.map((u, index)=>{
@@ -180,9 +188,9 @@ class User extends Component {
         <TableRow key={index}  >
           <td >{u.name}</td>
           <td >{u.email}</td>
-          <td >{u.role}</td>
           <td >{u.level}</td>
           <td >{u.mobile}</td>
+          <td >{u.userType == ut.FACTORY ? u.designation : u.role}</td>
           {modControl}
         </TableRow>
       );
@@ -192,13 +200,11 @@ class User extends Component {
 
     let addControl;
     if (sessionStorage.role == ur.ROLE_ADMIN) {
-      addControl = (<Anchor icon={<Add />} path='/user2/add' a11yTitle={`Add User`} onClick={this._onAddClick.bind(this)}/>);
+      addControl = (<Anchor icon={<Add />} path='/user/add' a11yTitle={`Add User`} onClick={this._onAddClick.bind(this)}/>);
     }
 
     return (
       <Box full='horizontal'>
-        <AppHeader/>
-
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
             <span>{this.localeData.label_user}</span>

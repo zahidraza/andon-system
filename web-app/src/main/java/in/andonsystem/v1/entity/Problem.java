@@ -35,7 +35,6 @@ public class Problem implements Serializable{
     @Column(name = "DEPARTMENT", nullable = false)
     private String department;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "problems")
     private Set<Designation> designations = new HashSet<>();
 

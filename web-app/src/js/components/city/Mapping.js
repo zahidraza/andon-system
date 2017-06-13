@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import {initialize} from '../../actions/misc';
 import {USER_LEVEL as ul}  from '../../utils/constants';
 
-import AppHeader from '../AppHeader';
 import Box from 'grommet/components/Box';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
@@ -14,7 +13,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import TableHeader from 'grommet/components/TableHeader';
 
-class Buyer extends Component {
+class Mapping extends Component {
   
   constructor () {
     super();
@@ -79,7 +78,6 @@ class Buyer extends Component {
 
     return (
       <Box>
-        <AppHeader page={this.localeData.label_test}/>
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
             <span>{this.localeData.label_buyer}</span>
@@ -98,7 +96,7 @@ class Buyer extends Component {
   }
 }
 
-Buyer.contextTypes = {
+Mapping.contextTypes = {
   router: React.PropTypes.object.isRequired
 };
 
@@ -106,4 +104,4 @@ let select = (store) => {
   return {misc: store.misc};
 };
 
-export default connect(select)(Buyer);
+export default connect(select)(Mapping);

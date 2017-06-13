@@ -2,6 +2,7 @@ package in.andonsystem.v2.service;
 
 import in.andonsystem.Constants;
 import in.andonsystem.util.ConfigUtility;
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.entity.Buyer;
@@ -64,8 +65,8 @@ public class IssueService {
 
     public List<IssueDto> findAllAfter(Long after){
         logger.debug("findAllAfter: after = " + after);
-        Date date = in.andonsystem.util.MiscUtil.getTodayMidnight();
-        //If after value is greater than today midnight value, then return issues after this value, else return issue after today's midnight
+        Date date = MiscUtil.getTodayMidnight();
+        //If after value is greater than last two day midnight value, then return issues after this value, else return issue after last two day midnight
         if(after > date.getTime()){
             date = new Date(after);
         }
@@ -89,6 +90,7 @@ public class IssueService {
         issue.setRaisedAt(new Date());
         issue.setRaisedBy(userRespository.findOne(issueDto.getRaisedBy()));
         issue.setProcessingAt(1);
+        if (issue.getDeleted() == null) issue.setDeleted(false);
         issue = issueRepository.save(issue);
 
         //Submit tasks to scheduler
@@ -117,7 +119,12 @@ public class IssueService {
         if(operation.equalsIgnoreCase(Constants.OP_ACK)){
             issue.setAckBy(userRespository.findOne(issuePatchDto.getAckBy()));
             issue.setAckAt(new Date());
-        }else if(operation.equalsIgnoreCase(Constants.OP_FIX)){
+
+        }
+        else if (operation.equalsIgnoreCase(Constants.OP_DEL)) {
+            issue.setDeleted(true);
+        }
+        else if(operation.equalsIgnoreCase(Constants.OP_FIX)){
             User user = userRespository.findOne(issuePatchDto.getFixBy());
             if (issue.getAckAt() == null){
                 issue.setAckAt(new Date());

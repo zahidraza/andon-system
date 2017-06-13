@@ -9,6 +9,7 @@ axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   if (error.response.status == 401) {
+    console.log('Session expired');
     delete sessionStorage.session;
   }
   return Promise.reject(error);
@@ -21,8 +22,7 @@ export function authenticate (username, password) {
     dispatch({type: c.USER_AUTH_PROGRESS});
     const config = {
       method: 'post',
-      //url: "http://localhost:8001/oauth/token",
-      url: window.authUrl + "/andon-system/oauth/token",
+      url: window.baseUrl + "/oauth/token",
       headers: {'Authorization': 'Basic ' + btoa('client-web:super-secret')},
       params: {
         grant_type: 'password',

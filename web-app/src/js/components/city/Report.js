@@ -7,7 +7,6 @@ import {initialize} from '../../actions/misc';
 import {getHeaders} from  '../../utils/restUtil';
 import {CSVLink} from 'react-csv';
 
-import AppHeader from '../AppHeader';
 import Box from 'grommet/components/Box';
 import Section from 'grommet/components/Section';
 import Spinning from 'grommet/components/icons/Spinning';
@@ -295,8 +294,6 @@ class Report extends Component {
 
     return (
       <Box full='horizontal'>
-        <AppHeader/>
-
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
             <span>{this.localeData.label_report}</span>

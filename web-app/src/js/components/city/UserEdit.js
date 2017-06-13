@@ -2,10 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localeData } from '../../reducers/localization';
 import {updateUser}  from '../../actions/user';
-import {USER_CONSTANTS as c, USER_ROLE as ur, USER_LEVEL as ul}  from '../../utils/constants';
+import {USER_CONSTANTS as c, USER_ROLE as ur, USER_LEVEL as ul, USER_TYPE as ut}  from '../../utils/constants';
 import {initialize} from '../../actions/misc';
 
-import AppHeader from '../AppHeader';
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
@@ -38,6 +37,7 @@ class UserEdit extends Component {
       user: {},
       team: 'Select Team',
       teams: [],
+      desgns: [],
       layer: {
         show: false,                             // name of layer under operation [section|supplier]
         title: 'Add Buyer',
@@ -49,6 +49,7 @@ class UserEdit extends Component {
     };
 
     this.localeData = localeData();
+    this._initDesgns = this._initDesgns.bind(this);
   }
 
   componentWillMount () {
@@ -59,10 +60,9 @@ class UserEdit extends Component {
     }else{
       let {team, teams, layer} = this.state;
       const {user} = this.props.user;
-      const {buyers} = this.props.misc;
+      const {buyers, desgns} = this.props.misc;
+      this._initDesgns(desgns);
       teams = this.props.misc.teams;
-
-      console.log(user);
 
       if ( 'buyers' in user && user.buyers.length != 0) {
         team = user.buyers[0].team;
@@ -77,10 +77,16 @@ class UserEdit extends Component {
     if (!this.props.misc.initialized && nextProps.misc.initialized) {
       this.setState({initializing: false});
       this.setState({user: nextProps.user.user});
+      this._initDesgns(nextProps.misc.desgns);
     }
     if (!nextProps.user.editing) {
-      this.context.router.push('/user2');
+      this.context.router.push('/user');
     }
+  }
+
+  _initDesgns (designations) {
+    let desgns = designations.map(d => d.name);
+    this.setState({desgns});
   }
 
   _onSubmit (event) {
@@ -115,6 +121,9 @@ class UserEdit extends Component {
     user[event.target.getAttribute('name')] = event.value;
     if (event.value == ur.ROLE_ADMIN) {
       user.level = ul.LEVEL4;
+    }
+    if (event.value == ur.ROLE_USER && user.designation == null) {
+      user.designation = 'Select Designation';
     }
     this.setState({user});
   }
@@ -224,7 +233,7 @@ class UserEdit extends Component {
   _renderFields () {
     const {layer,teams,team,user} = this.state;
 
-    if (! (user.level == ul.LEVEL1 || user.level == ul.LEVEL2)) {
+    if (! (user.level == ul.LEVEL1 || user.level == ul.LEVEL2) || user.userType == ut.FACTORY) {
       return null;
     }
 
@@ -265,7 +274,7 @@ class UserEdit extends Component {
 
   render () {
     const {error,busy} = this.props.user;
-    const {user,initializing} = this.state;
+    const {user,initializing, desgns} = this.state;
 
     if (initializing) {
       return (
@@ -283,23 +292,29 @@ class UserEdit extends Component {
 
     const buyerFields = this._renderFields();
 
-    const  levelFilter = user.role == ur.ROLE_ADMIN ? null : (
+    const  levelFilter = (user.role == ur.ROLE_ADMIN || user.userType == ut.FACTORY) ? null : (
       <FormField label="User Level" htmlFor="level" error={error.level}>
         <Select id="level" name="level" options={[ul.LEVEL1, ul.LEVEL2, ul.LEVEL3]}
           value={user.level}  onChange={this._onFilter.bind(this)} />
       </FormField>
     );
 
+    const  desgnFilter = (user.role == ur.ROLE_ADMIN || user.userType != ut.FACTORY )? null : (
+      <FormField label="User Designation" htmlFor="level" error={error.level}>
+        <Select id="desgn" name="designation" options={desgns}
+          value={user.designation}  onChange={this._onFilter.bind(this)} />
+      </FormField>
+    );
+
     return (
       <Box>
-        <AppHeader/>
         <Section>
           <Article align="center" pad={{horizontal: 'medium'}} primary={true}>
             <Form onSubmit={this._onSubmit}>
 
               <Header size="large" justify="between" pad="none">
                 <Heading tag="h2" margin="none" strong={true}>{this.localeData.label_user_edit}</Heading>
-                <Anchor icon={<CloseIcon />} path="/user2" a11yTitle='Close Add User Form' onClick={this._onClose.bind(this)} />
+                <Anchor icon={<CloseIcon />} path="/user" a11yTitle='Close Add User Form' onClick={this._onClose.bind(this)} />
               </Header>
 
               <FormFields>
@@ -310,10 +325,11 @@ class UserEdit extends Component {
                       value={user.role}  onChange={this._onFilter.bind(this)} />
                   </FormField>
                   {levelFilter}
-                  <FormField label="User Name" error={error.name}>
+                  {desgnFilter}
+                  <FormField label="Full Name" error={error.name}>
                     <input type="text" name="name" value={user.name} onChange={this._onChange.bind(this)} />
                   </FormField>
-                  <FormField label="Email" error={error.email}>
+                  <FormField label="Email/Username" error={error.email}>
                     <input type="email" name="email" value={user.email} onChange={this._onChange.bind(this)} />
                   </FormField>
                   <FormField label="Mobile Number" error={error.mobile}>

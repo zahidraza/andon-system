@@ -3,7 +3,6 @@ import { localeData } from '../reducers/localization';
 import { connect } from 'react-redux';
 import {initialize} from '../actions/misc';
 
-import AppHeader from './AppHeader';
 import Box from 'grommet/components/Box';
 import Section from 'grommet/components/Section';
 import Spinning from 'grommet/components/icons/Spinning';
@@ -48,7 +47,6 @@ class Test extends Component {
 
     return (
       <Box>
-        <AppHeader page={this.localeData.label_test}/>
         <Section>
           <h1>Test Navigation page</h1>
         </Section>

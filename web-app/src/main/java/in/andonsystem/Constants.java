@@ -24,9 +24,10 @@ public class Constants {
     public static final String APP_VERSION = "app.version";
     public static final String APP_INITIALIZE = "app.initialize";
 
-    //Issue update operations
+    //Issue1 update operations
     public static final String OP_ACK = "OP_ACK";
     public static final String OP_FIX = "OP_FIX";
+    public static final String OP_DEL = "OP_DEL";
 
     public static final String APP_V2_ACK_TIME = "app.v2.ack.time.min";
     public static final String APP_V2_FIX_L1_TIME = "app.v2.fix.level1.time.min";

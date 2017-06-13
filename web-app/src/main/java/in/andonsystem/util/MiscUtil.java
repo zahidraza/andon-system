@@ -33,10 +33,15 @@ public class MiscUtil {
 
     public static Date getTodayMidnight(){
         Long time = new Date().getTime();
-        return new Date(time -((24 * 60 * 60 * 1000)+ time % (24 * 60 * 60 * 1000)));
+        Long oneDayMillis = (long)24*60*60*1000;
+        //((now.getTime() + (5*60 + 30)*60*1000) )% (24*60*60*1000)
+
+        return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
     }
 
+    //public static Boolean sendSMS(String to,String message){return true;}
     public static Boolean sendSMS(String to,String message){
+
         logger.debug("sendSMS(): to = {}, message = {}", to, message);
         Boolean result = false;
 
@@ -93,7 +98,6 @@ public class MiscUtil {
         }
         return result;
     }
-
     /**
      * Check If City Office is Open/Close.
      * @return -1:  Not opened yet, 0: open, 1: Colsed

@@ -73,12 +73,23 @@ public class Issue1 {
     @Column(name = "SEEK_HELP")
     private Integer seekHelp;
 
+    @Column(name = "deleted",nullable = false)
+    private Boolean deleted;
+
     @Version
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_MODIFIED")
     private Date lastModified;
 
     public Issue1() {
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Long getId() {

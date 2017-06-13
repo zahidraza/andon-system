@@ -1,6 +1,7 @@
 package in.andonsystem.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import in.andonsystem.v1.entity.Designation;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.enums.Level;
 import in.andonsystem.v2.enums.Role;
@@ -21,7 +22,7 @@ public class UserDto {
     private String name;
 
     @NotNull
-    @Pattern(regexp=".+@.+\\..+", message="Incorrect email!")
+    @Pattern(regexp="^(?=.*[a-z])[a-z0-9_]{4,20}$", message="Username should contain lowercase letter, number and underscore only.")
     private String email;
 
     @JsonIgnore
@@ -35,19 +36,32 @@ public class UserDto {
     @StringEnum(enumClass = Role.class)
     private String role;
 
+    private String designation;
+
     @NotNull
     @StringEnum(enumClass = UserType.class)
     private String userType;
 
-    @NotNull
     @StringEnum(enumClass = Level.class)
     private String level;
 
     private Set<Buyer> buyers;
 
+    private Boolean active;
+
     private Long lastModified;
 
     public UserDto() {
+    }
+
+    public UserDto(String name, String email, String role, String mobile,  String userType, String level, boolean active) {
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+        this.active = active;
     }
 
     public UserDto(String name, String email, String role, String mobile, String userType, String level) {
@@ -57,6 +71,23 @@ public class UserDto {
         this.mobile = mobile;
         this.userType = userType;
         this.level = level;
+        this.active = true;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Long getId() {

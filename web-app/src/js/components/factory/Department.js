@@ -37,15 +37,7 @@ class Problem extends Component {
 
   render() {
     const {initializing} = this.state;
-    const {problems} = this.props.misc;
-
-    let items = problems.map((problem,index) => {
-      return (
-        <TableRow key={index}  >
-          <td >{problem}</td>
-        </TableRow>
-      );
-    });
+    const {departments} = this.props.misc;
 
     if (initializing) {
       return (
@@ -57,15 +49,23 @@ class Problem extends Component {
       );
     }
 
+    let items = departments.map((dept,index) => {
+      return (
+        <TableRow key={index}  >
+          <td >{dept}</td>
+        </TableRow>
+      );
+    });
+
     return (
       <Box>
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
-            <span>{this.localeData.label_problem}</span>
+            <span>{this.localeData.label_department}</span>
           </Title>
         </Header>
         <Section>
-          <Box size="small" alignSelf="center" >
+          <Box size="medium" alignSelf="center" >
             <Table>
               <tbody>{items}</tbody>
             </Table>

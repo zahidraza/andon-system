@@ -1,5 +1,7 @@
 package in.andonsystem.v2.service;
 
+import in.andonsystem.v1.entity.Designation;
+import in.andonsystem.v1.repository.DesignationRepository;
 import in.andonsystem.v2.dto.UserDto;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.page.converter.UserConverter;
@@ -28,8 +30,9 @@ public class UserService {
     
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    UserRespository userRepository;
+    @Autowired UserRespository userRepository;
+
+    @Autowired DesignationRepository designationRepository;
     
     @Autowired Mapper mapper;
     
@@ -92,6 +95,14 @@ public class UserService {
         logger.debug("save()");
         User user = mapper.map(userDto, User.class);
         user.setPassword(userDto.getMobile());
+        if (user.getActive() == null) {
+            user.setActive(true);
+        }
+        if (userDto.getDesignation() != null) {
+            Designation designation = designationRepository.findByName(userDto.getDesignation());
+            user.setDesignation(designation);
+            user.setLevel( "LEVEL" + designation.getLevel());
+        }
         user = userRepository.save(user);
         return mapper.map(user, UserDto.class);
     }
@@ -107,9 +118,15 @@ public class UserService {
         if (userDto.getRole() != null) user.setRole(userDto.getRole());
         if (userDto.getUserType() != null) user.setUserType(userDto.getUserType());
         if (userDto.getPassword() != null) user.setPassword(userDto.getPassword());
+        if (userDto.getActive() != null) user.setActive(userDto.getActive());
         if (userDto.getBuyers() != null){
             user.getBuyers().clear();
             userDto.getBuyers().forEach(buyer -> user.getBuyers().add(buyer));
+        }
+        if (userDto.getDesignation() != null) {
+            Designation designation = designationRepository.findByName(userDto.getDesignation());
+            user.setDesignation(designation);
+            user.setLevel( "LEVEL" + designation.getLevel());
         }
         return mapper.map(user, UserDto.class);
     }

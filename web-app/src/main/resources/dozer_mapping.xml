@@ -96,5 +96,9 @@
       <a>buyers</a>
       <b>buyers</b>
     </field>
+    <field custom-converter="in.andonsystem.v2.dozer.converter.DesignationStringConverter">
+      <a>designation</a>
+      <b>designation</b>
+    </field>
   </mapping>
 </mappings>

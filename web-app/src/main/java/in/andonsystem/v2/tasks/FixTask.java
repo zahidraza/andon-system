@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Checks whether specific issue is fixed by intended level (processingAt)
  * Created by razamd on 4/4/2017.
  */
 public class FixTask extends Thread{

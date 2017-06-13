@@ -4,14 +4,10 @@ import { connect } from 'react-redux';
 import {initialize} from '../../actions/misc';
 
 import Box from 'grommet/components/Box';
-import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
 import Spinning from 'grommet/components/icons/Spinning';
-import Title from 'grommet/components/Title';
-import Table from 'grommet/components/Table';
-import TableRow from 'grommet/components/TableRow';
 
-class Problem extends Component {
+class Dashboard extends Component {
   
   constructor () {
     super();
@@ -27,6 +23,7 @@ class Problem extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }
+    console.log(new Date(1492108200000));
   }
 
   componentWillReceiveProps (nextProps) {
@@ -37,15 +34,6 @@ class Problem extends Component {
 
   render() {
     const {initializing} = this.state;
-    const {problems} = this.props.misc;
-
-    let items = problems.map((problem,index) => {
-      return (
-        <TableRow key={index}  >
-          <td >{problem}</td>
-        </TableRow>
-      );
-    });
 
     if (initializing) {
       return (
@@ -59,29 +47,20 @@ class Problem extends Component {
 
     return (
       <Box>
-        <Header size='large' pad={{ horizontal: 'medium' }}>
-          <Title responsive={false}>
-            <span>{this.localeData.label_problem}</span>
-          </Title>
-        </Header>
         <Section>
-          <Box size="small" alignSelf="center" >
-            <Table>
-              <tbody>{items}</tbody>
-            </Table>
-          </Box>
+          <h1>Dashboard Navigation page</h1>
         </Section>
       </Box>
     );
   }
 }
 
-Problem.contextTypes = {
-  router: React.PropTypes.object.isRequired
+Dashboard.contextTypes = {
+  router: React.PropTypes.object
 };
 
 let select = (store) => {
   return {misc: store.misc};
 };
 
-export default connect(select)(Problem);
+export default connect(select)(Dashboard);

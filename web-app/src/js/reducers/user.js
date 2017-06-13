@@ -27,6 +27,7 @@ const handlers = {
     }
     let i = users.findIndex(u => u.email == action.payload.username);
     const user = users[i];
+    window.sessionStorage.userId = user.id;
     window.sessionStorage.username = user.name;
     window.sessionStorage.email = user.email;
     window.sessionStorage.access_token = action.payload.data.access_token;

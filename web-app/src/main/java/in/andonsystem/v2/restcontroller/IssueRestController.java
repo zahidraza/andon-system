@@ -52,8 +52,8 @@ public class IssueRestController {
     UserService userService;
 
     /**
-     * case 1: (start = 0 &  end = 0), Return todays issues
-     * case 2: (start != 0 &  end = 0), Return todays issues after start
+     * case 1: (start = 0 &  end = 0), Return last two day issues
+     * case 2: (start != 0 &  end = 0), Return issues after start if start is greater than last two day
      * case 3: (start != 0 &  end != 0), Return issues in between start and end
      * case 4: (start = 0 &  end != 0), not supported
      * @param start
@@ -133,8 +133,7 @@ public class IssueRestController {
         }
         issueDto.setId(issueId);
         issueDto = issueService.update(issueDto, operation);
-        Link selfLink = linkTo(IssueRestController.class).slash(issueDto.getId()).withSelfRel();
-        return ResponseEntity.created(URI.create(selfLink.getHref())).body(issueDto);
+        return ResponseEntity.ok(issueDto);
     }
 
 
