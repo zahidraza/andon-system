@@ -32,7 +32,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 /**
  * Created by Md Jawed Akhtar on 08-04-2017.
  */
-//@RestController(ApiUrls.ROOT_URL_ISSUES)
+@RestController(value = "issueController")
+@RequestMapping(ApiUrls.ROOT_URL_ISSUES)
 public class IssueRestController {
     private final Logger logger = LoggerFactory.getLogger(IssueRestController.class);
 
