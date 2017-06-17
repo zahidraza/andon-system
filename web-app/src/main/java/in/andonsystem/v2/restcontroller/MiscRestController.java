@@ -85,7 +85,7 @@ public class MiscRestController {
 
     @PutMapping(ApiUrls.URL_FORGOT_PASSWORD_VERIFY_OTP)
     public ResponseEntity<?> forgotPasswordVerifyOTP(@RequestParam("email") String email,
-                                                     @RequestParam("otp") String otp){
+                                                   @RequestParam("otp") String otp){
         logger.debug("forgotPasswordVerifyOTP: email = {}, otp = {}", email, otp);
         if (userService.findByEmail(email) == null){
             return new ResponseEntity<Object>(new RestError(404,404,"User with email id = " + email + " not found.", "", ""), HttpStatus.NOT_FOUND);
@@ -104,8 +104,8 @@ public class MiscRestController {
 
     @PutMapping(ApiUrls.URL_FORGOT_PASSWORD_CHANGE_PASSWORD)
     public ResponseEntity<?> changeForgotPassword(@RequestParam("email") String email,
-                                                  @RequestParam(value = "otp") String otp,
-                                                  @RequestParam("newPassword") String newPassword){
+                                            @RequestParam(value = "otp") String otp,
+                                            @RequestParam("newPassword") String newPassword){
         logger.debug("changeForgotPassword: email = {}, otp = {}", email, otp);
 
         if (userService.findByEmail(email) == null){

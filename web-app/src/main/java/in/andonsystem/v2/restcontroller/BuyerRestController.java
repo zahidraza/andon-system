@@ -27,7 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping(ApiUrls.ROOT_URL_BUYERS)
 public class BuyerRestController {
-
     private final Logger logger = LoggerFactory.getLogger(BuyerRestController.class);
 
     @Autowired
@@ -51,6 +50,7 @@ public class BuyerRestController {
 
     @PostMapping
     public ResponseEntity<?> saveBuyer(@Valid @RequestBody Buyer buyer){
+        logger.debug("saveBuyers()");
         buyer = buyerService.save(buyer);
         Link selfLink = linkTo(BuyerRestController.class).slash(buyer.getId()).withSelfRel();
         return ResponseEntity.created(URI.create(selfLink.getHref())).body(buyer);

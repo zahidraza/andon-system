@@ -55,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
     private LinearLayout layoutMobile;
     private TextView mobileTextView;
     private EditText mobileEditText;
+    private ImageView mobileIcon;
     private ImageView mobileEdit;
     private ImageView mobileSave;
     private LinearLayout layoutPasswd;
@@ -103,9 +104,10 @@ public class ProfileActivity extends AppCompatActivity {
         changePasswdBtn = createButton("Change Password");
         savePasswdBtn = createButton("Save");
 
-
+        mobileIcon = createImageView();
         mobileEdit = createImageView();
         mobileSave = createImageView();
+        mobileIcon.setBackgroundResource(R.drawable.ic_phone_android_white_24dp);
         mobileEdit.setBackgroundResource(R.drawable.ic_edit_white_24dp);
         mobileSave.setBackgroundResource(R.drawable.ic_save_white_24dp);
 
@@ -289,26 +291,26 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void showMobileEdit(){
-        layoutMobile.removeView(mobileEditText);
-        layoutMobile.removeView(mobileSave);
-
+        layoutMobile.removeAllViews();
 
         mobileTextView.setText(user.getMobile());
-
-        layoutMobile.addView(mobileTextView,1);
-        layoutMobile.addView(mobileEdit,2);
+        layoutMobile.addView(mobileIcon);
+        layoutMobile.addView(mobileTextView);
+        layoutMobile.addView(mobileEdit);
     }
 
     private void showMobileSave(){
-        layoutMobile.removeView(mobileTextView);
-        layoutMobile.removeView(mobileEdit);
+        layoutMobile.removeAllViews();;
+        //layoutMobile.removeView(mobileTextView);
+        //layoutMobile.removeView(mobileEdit);
 
         mobileEditText.setText(user.getMobile());
         mobileEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         mobileEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
 
-        layoutMobile.addView(mobileEditText,1);
-        layoutMobile.addView(mobileSave,2);
+        layoutMobile.addView(mobileIcon);
+        layoutMobile.addView(mobileEditText);
+        layoutMobile.addView(mobileSave);
     }
 
     private void showPasswordBtn(){

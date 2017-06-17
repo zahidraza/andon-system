@@ -1,6 +1,6 @@
-package in.andonsystem.v2.dozer.converter;
+package in.andonsystem.dozerconverter;
 
-import in.andonsystem.v2.enums.UserType;
+import in.andonsystem.UserType;
 import org.dozer.DozerConverter;
 
 public class RoleConverter extends DozerConverter<String, UserType>{

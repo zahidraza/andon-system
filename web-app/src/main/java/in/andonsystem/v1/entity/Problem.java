@@ -1,8 +1,7 @@
 package in.andonsystem.v1.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import in.andonsystem.v2.validation.DepartmentFixedValue;
-import in.andonsystem.v2.validation.Fixed;
+import in.andonsystem.validation.DepartmentFixedValue;
+import in.andonsystem.validation.Fixed;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,6 +38,16 @@ public class Problem implements Serializable{
     private Set<Designation> designations = new HashSet<>();
 
     public Problem() {
+    }
+
+    public Problem(Long id, String name, String department) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+    }
+
+    public Problem(Long id) {
+        this.id = id;
     }
 
     public Long getId() {

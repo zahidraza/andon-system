@@ -1,4 +1,4 @@
-package in.andonsystem.v2.validation;
+package in.andonsystem.validation;
 
 import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.*;

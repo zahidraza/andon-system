@@ -8,12 +8,12 @@ import in.andonsystem.v2.dto.IssuePatchDto;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.enums.Level;
+import in.andonsystem.Level;
 import in.andonsystem.v2.respository.BuyerRepository;
 import in.andonsystem.v2.respository.IssueRepository;
 import in.andonsystem.v2.respository.UserRespository;
-import in.andonsystem.v2.tasks.AckTask;
-import in.andonsystem.v2.tasks.FixTask;
+import in.andonsystem.v2.task.AckTask;
+import in.andonsystem.v2.task.FixTask;
 import in.andonsystem.util.Scheduler;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
@@ -30,10 +30,9 @@ import java.util.stream.Collectors;
 /**
  * Created by razamd on 3/30/2017.
  */
-@Service
+@Service("issueService2")
 @Transactional(readOnly = true)
 public class IssueService {
-
     private final Logger logger = LoggerFactory.getLogger(IssueService.class);
 
     private final IssueRepository issueRepository;
@@ -55,6 +54,7 @@ public class IssueService {
     }
 
     public Issue2 findOne(Long id, Boolean initUsers){
+        logger.debug("findOne: id = {}, initUsers = {}", id, initUsers);
         Issue2 issue = issueRepository.findOne(id);
         if(initUsers){
             Buyer buyer = issue.getBuyer();
@@ -65,7 +65,7 @@ public class IssueService {
 
     public List<IssueDto> findAllAfter(Long after){
         logger.debug("findAllAfter: after = " + after);
-        Date date = MiscUtil.getTodayMidnight();
+        Date date = MiscUtil.getYesterdayMidnight();
         //If after value is greater than last two day midnight value, then return issues after this value, else return issue after last two day midnight
         if(after > date.getTime()){
             date = new Date(after);
@@ -76,6 +76,7 @@ public class IssueService {
     }
 
     public List<IssueDto> findAllBetween(Long start, Long end){
+        logger.debug("findAllBetween: start = {}, end = {}", start, end);
         Date date1 = new Date(start);
         Date date2 = new Date(end);
         return issueRepository.findByLastModifiedBetweenOrderByRaisedAtDesc(date1,date2).stream()
@@ -93,7 +94,7 @@ public class IssueService {
         if (issue.getDeleted() == null) issue.setDeleted(false);
         issue = issueRepository.save(issue);
 
-        //Submit tasks to scheduler
+        //Submit task to scheduler
         Scheduler scheduler = Scheduler.getInstance();
 
         ConfigUtility configUtility = ConfigUtility.getInstance();
@@ -103,7 +104,7 @@ public class IssueService {
 
         Buyer buyer = buyerRepository.findOne(issue.getBuyer().getId());
         String message = generateMessage(issue, buyer);
-        sendMessage(buyer, message);
+        sendMessage(buyer, message, issue.getId());
 
         scheduler.submit(new AckTask(issue.getId(), message), ackTime);
         scheduler.submit(new FixTask(issue.getId(),1, message),fixL1Time);
@@ -114,6 +115,7 @@ public class IssueService {
 
     @Transactional
     public IssuePatchDto update(IssuePatchDto issuePatchDto, String operation){
+        logger.debug("update: id = {}, operation = {}", issuePatchDto.getId(), operation);
         Issue2 issue = issueRepository.findOne(issuePatchDto.getId());
 
         if(operation.equalsIgnoreCase(Constants.OP_ACK)){
@@ -167,18 +169,15 @@ public class IssueService {
         return builder.toString();
     }
 
-    private void sendMessage(Buyer buyer, String message){
-
-
-        List<User> users = buyer.getUsers().stream()
-                .filter(user -> user.getLevel().equalsIgnoreCase(Level.LEVEL1.getValue()))
-                .collect(Collectors.toList());
-        StringBuilder builder = new StringBuilder();
-        users.forEach(user -> builder.append(user.getMobile() + ","));
-        if (users.size() > 0){
-            builder.setLength(builder.length() - 1);
-            logger.info("Sending sms to = {}, message = {}",builder.toString(), message);
-            in.andonsystem.util.MiscUtil.sendSMS(builder.toString(),message);
+    private void sendMessage(Buyer buyer, String message, Long issueId){
+        String mobileNumbers = MiscUtil.getUserMobileNumbers(buyer,Level.LEVEL1);
+        if (mobileNumbers != null) {
+            boolean result = MiscUtil.sendSMS(mobileNumbers,message);
+            if (result) {
+                logger.info("Sent sms to = {}, issueId-2 = {}",mobileNumbers, issueId);
+            }
+        }else {
+            logger.info("No Users found for sending sms");
         }
     }
 }

@@ -1,4 +1,4 @@
-package in.andonsystem.v2.dozer.converter;
+package in.andonsystem.dozerconverter;
 
 import in.andonsystem.v1.entity.Designation;
 import org.dozer.DozerConverter;

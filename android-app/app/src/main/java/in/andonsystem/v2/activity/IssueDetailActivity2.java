@@ -210,8 +210,9 @@ public class IssueDetailActivity2 extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, error.toString());
                 NetworkResponse resp = error.networkResponse;
-                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
-                Log.i(TAG, "response data: " + data);
+
+//                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
+//                Log.i(TAG, "response data: " + data);
                 if (resp != null && resp.statusCode == 401) {
                     invalidateAccessToken();
                     getAuthToken("ACK");
@@ -256,8 +257,8 @@ public class IssueDetailActivity2 extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, error.toString());
                 NetworkResponse resp = error.networkResponse;
-                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
-                Log.i(TAG, "response data: " + data);
+//                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
+//                Log.i(TAG, "response data: " + data);
                 if (resp != null && resp.statusCode == 401) {
                     invalidateAccessToken();
                     getAuthToken("FIX");

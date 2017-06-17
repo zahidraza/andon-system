@@ -8,36 +8,36 @@
       <class-a>in.andonsystem.v2.dto.IssueDto</class-a>
       <class-b>in.andonsystem.v2.entity.Issue2</class-b>
 
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongBuyerConverter">
         <a>buyerId</a>
         <b>buyer</b>
       </field>
 
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
          <a>raisedBy</a>
          <b>raisedBy</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
         <a>ackBy</a>
         <b>ackBy</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
         <a>fixBy</a>
         <b>fixBy</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
         <a>raisedAt</a>
         <b>raisedAt</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
         <a>ackAt</a>
         <b>ackAt</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
         <a>fixAt</a>
         <b>fixAt</b>
       </field>
-      <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+      <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
         <a>lastModified</a>
         <b>lastModified</b>
       </field>
@@ -48,36 +48,116 @@
     <class-a>in.andonsystem.v2.dto.IssuePatchDto</class-a>
     <class-b>in.andonsystem.v2.entity.Issue2</class-b>
 
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongBuyerConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongBuyerConverter">
       <a>buyerId</a>
       <b>buyer</b>
     </field>
 
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
       <a>raisedBy</a>
       <b>raisedBy</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
       <a>ackBy</a>
       <b>ackBy</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongUserConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
       <a>fixBy</a>
       <b>fixBy</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
       <a>raisedAt</a>
       <b>raisedAt</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
       <a>ackAt</a>
       <b>ackAt</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
       <a>fixAt</a>
       <b>fixAt</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>lastModified</a>
+      <b>lastModified</b>
+    </field>
+
+  </mapping>
+
+  <mapping >
+    <class-a>in.andonsystem.v1.dto.IssueDto</class-a>
+    <class-b>in.andonsystem.v1.entity.Issue1</class-b>
+
+    <field custom-converter="in.andonsystem.dozerconverter.LongProblemConverter">
+      <a>problemId</a>
+      <b>problem</b>
+    </field>
+
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>raisedBy</a>
+      <b>raisedBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>ackBy</a>
+      <b>ackBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>fixBy</a>
+      <b>fixBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>raisedAt</a>
+      <b>raisedAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>ackAt</a>
+      <b>ackAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>fixAt</a>
+      <b>fixAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>lastModified</a>
+      <b>lastModified</b>
+    </field>
+
+  </mapping>
+
+  <mapping >
+    <class-a>in.andonsystem.v1.dto.IssuePatchDto</class-a>
+    <class-b>in.andonsystem.v1.entity.Issue1</class-b>
+
+    <field custom-converter="in.andonsystem.dozerconverter.LongProblemConverter">
+      <a>problemId</a>
+      <b>problem</b>
+    </field>
+
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>raisedBy</a>
+      <b>raisedBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>ackBy</a>
+      <b>ackBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongUserConverter">
+      <a>fixBy</a>
+      <b>fixBy</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>raisedAt</a>
+      <b>raisedAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>ackAt</a>
+      <b>ackAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
+      <a>fixAt</a>
+      <b>fixAt</b>
+    </field>
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
       <a>lastModified</a>
       <b>lastModified</b>
     </field>
@@ -88,7 +168,7 @@
     <class-a>in.andonsystem.v2.entity.User</class-a>
     <class-b>in.andonsystem.v2.dto.UserDto</class-b>
 
-    <field custom-converter="in.andonsystem.v2.dozer.converter.LongDateConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.LongDateConverter">
       <a>lastModified</a>
       <b>lastModified</b>
     </field>
@@ -96,7 +176,7 @@
       <a>buyers</a>
       <b>buyers</b>
     </field>
-    <field custom-converter="in.andonsystem.v2.dozer.converter.DesignationStringConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.DesignationStringConverter">
       <a>designation</a>
       <b>designation</b>
     </field>

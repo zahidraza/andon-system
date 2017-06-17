@@ -148,57 +148,57 @@ public class Authenticator extends AbstractAccountAuthenticator {
         result.putBoolean(KEY_BOOLEAN_RESULT, false);
         return result;
     }
-
-    private String login(AccountManager am,Account account,final String username,final String password){
-        Log.i(TAG,"login");
-        String url = Constants.AUTH_BASE_URL + "?grant_type=password&username=zahid7292@gmail.com&password=8987525008";
-
-        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,future,future){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                params.put("Authorization", "Basic " + Base64.encode("client:secret".getBytes(),0));
-                return params;
-            }
-
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                params.put("grant_type", "password");
-                params.put("username", username);
-                params.put("password", password);
-                return params;
-            }
-        };
-
-        AppController.getInstance().addToRequestQueue(request);
-
-        JSONObject response = null;
-        try {
-            response = future.get(30, TimeUnit.SECONDS);
-            Log.i(TAG,response.toString());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-            Log.e(TAG,"Check your internet connection");
-        }
-        String accessToken = null;
-
-        if(response != null){
-            try {
-                accessToken = response.getString("access_token");
-                String refreshToken = response.getString("refresh_token");
-
-                am.setUserData(account,"REFRESH_TOKEN", refreshToken);
-                am.setAuthToken(account,AuthConstants.AUTH_TOKEN_TYPE_FULL_ACCESS,accessToken);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return accessToken;
-    }
+//
+//    private String login(AccountManager am,Account account,final String username,final String password){
+//        Log.i(TAG,"login");
+//        String url = Constants.AUTH_BASE_URL + "?grant_type=password&username=zahid7292@gmail.com&password=8987525008";
+//
+//        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,null,future,future){
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String,String> params = new HashMap<>();
+//                params.put("Authorization", "Basic " + Base64.encode("client:secret".getBytes(),0));
+//                return params;
+//            }
+//
+//            @Override
+//            protected Map<String, String> getParams() throws AuthFailureError {
+//                Map<String,String> params = new HashMap<>();
+//                params.put("grant_type", "password");
+//                params.put("username", username);
+//                params.put("password", password);
+//                return params;
+//            }
+//        };
+//
+//        AppController.getInstance().addToRequestQueue(request);
+//
+//        JSONObject response = null;
+//        try {
+//            response = future.get(30, TimeUnit.SECONDS);
+//            Log.i(TAG,response.toString());
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        } catch (TimeoutException e) {
+//            e.printStackTrace();
+//            Log.e(TAG,"Check your internet connection");
+//        }
+//        String accessToken = null;
+//
+//        if(response != null){
+//            try {
+//                accessToken = response.getString("access_token");
+//                String refreshToken = response.getString("refresh_token");
+//
+//                am.setUserData(account,"REFRESH_TOKEN", refreshToken);
+//                am.setAuthToken(account,AuthConstants.AUTH_TOKEN_TYPE_FULL_ACCESS,accessToken);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return accessToken;
+//    }
 }

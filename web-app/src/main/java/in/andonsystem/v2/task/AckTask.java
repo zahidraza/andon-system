@@ -1,11 +1,11 @@
-package in.andonsystem.v2.tasks;
+package in.andonsystem.v2.task;
 
 import in.andonsystem.Constants;
 import in.andonsystem.util.ConfigUtility;
-import in.andonsystem.v2.entity.Buyer;
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.enums.Level;
+import in.andonsystem.Level;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.util.ApplicationContextUtil;
 import in.andonsystem.util.Scheduler;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by razamd on 4/4/2017.
@@ -37,23 +36,20 @@ public class AckTask extends Thread {
         IssueService issueService = context.getBean(IssueService.class);
 
         Issue2 issue = issueService.findOne(issueId,true);
-        System.out.println(issue);
 
         if(issue.getAckAt() == null){  //If not acknowldged yet
             //Send message to L2 users
-            System.out.println("Sending notification to L2 users");
+            logger.debug("Sending notification to L2 users");
 
-            Buyer buyer = issue.getBuyer();
-            List<User> users = buyer.getUsers().stream()
-                                    .filter(user -> user.getLevel().equalsIgnoreCase(Level.LEVEL2.getValue()))
-                                    .collect(Collectors.toList());
+            String mobileNumbers = MiscUtil.getUserMobileNumbers(issue.getBuyer(), Level.LEVEL2);
 
-            StringBuilder builder = new StringBuilder();
-            users.forEach(user -> builder.append(user.getMobile() + ","));
-            if (users.size() > 0){
-                builder.setLength(builder.length() - 1);
-                logger.debug("Sending sms to = {}, message = {}",builder.toString(), message);
-                in.andonsystem.util.MiscUtil.sendSMS(builder.toString(),message);
+            if (mobileNumbers != null) {
+                boolean result = MiscUtil.sendSMS(mobileNumbers,message);
+                if (result) {
+                    logger.info("Sent sms to = {}, issueId-2 = {}",mobileNumbers, issueId);
+                }
+            }else {
+                logger.info("No Users found for sending sms");
             }
 
             //Update processingAt
@@ -62,7 +58,7 @@ public class AckTask extends Thread {
             Long fixL2Time = Long.parseLong(ConfigUtility.getInstance().getConfigProperty(Constants.APP_V2_FIX_L2_TIME, "120"));
             Scheduler.getInstance().submit(new FixTask(issue.getId(),2, message),fixL2Time);
         }else {
-            logger.debug("Ignoring AckTask as Issue1 is acknowledged. issueId = {}", issueId);
+            logger.info("Ignoring AckTask as Issue1 is acknowledged. issueId = {}", issueId);
         }
 
 

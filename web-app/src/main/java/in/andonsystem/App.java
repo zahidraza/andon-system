@@ -1,25 +1,14 @@
-
 package in.andonsystem;
 
-import in.andonsystem.util.DbBackupUtility;
-import in.andonsystem.util.MiscUtil;
-import in.andonsystem.util.Scheduler;
 import in.andonsystem.v2.dto.UserDto;
 import in.andonsystem.v2.service.UserService;
-
-import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,8 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.sql.DataSource;
 
 @SpringBootApplication
 @Controller
@@ -52,7 +39,7 @@ public class App extends SpringBootServletInitializer{
     @Bean
     CommandLineRunner init(
             UserService userService) {
-        scheduleDbBackup();
+
         return (args) -> {
             if(userService.count() == 0){
                 userService.save(new UserDto("Md Jawed Akhtar", "jawed.akhtar1993@gmail.com", Role.ADMIN.name(), "8987525008", UserType.MERCHANDISING.getValue(), Level.LEVEL4.getValue()));
@@ -74,21 +61,11 @@ public class App extends SpringBootServletInitializer{
         return new DozerBeanMapper(list);
     }
 
-    @GetMapping(value = "/")
-    public String homePage() {
+    @GetMapping(value= "/")
+    public String hello() {
         logger.debug("home page");
+        System.out.println("Home");
         return "index";
     }
-
-    private void scheduleDbBackup() {
-        //Schedule Database backup at 11.00 PM daily
-        long todayMinsAfterMidnight = (System.currentTimeMillis() % (24*60*60*1000)) / (1000*60);
-        long initialDelay = (23*60) > todayMinsAfterMidnight ? (23*60) - todayMinsAfterMidnight : (24*60) - (todayMinsAfterMidnight - 23*60);
-        long oneDayMins = 24*60;
-
-        Scheduler.getInstance().getScheduler()
-                .scheduleAtFixedRate(() -> DbBackupUtility.backup(),initialDelay,oneDayMins, TimeUnit.MINUTES);
-    }
-
 
 }

@@ -1,10 +1,10 @@
-package in.andonsystem.v2.tasks;
+package in.andonsystem.v2.task;
 
 import in.andonsystem.util.MiscUtil;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.Issue2;
 import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.enums.Level;
+import in.andonsystem.Level;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.util.ApplicationContextUtil;
 import org.slf4j.Logger;
@@ -38,32 +38,26 @@ public class FixTask extends Thread{
         IssueService issueService = context.getBean(IssueService.class);
 
         Issue2 issue = issueService.findOne(issueId,true);
-        System.out.println(issue);
 
         //If issue is not fixed yet and It is processing at level below or equal to checkProcessingAT
         if(issue.getFixAt() == null && issue.getProcessingAt() <= checkProcessingAt){
             //Send notification to level (checkProcessingAt + 1)
-            System.out.println("Sending notification to level " + (checkProcessingAt+1) + " users");
-            Buyer buyer = issue.getBuyer();
-            List<User> users = buyer.getUsers().stream()
-                                    .filter(user -> {
-                                        if(checkProcessingAt == 1) return user.getLevel().equalsIgnoreCase(Level.LEVEL2.getValue());
-                                        else return user.getLevel().equalsIgnoreCase(Level.LEVEL3.getValue()) ;
-                                    })
-                                    .collect(Collectors.toList());
+            logger.debug("Sending notification to level " + (checkProcessingAt+1) + " users");
+            String mobileNumbers = checkProcessingAt == 1 ? MiscUtil.getUserMobileNumbers(issue.getBuyer(), Level.LEVEL2) : MiscUtil.getUserMobileNumbers(issue.getBuyer(), Level.LEVEL3);
 
-            StringBuilder builder = new StringBuilder();
-            users.forEach(user -> builder.append(user.getMobile() + ","));
-            if (users.size() > 0){
-                builder.setLength(builder.length() - 1);
-                logger.debug("Sending sms to = {}, message = {}",builder.toString(), message);
-                MiscUtil.sendSMS(builder.toString(),message);
+            if (mobileNumbers != null) {
+                boolean result = MiscUtil.sendSMS(mobileNumbers,message);
+                if (result) {
+                    logger.info("Sent sms to = {}, issueId-2 = {}",mobileNumbers, issueId);
+                }
+            }else {
+                logger.info("No Users found for sending sms");
             }
 
             //update processing at value = (checkProcessingAt + 1)
             issueService.updateProcessingAt(issueId, (checkProcessingAt+1));
         }else {
-            logger.debug("Ignoring FixTask as issue is fixed. issueId = {}", issueId);
+            logger.info("Ignoring FixTask as issue is fixed. issueId = {}", issueId);
         }
 
     }

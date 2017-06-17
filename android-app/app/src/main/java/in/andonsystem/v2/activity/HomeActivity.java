@@ -70,6 +70,7 @@ import java.util.TreeSet;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
+import in.andonsystem.LoadingActivity;
 import in.andonsystem.R;
 import in.andonsystem.v2.adapter.AdapterHome;
 import in.andonsystem.v2.authenticator.AuthConstants;
@@ -258,8 +259,13 @@ public class HomeActivity extends AppCompatActivity {
 //            }
 
             User user = userService.findByEmail(email);
-            chooseScreen(user);
-            onAccountChange();
+            if (user == null) {
+                syncUsers();
+            }else {
+                chooseScreen(user);
+                onAccountChange();
+            }
+
         }
     }
 
@@ -823,6 +829,11 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 String email = userPref.getString(Constants.USER_EMAIL, null);
                 User user = userService.findByEmail(email);
+                if (user == null) {
+                    appPref.edit().putBoolean(Constants.FIRST_LAUNCH, true).commit();
+                    Intent i = new Intent(mContext, LoadingActivity.class);
+                    startActivity(i);
+                }
                 chooseScreen(user);
                 onAccountChange();
             }

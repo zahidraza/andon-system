@@ -1,5 +1,6 @@
 package in.andonsystem.v2.service;
 
+import in.andonsystem.UserType;
 import in.andonsystem.v1.entity.Designation;
 import in.andonsystem.v1.repository.DesignationRepository;
 import in.andonsystem.v2.dto.UserDto;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class UserService {
-    
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired UserRespository userRepository;
@@ -46,7 +46,7 @@ public class UserService {
     }
 
     public List<UserDto> findAllAfter(Long after) {
-        logger.debug("findAll()");
+        logger.debug("findAllAfter: after = {}", after);
         List<User> users = null;
         if(after > 0L){
             users = userRepository.findByLastModifiedGreaterThan(new Date(after));
@@ -59,11 +59,6 @@ public class UserService {
         return users.stream()
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
-    }
-    
-    public Page<UserDto> findAllByPage(Pageable pageable){
-        logger.debug("findAllByPage()");
-        return userRepository.findAll(pageable).map(converter);
     }
 
     public UserDto findByEmail(String email) {
@@ -175,5 +170,23 @@ public class UserService {
         logger.debug("delete(): id = {}",id);
         userRepository.delete(id);
     }
+
+    public List<Long> getUserIds(){
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserType().equalsIgnoreCase(UserType.FACTORY.getValue()))
+                .map(user -> user.getId())
+                .collect(Collectors.toList());
+    }
+
+
+//    @Transactional
+//    public void resetPassword(){
+//        List<User> users = userRepository.findAll();
+//        for (User user : users){
+//            if (user.getUserType().equalsIgnoreCase(UserType.FACTORY.getValue())) {
+//                user.setPassword(user.getMobile());
+//            }
+//        }
+//    }
     
 }

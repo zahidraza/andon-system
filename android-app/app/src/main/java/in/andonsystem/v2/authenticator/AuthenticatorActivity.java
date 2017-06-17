@@ -101,7 +101,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             public void onErrorResponse(VolleyError error) {
                 Log.i(TAG,error.toString());
                 NetworkResponse resp = error.networkResponse;
-                Log.i(TAG, "response status: " + resp.statusCode);
+                //Log.i(TAG, "response status: " + resp.statusCode);
                 if(resp != null && resp.statusCode == 400){
                     result.putString(AuthConstants.ARG_AUTHENTICATION_ERROR,"Incorrect credentials. Try again");
                 }

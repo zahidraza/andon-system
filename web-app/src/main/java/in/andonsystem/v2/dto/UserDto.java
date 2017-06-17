@@ -1,16 +1,14 @@
 package in.andonsystem.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import in.andonsystem.v1.entity.Designation;
 import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.enums.Level;
-import in.andonsystem.v2.enums.Role;
-import in.andonsystem.v2.enums.UserType;
-import in.andonsystem.v2.validation.StringEnum;
+import in.andonsystem.Level;
+import in.andonsystem.Role;
+import in.andonsystem.UserType;
+import in.andonsystem.validation.StringEnum;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Set;
 
 public class UserDto {

@@ -1,9 +1,9 @@
 package in.andonsystem.v2.dto;
 
-import in.andonsystem.v2.enums.Level;
-import in.andonsystem.v2.enums.Role;
-import in.andonsystem.v2.enums.UserType;
-import in.andonsystem.v2.validation.StringEnum;
+import in.andonsystem.Level;
+import in.andonsystem.Role;
+import in.andonsystem.UserType;
+import in.andonsystem.validation.StringEnum;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

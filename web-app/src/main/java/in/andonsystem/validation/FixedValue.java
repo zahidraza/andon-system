@@ -1,4 +1,4 @@
-package in.andonsystem.v2.validation;
+package in.andonsystem.validation;
 
 /**
  * Created by razamd on 3/30/2017.

@@ -73,13 +73,13 @@ public class LoginUtil {
             @Override
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse resp = error.networkResponse;
-                String data = new String(resp.data);
-                Log.i(TAG, "response status: " + data);
-                Log.i(TAG, "response status: " + resp.statusCode);
-                if(resp.statusCode == 400){
+//                String data = new String(resp.data);
+//                Log.i(TAG, "response status: " + data);
+//                Log.i(TAG, "response status: " + resp.statusCode);
+                if(resp != null && resp.statusCode == 400){
                     result.putString(AuthConstants.ARG_AUTHENTICATION_ERROR,"Incorrect credentials. Try again");
                 }
-                if(resp.statusCode == 401){
+                if(resp != null && resp.statusCode == 401){
                     result.putString(AuthConstants.ARG_AUTHENTICATION_ERROR,"Client is not authorized.");
                 }
                 reqProgress = false;

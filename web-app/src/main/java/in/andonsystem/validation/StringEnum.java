@@ -1,4 +1,4 @@
-package in.andonsystem.v2.validation;
+package in.andonsystem.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

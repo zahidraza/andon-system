@@ -1,4 +1,4 @@
-package in.andonsystem.v2.validation;
+package in.andonsystem.validation;
 
 import in.andonsystem.Constants;
 import in.andonsystem.util.ConfigUtility;

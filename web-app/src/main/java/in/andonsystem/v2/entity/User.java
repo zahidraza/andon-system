@@ -83,6 +83,15 @@ public class User implements Serializable {
     public User() {
     }
 
+    public User(Long id, String name, String mobile, String role, String userType, String level) {
+        this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+    }
+
     public Integer getRetryCount() {
         return retryCount;
     }

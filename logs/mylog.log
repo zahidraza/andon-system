@@ -1098,15 +1098,3 @@ Remarks: testing
 03:45:59.999 [http-nio-8001-exec-6] DEBUG i.a.v.s.UserService - findAll()
 03:46:00.224 [http-nio-8001-exec-3] DEBUG i.a.v.r.UserRestController - listAllUsers()
 03:46:00.225 [http-nio-8001-exec-3] DEBUG i.a.v.s.UserService - findAll()
-15:39:48.691 [main] INFO  i.a.App - Starting App on Mds-MacBook-Air.local with PID 1714 (/Users/mdzahidraza/projects/local-repo/andon-system/web-app/target/classes started by mdzahidraza in /Users/mdzahidraza/projects/local-repo/andon-system/web-app)
-15:39:48.693 [main] DEBUG i.a.App - Running with Spring Boot v1.5.2.RELEASE, Spring v4.3.7.RELEASE
-15:39:48.693 [main] INFO  i.a.App - No active profile set, falling back to default profiles: default
-15:39:59.503 [main] DEBUG i.a.v.s.UserService - count()
-15:39:59.751 [main] INFO  i.a.App - Started App in 26.705 seconds (JVM running for 28.307)
-15:40:07.999 [http-nio-8001-exec-1] DEBUG i.a.App - home page
-15:47:44.654 [main] INFO  i.a.App - Starting App on Mds-MacBook-Air.local with PID 1784 (/Users/mdzahidraza/projects/local-repo/andon-system/web-app/target/classes started by mdzahidraza in /Users/mdzahidraza/projects/local-repo/andon-system/web-app)
-15:47:44.655 [main] DEBUG i.a.App - Running with Spring Boot v1.5.2.RELEASE, Spring v4.3.7.RELEASE
-15:47:44.656 [main] INFO  i.a.App - No active profile set, falling back to default profiles: default
-15:47:54.822 [main] DEBUG i.a.v.s.UserService - count()
-15:47:55.065 [main] INFO  i.a.App - Started App in 26.008 seconds (JVM running for 27.979)
-15:48:10.430 [http-nio-8001-exec-1] DEBUG i.a.App - home page

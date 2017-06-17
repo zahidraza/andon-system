@@ -1,10 +1,7 @@
 package in.andonsystem.v2.dto;
 
-import in.andonsystem.v2.validation.Fixed;
-import in.andonsystem.v2.validation.ProblemFixedValue;
-
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
+import in.andonsystem.validation.Fixed;
+import in.andonsystem.validation.ProblemFixedValue;
 
 /**
  * Created by razamd on 3/30/2017.

@@ -3,6 +3,8 @@ package in.andonsystem.v2.service;
 import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.respository.BuyerRepository;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class BuyerService {
-
+    private final Logger logger = LoggerFactory.getLogger(BuyerService.class);
     private final BuyerRepository buyerRepository;
 
     @Autowired
@@ -24,10 +26,12 @@ public class BuyerService {
     }
 
     public Buyer findOne(Long id){
+        logger.debug("findOne: id = {}", id);
         return buyerRepository.findOne(id);
     }
 
     public List<Buyer> findAll(){
+        logger.debug("findAll()");
         List<Buyer> buyers = buyerRepository.findAll();
         buyers.forEach(buyer -> Hibernate.initialize(buyer.getUsers()));
         return buyers;
@@ -39,6 +43,7 @@ public class BuyerService {
 
     @Transactional
     public Buyer save(Buyer buyer){
+        logger.debug("saveBuyer()");
         return buyerRepository.save(buyer);
     }
 }

@@ -39,7 +39,6 @@ import java.util.Map;
 @RestController
 @RequestMapping(ApiUrls.ROOT_URL_ISSUES)
 public class IssueRestController {
-
     private final Logger logger = LoggerFactory.getLogger(IssueRestController.class);
 
     @Autowired
@@ -62,6 +61,7 @@ public class IssueRestController {
      */
     @GetMapping
     public ResponseEntity<?> getAllIssueAfter(@RequestParam(value = "start", defaultValue = "0") Long start, @RequestParam(value = "end", defaultValue = "0") Long end){
+        logger.debug("getAllIssuesAfter: start = {}, end = {}", start, end);
         List<IssueDto > issues = null;
         if((start == 0L && end == 0L) || (start != 0L && end == 0L)){
             issues = issueService.findAllAfter(start);

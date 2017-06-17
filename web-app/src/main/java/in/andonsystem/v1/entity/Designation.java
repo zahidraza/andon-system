@@ -54,6 +54,13 @@ public class Designation implements Serializable{
     public Designation() {
     }
 
+    public Designation(Long id, String name, String lines, Integer level) {
+        this.id = id;
+        this.name = name;
+        this.lines = lines;
+        this.level = level;
+    }
+
     public Integer getLevel() {
         return level;
     }
