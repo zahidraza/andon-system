@@ -1,4 +1,54 @@
+package in.andonsystem;
 
+/**
+ * Created by mdzahidraza on 17/06/17.
+ */
+public class Test {
+
+
+//    private void loadIssues(){
+//        Connection conn = null;
+//        Statement statement = null;
+//        BufferedReader br = null;
+//        try {
+//            conn = dataSource.getConnection();
+//            statement = conn.createStatement();
+//            //conn.setAutoCommit(true);
+//            br = new BufferedReader(new InputStreamReader(new FileInputStream(MiscUtil.getAndonHome()+ File.separator+"issue.sql")));
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        String line = null;
+//        String baseSql = null;
+//        String sql = null;
+//        Boolean result;
+//        try{
+//            while ((line = br.readLine()) != null){
+////            for (int i = 0; i < 10 ; i++){
+////                line = br.readLine();
+//                if (line.contains("INSERT")) {
+//                    baseSql = line;
+//                }else {
+//                    sql = baseSql + "\n" + line;
+//                    try {
+//                        result = statement.execute(sql);
+//                        if (!result){
+//                            System.out.println("Failed: " + line);
+//                        }
+//                    } catch (SQLException e) {
+//                        //e.printStackTrace();
+//                        System.out.println("Failed: " + line);
+//                    }
+//                }
+//            }
+//        }catch (IOException e){
+//
+//        }
+//    }
+}
+
+/*
 package in.andonsystem;
 
 import in.andonsystem.util.DbBackupUtility;
@@ -52,7 +102,7 @@ public class App extends SpringBootServletInitializer{
     @Bean
     CommandLineRunner init(
             UserService userService) {
-        scheduleDbBackup();
+        //scheduleDbBackup();
         return (args) -> {
             if(userService.count() == 0){
                 userService.save(new UserDto("Md Jawed Akhtar", "jawed.akhtar1993@gmail.com", Role.ADMIN.name(), "8987525008", UserType.MERCHANDISING.getValue(), Level.LEVEL4.getValue()));
@@ -92,3 +142,5 @@ public class App extends SpringBootServletInitializer{
 
 
 }
+
+ */

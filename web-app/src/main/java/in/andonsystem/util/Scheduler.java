@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Scheduler {
     private static Scheduler INSTANCE;
-    private final int POOL_SIZE = 5;
+    private final int POOL_SIZE = 10;
     private ScheduledExecutorService scheduler;
 
     private Scheduler(){

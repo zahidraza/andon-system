@@ -1,6 +1,11 @@
 package in.andonsystem.util;
 
 import in.andonsystem.Constants;
+import in.andonsystem.v1.entity.Designation;
+import in.andonsystem.v1.entity.Problem;
+import in.andonsystem.v2.entity.Buyer;
+import in.andonsystem.v2.entity.User;
+import in.andonsystem.Level;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +18,10 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * Created by razamd on 3/30/2017.
@@ -31,15 +38,24 @@ public class MiscUtil {
         symbols = tmp.toString().toCharArray();
     }
 
+    public static String getAndonHome() {
+        return System.getenv("ANDON_HOME");
+    }
+
     public static Date getTodayMidnight(){
         Long time = new Date().getTime();
         Long oneDayMillis = (long)24*60*60*1000;
-        //((now.getTime() + (5*60 + 30)*60*1000) )% (24*60*60*1000)
-
-        return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
+        return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis));
     }
 
-    //public static Boolean sendSMS(String to,String message){return true;}
+    public static Date getYesterdayMidnight() {
+        Long time = new Date().getTime();
+        Long oneDayMillis = (long)24*60*60*1000;
+        return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
+    }
+    public static Boolean sendSMS(String to,String message){return true;}
+
+/*
     public static Boolean sendSMS(String to,String message){
 
         logger.debug("sendSMS(): to = {}, message = {}", to, message);
@@ -98,6 +114,8 @@ public class MiscUtil {
         }
         return result;
     }
+    */
+
     /**
      * Check If City Office is Open/Close.
      * @return -1:  Not opened yet, 0: open, 1: Colsed
@@ -135,5 +153,52 @@ public class MiscUtil {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = symbols[random.nextInt(symbols.length)];
         return new String(buf);
+    }
+
+    /**
+     * Get mobile number of users
+     * @param problem
+     * @param level
+     * @return comma separated mobile number of users if users are found else null
+     */
+    public static String getUserMobileNumbers(Problem problem, Level level){
+        logger.debug("getUserMobileNumbers-1: level = {}", level.getValue());
+        int l = (level == Level.LEVEL1 ? 1 : (level == Level.LEVEL2 ? 2 : (level == Level.LEVEL3 ? 3 : -1)));
+        List<Designation> designations = problem.getDesignations().stream()
+                .filter(designation -> designation.getLevel() == l)
+                .collect(Collectors.toList());
+
+        List<User> users = designations.stream()
+                .flatMap(designation -> designation.getUsers().stream())
+                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .collect(Collectors.toList());
+        StringBuilder builder = new StringBuilder();
+        if (users.size() > 0) {
+            users.forEach(user -> builder.append(user.getMobile() + ","));
+            builder.setLength(builder.length() - 1);
+            return builder.toString();
+        }
+        return null;
+    }
+
+    /**
+     * Get mobile number of users
+     * @param buyer
+     * @param level
+     * @return comma separated mobile number of users if users are found else null
+     */
+    public static String getUserMobileNumbers(Buyer buyer, Level level){
+        logger.debug("getUserMobileNumbers-2: level = {}", level.getValue());
+        List<User> users = buyer.getUsers().stream()
+                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .collect(Collectors.toList());
+
+        StringBuilder builder = new StringBuilder();
+        if (users.size() > 0) {
+            users.forEach(user -> builder.append(user.getMobile() + ","));
+            builder.setLength(builder.length() - 1);
+            return builder.toString();
+        }
+        return null;
     }
 }
