@@ -108,8 +108,8 @@ public class IssueService {
         sendMessage(problem, message,issue.getId());
 
         scheduler.submit(new AckTask(issue.getId(), message), ackTime);
-        scheduler.submit(new FixTask(issue.getId(),1, message),fixL1Time);
-        scheduler.submit(new FixTask(issue.getId(),2, message),fixL1Time+ fixL2Time);
+        scheduler.submit(new FixTask(issue.getId(),1, message),ackTime + fixL1Time);
+        scheduler.submit(new FixTask(issue.getId(),2, message),ackTime + fixL1Time+ fixL2Time);
 
         return mapper.map(issue,IssueDto.class);
     }
