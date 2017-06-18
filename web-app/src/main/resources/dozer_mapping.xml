@@ -176,9 +176,9 @@
       <a>buyers</a>
       <b>buyers</b>
     </field>
-    <field custom-converter="in.andonsystem.dozerconverter.DesignationStringConverter">
+    <field custom-converter="in.andonsystem.dozerconverter.DesignationLongConverter">
       <a>designation</a>
-      <b>designation</b>
+      <b>desgnId</b>
     </field>
   </mapping>
 </mappings>

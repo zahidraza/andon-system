@@ -12,26 +12,26 @@ import in.andonsystem.entity.ProblemDesignationDao;
 
 public class ProblemDesignationService {
 
-    private ProblemDesignationDao userBuyerDao;
+    private ProblemDesignationDao problemDesignationDao;
 
     public ProblemDesignationService(App app){
-        this.userBuyerDao = app.getDaoSession().getProblemDesignationDao();
+        this.problemDesignationDao = app.getDaoSession().getProblemDesignationDao();
     }
 
-    public long save(ProblemDesignation userBuyer){
-        return userBuyerDao.insert(userBuyer);
+    public long save(ProblemDesignation problemDesignation){
+        return problemDesignationDao.insert(problemDesignation);
     }
 
     public void saveBatch(List<ProblemDesignation> list){
-        userBuyerDao.insertInTx(list);
+        problemDesignationDao.insertInTx(list);
     }
 
-    public void deleteByProblem(Long userId){
-        List<ProblemDesignation> list = userBuyerDao.queryBuilder().where(ProblemDesignationDao.Properties.ProblemId.eq(userId)).list();
-        userBuyerDao.deleteInTx(list);
+    public void deleteByProblem(Long problemId){
+        List<ProblemDesignation> list = problemDesignationDao.queryBuilder().where(ProblemDesignationDao.Properties.ProblemId.eq(problemId)).list();
+        problemDesignationDao.deleteInTx(list);
     }
 
     public void deleteAll(){
-        userBuyerDao.deleteAll();
+        problemDesignationDao.deleteAll();
     }
 }

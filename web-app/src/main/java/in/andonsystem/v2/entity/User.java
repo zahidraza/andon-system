@@ -53,7 +53,7 @@ public class User implements Serializable {
     @Column(name = "LEVEL", nullable = true)
     private String level;
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToOne(optional = true)
     @JoinColumn(name = "DESGN_ID")
     private Designation designation;

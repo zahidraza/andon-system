@@ -18,6 +18,7 @@ public class Constants {
 
     /*User Preference file*/
     public static final String USER_PREF = "user.pref";
+    public static final String USER_ID = "user.id";
     public static final String USER_EMAIL = "user.email";
     public static final String USER_NAME = "user.name";
     public static final String USER_ROLE = "user.role";

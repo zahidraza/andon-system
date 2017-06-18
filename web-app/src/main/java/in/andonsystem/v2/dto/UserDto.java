@@ -34,7 +34,7 @@ public class UserDto {
     @StringEnum(enumClass = Role.class)
     private String role;
 
-    private String designation;
+    private Long desgnId;
 
     @NotNull
     @StringEnum(enumClass = UserType.class)
@@ -72,12 +72,12 @@ public class UserDto {
         this.active = true;
     }
 
-    public String getDesignation() {
-        return designation;
+    public Long getDesgnId() {
+        return desgnId;
     }
 
-    public void setDesignation(String designation) {
-        this.designation = designation;
+    public void setDesgnId(Long desgnId) {
+        this.desgnId = desgnId;
     }
 
     public Boolean getActive() {

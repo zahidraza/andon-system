@@ -123,21 +123,26 @@ public class IssueRestController {
             return new ResponseEntity<Object>(new RestError(404,40401,msg,"",""),HttpStatus.NOT_FOUND);
         }
         List<FieldError> fieldErrors = new ArrayList<>();
-        if(operation.equalsIgnoreCase(Constants.OP_ACK) && issueDto.getAckBy() == null){
-            fieldErrors.add(new FieldError("ackBy",null,"User acknowledging Issue1 cannot be null."));
-            return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
+        if(operation.equalsIgnoreCase(Constants.OP_ACK)){
+            if (issueDto.getAckBy() == null) {
+                fieldErrors.add(new FieldError("ackBy",null,"User acknowledging Issue1 cannot be null."));
+                return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
+            }
         }
-        else if(operation.equalsIgnoreCase(Constants.OP_FIX) && issueDto.getFixBy() == null){
-            fieldErrors.add(new FieldError("fixBy",null,"User fixing Issue1 cannot be null."));
-            return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
-        }else if (operation.equalsIgnoreCase(Constants.OP_SEEK_HELP) && issueDto.getSeekHelp() == null || !(issueDto.getSeekHelp() == 1 || issueDto.getSeekHelp() == 2)) {
+        else if(operation.equalsIgnoreCase(Constants.OP_FIX)){
+            if (issueDto.getFixBy() == null) {
+                fieldErrors.add(new FieldError("fixBy",null,"User fixing Issue1 cannot be null."));
+                return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
+            }
+        }
+        else if (operation.equalsIgnoreCase(Constants.OP_SEEK_HELP)) {
             if (issueDto.getSeekHelp() == null) {
                 fieldErrors.add(new FieldError("seekHelp",null,"User Level seeking hellp cannot be null"));
-            }else {
+                return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
+            }else if(!(issueDto.getSeekHelp() == 1 || issueDto.getSeekHelp() == 2)){
                 fieldErrors.add(new FieldError("seekHelp",issueDto.getSeekHelp(),"Only level1 or level2 users can seek for help"));
+                return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
             }
-
-            return new ResponseEntity<Object>(fieldErrors, HttpStatus.BAD_REQUEST);
         }
         issueDto.setId(issueId);
         issueDto = issueService.update(issueDto, operation);

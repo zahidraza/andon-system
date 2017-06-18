@@ -38,9 +38,6 @@ public class User {
 
     private Long desgnId;
 
-    @ToOne(joinProperty = "desgnId")
-    private Designation designation;
-
     @ToMany
     @JoinEntity(
             entity = UserBuyer.class,
@@ -57,12 +54,20 @@ public class User {
     @Generated(hash = 1507654846)
     private transient UserDao myDao;
 
-    @Generated(hash = 1433887650)
-    private transient Long designation__resolvedKey;
+    public User(Long id, @NotNull String name, String email, String mobile,
+                String role, String userType, String level) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+    }
 
     @Generated(hash = 1941081737)
-    public User(Long id, @NotNull String name, String email, String mobile, String role,
-            String userType, String level, Long desgnId) {
+    public User(Long id, @NotNull String name, String email, String mobile,
+            String role, String userType, String level, Long desgnId) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -73,19 +78,11 @@ public class User {
         this.desgnId = desgnId;
     }
 
-    public User(Long id, String name, String email, String mobile, String role, String userType, String level) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.mobile = mobile;
-        this.role = role;
-        this.userType = userType;
-        this.level = level;
-    }
-
     @Generated(hash = 586692638)
     public User() {
     }
+
+
 
     public Long getId() {
         return this.id;
@@ -141,6 +138,14 @@ public class User {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public Long getDesgnId() {
+        return this.desgnId;
+    }
+
+    public void setDesgnId(Long desgnId) {
+        this.desgnId = desgnId;
     }
 
     /**
@@ -207,41 +212,20 @@ public class User {
         myDao.update(this);
     }
 
-    public Long getDesgnId() {
-        return this.desgnId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return id.equals(user.id);
+
     }
 
-    public void setDesgnId(Long desgnId) {
-        this.desgnId = desgnId;
-    }
-
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1683235924)
-    public Designation getDesignation() {
-        Long __key = this.desgnId;
-        if (designation__resolvedKey == null || !designation__resolvedKey.equals(__key)) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            DesignationDao targetDao = daoSession.getDesignationDao();
-            Designation designationNew = targetDao.load(__key);
-            synchronized (this) {
-                designation = designationNew;
-                designation__resolvedKey = __key;
-            }
-        }
-        return designation;
-    }
-
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1194385037)
-    public void setDesignation(Designation designation) {
-        synchronized (this) {
-            this.designation = designation;
-            desgnId = designation == null ? null : designation.getId();
-            designation__resolvedKey = desgnId;
-        }
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
     /** called by internal mechanisms, do not call yourself. */
@@ -250,6 +234,4 @@ public class User {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
-
-
 }

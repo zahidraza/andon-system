@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -29,25 +27,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
 import in.andonsystem.Constants;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.adapter.AdapterHome;
 //import in.andonsystem.database.DatabaseManager;
 //import in.andonsystem.database.DatabaseSchema;
@@ -61,16 +51,14 @@ import in.andonsystem.adapter.AdapterHome;
 
 import in.andonsystem.R;
 import in.andonsystem.dto.Problem;
-import in.andonsystem.entity.Buyer;
 import in.andonsystem.entity.Designation;
+import in.andonsystem.entity.ProblemDesignation;
 import in.andonsystem.entity.Issue1;
-import in.andonsystem.entity.Issue2;
 
 import in.andonsystem.entity.User;
-import in.andonsystem.entity.UserBuyer;
+import in.andonsystem.service.ProblemDesignationService;
 import in.andonsystem.service.DesignationService;
 import in.andonsystem.service.IssueService1;
-import in.andonsystem.service.IssueService2;
 import in.andonsystem.service.ProblemService;
 import in.andonsystem.service.UserService;
 import in.andonsystem.util.ErrorListener;
@@ -81,7 +69,6 @@ import in.andonsystem.v2.activity.ContactActivity;
 import in.andonsystem.v2.activity.HelpActivity;
 import in.andonsystem.v2.activity.ProfileActivity;
 
-import com.android.volley.toolbox.RequestFuture;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -92,14 +79,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -110,7 +92,7 @@ public class HomeActivity extends AppCompatActivity
     private Spinner section;
     private Spinner dept;
     private Integer lineNo;
-    private String secSelected = null;
+    private String secSelected;
     private String deptSelected;
     private int desgnId;
     private int level;
@@ -196,11 +178,12 @@ public class HomeActivity extends AppCompatActivity
         errorListener = new ErrorListener(this) {
             @Override
             protected void handleTokenExpiry() {
-                onStart();
+                //onStart();
+                Intent intent = new Intent(context, LoginActivity.class);
+                startActivity(intent);
             }
         };
     }
-
 
     @Override
     public void onBackPressed() {
@@ -229,15 +212,13 @@ public class HomeActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_sync) {
-         //   syncIssues();
+           syncIssues();
         }
-//        if(id == R.id.action_notification){
-//            Intent i = new Intent(context,NotificationActivity.class);
-//            startActivity(i);
-//        }
+        if(id == R.id.action_notification){
+            Intent i = new Intent(context,NotificationActivity.class);
+            startActivity(i);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -294,10 +275,12 @@ public class HomeActivity extends AppCompatActivity
             Intent i = new Intent(context,AboutActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_logout) {
-            //sharedPref.edit().putBoolean(Constants.LOGGED_IN,false).commit();
-            finish();
-            //Intent i = new Intent(context,LoginActivity.class);
-            //startActivity(i);
+            userPref.edit()
+                    .putBoolean(Constants.IS_LOGGED_IN, false)
+                    .putString(Constants.USER_ACCESS_TOKEN,null)
+                    .commit();
+            Intent i = new Intent(context,LoginActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -307,8 +290,8 @@ public class HomeActivity extends AppCompatActivity
 
     public void raiseIssue(){
         Log.i(TAG,"raiseIssues()");
-//        Intent i = new Intent(this,RaiseIssueActivity.class);
-//        startActivity(i);
+        Intent i = new Intent(this,RaiseIssueActivity.class);
+        startActivity(i);
     }
 
     public void showIssues(){
@@ -366,7 +349,7 @@ public class HomeActivity extends AppCompatActivity
         String raiseTime = df.format(issue.getRaisedAt());
         long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
-        return new Problem(issue.getId(), "Line " + issue.getLine(), issue.getProblem().getDepartment(), issue.getProblem().getName(),raiseTime,downtime,flag);
+        return new Problem(issue.getId(), "Line " + issue.getLine(), issue.getProblem().getDepartment(), issue.getProblem().getName(),raiseTime,downtime,flag,1);
     }
 
     public void syncIssues(){
@@ -410,7 +393,12 @@ public class HomeActivity extends AppCompatActivity
                         for (Issue1 issue : issueList) {
                             i = issueService.findOne(issue.getId());
                             //If Issue2 belongs to applied filter then add or update rvAdapter
-                            if (i.getLine().equals(lineNo) || i.getSection().equalsIgnoreCase(secSelected) || i.getProblem().getDepartment().equalsIgnoreCase(deptSelected)) {
+                            Log.d(TAG,"lineNo = " + lineNo + ", sec = " + secSelected + ", dept = " + deptSelected);
+                            Log.d(TAG,"lineNo = " + i.getLine() + ", sec = " + i.getSection() + ", dept = " + i.getProblem().getDepartment());
+
+                            if (lineNo == null || secSelected == null || deptSelected == null || lineNo == 0 || secSelected.contains("All") ||
+                                    deptSelected.contains("All") || i.getLine().equals(lineNo) || i.getSection().equalsIgnoreCase(secSelected) ||
+                                    i.getProblem().getDepartment().equalsIgnoreCase(deptSelected)) {
 
                                 if (issue.getFixAt() == null && issue.getAckAt() == null) {
                                     Log.i(TAG, "Adapter : add Issue2");
@@ -433,7 +421,9 @@ public class HomeActivity extends AppCompatActivity
         ErrorListener errorListener1 = new ErrorListener(this) {
             @Override
             protected void handleTokenExpiry() {
-                syncIssues();
+                //syncIssues();
+                Intent intent = new Intent(context, LoginActivity.class);
+                startActivity(intent);
             }
         };
 
@@ -489,21 +479,25 @@ public class HomeActivity extends AppCompatActivity
                     JSONArray jsonUsers = response.getJSONArray("users");
                     Long userSync = response.getLong("userSync");
                     List<User> users = new ArrayList<>();
-                    Long userId;
                     JSONObject u;
+                    User user;
                     for (int i = 0; i < jsonUsers.length(); i++) {
 
                         u = jsonUsers.getJSONObject(i);
-                        userId = u.getLong("id");
-                        users.add(new User(
-                                userId,
+                        user = new User(
+                                u.getLong("id"),
                                 u.getString("name"),
                                 u.getString("email"),
                                 u.getString("mobile"),
                                 u.getString("role"),
                                 u.getString("userType"),
                                 u.getString("level")
-                        ));
+                        );
+
+                        if (! u.getString("desgnId").equals("null")) {
+                            user.setDesgnId(u.getLong("desgnId"));
+                        }
+                        users.add(user);
 
                     }
                     userService.saveOrUpdateBatch(users);
@@ -686,6 +680,7 @@ public class HomeActivity extends AppCompatActivity
         }else {
             final ProblemService problemService = new ProblemService((App)getApplication());
             final DesignationService designationService = new DesignationService((App)getApplication());
+            final ProblemDesignationService dpService = new ProblemDesignationService((App)getApplication());
 
             Response.Listener<JSONArray> listenerSection = new Response.Listener<JSONArray>() {
                 @Override
@@ -743,12 +738,29 @@ public class HomeActivity extends AppCompatActivity
                     Log.i(TAG, "problem Response :" + response.toString());
                     try {
                         List<in.andonsystem.entity.Problem> problems = new ArrayList<>();
-                        JSONObject obj;
+                        JSONObject p, d;
+                        JSONArray desgns;
+                        Long probId;
+                        List<ProblemDesignation> dpList;
                         for (int i = 0; i < response.length(); i++) {
-                            obj = response.getJSONObject(i);
-                            problems.add(new in.andonsystem.entity.Problem(obj.getLong("id"), obj.getString("name"), obj.getString("department")));
-                        }
+                            p = response.getJSONObject(i);
+                            probId = p.getLong("id");
+                            if (problemService.exists(probId)) {
+                                dpService.deleteByProblem(probId);
+                            }
+                            problemService.saveOrUpdate(new in.andonsystem.entity.Problem(p.getLong("id"), p.getString("name"), p.getString("department")));
 
+                            desgns = p.getJSONArray("designations");
+                            Log.d(TAG, "prob = " + p.getString("name") + ", designations size = " + desgns.length());
+                            if (desgns.length() > 0) {
+                                dpList = new ArrayList<>();
+                                for (int j = 0; j < desgns.length(); j++){
+                                    d = desgns.getJSONObject(j);
+                                    dpList.add(new ProblemDesignation(null,d.getLong("id"), p.getLong("id")));
+                                }
+                                dpService.saveBatch(dpList);
+                            }
+                        }
                         problemService.saveAll(problems);
                     } catch (Exception e) {
                         e.printStackTrace();

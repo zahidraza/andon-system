@@ -129,6 +129,34 @@ public class RestUtility {
         }
     }
 
+    public void patch(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
+        Log.d(TAG, "RestUtility: post url = " + url);
+        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
+
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, data,listener,errorListener);
+        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setTag("");  //TODO:
+
+        if (accessToken != null) {
+            request.setAccessToken(accessToken);
+            appController.addToRequestQueue(request);
+        }else {
+            redirectToLogin();
+//            String refreshToken = userPref.getString(Constants.USER_REFRESH_TOKEN, null);
+//            if (refreshToken != null) {
+//                accessToken = getAccessToken(refreshToken);
+//                if (accessToken != null) {
+//                    request.setAccessToken(accessToken);
+//                    appController.addToRequestQueue(request);
+//                }else {
+//                    redirectToLogin();
+//                }
+//            }else {
+//                redirectToLogin();
+//            }
+        }
+    }
+
     private void redirectToLogin() {
         Log.d(TAG, "RestUtility: redirectToLogin");
         userPref.edit().putBoolean(Constants.IS_LOGGED_IN,false).commit();

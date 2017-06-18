@@ -2,6 +2,7 @@ package in.andonsystem.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -15,6 +16,8 @@ import in.andonsystem.Constants;
  */
 
 public abstract class ErrorListener implements Response.ErrorListener {
+
+    private final String TAG = ErrorListener.class.getSimpleName();
 
     private final Context mContext;
 
@@ -32,6 +35,7 @@ public abstract class ErrorListener implements Response.ErrorListener {
                 userPref.edit().putString(Constants.USER_ACCESS_TOKEN,null).commit();
                 handleTokenExpiry();
             }else if (resp.statusCode == 400) {
+                Log.d(TAG,"resp: " + new String(resp.data));
                 showMessage("Some error occured. inform developer.");
             }
         }

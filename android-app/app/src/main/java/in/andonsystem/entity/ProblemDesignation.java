@@ -16,6 +16,7 @@ public class ProblemDesignation {
     private Long problemId;
     private Long desgnId;
 
+
     @Generated(hash = 2049678383)
     public ProblemDesignation(Long id, Long problemId, Long desgnId) {
         this.id = id;
@@ -26,6 +27,7 @@ public class ProblemDesignation {
     @Generated(hash = 1419113674)
     public ProblemDesignation() {
     }
+
 
     public Long getId() {
         return id;

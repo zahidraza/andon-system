@@ -18,6 +18,7 @@ public class HolderHome extends RecyclerView.ViewHolder {
     TextView team;
     TextView buyer;
     TextView issueId;
+    TextView appNo;
 
     public HolderHome(View view){
         super(view);
@@ -28,6 +29,7 @@ public class HolderHome extends RecyclerView.ViewHolder {
         team = (TextView)view.findViewById(R.id.issue_team_name);
         buyer = (TextView)view.findViewById(R.id.issue_buyer_name);
         issueId = (TextView)view.findViewById(R.id.issue_id);
+        appNo = (TextView)view.findViewById(R.id.appNo);
 
     }
 }

@@ -13,6 +13,7 @@ public class Problem implements Comparable<Problem> {
     private String raiseTime;
     private long downtime;
     private int flag;
+    private int appNo;
 
     public Problem(){}
 
@@ -24,7 +25,7 @@ public class Problem implements Comparable<Problem> {
         this.downtime = downtime;
     }
 
-    public Problem(long issueId, String dField1, String dField2, String probName, String raiseTime, long downtime, int flag) {
+    public Problem(long issueId, String dField1, String dField2, String probName, String raiseTime, long downtime, int flag, int appNo) {
         this.issueId = issueId;
         this.dField1 = dField1;
         this.dField2 = dField2;
@@ -32,6 +33,7 @@ public class Problem implements Comparable<Problem> {
         this.raiseTime = raiseTime;
         this.downtime = downtime;
         this.flag = flag;
+        this.appNo = appNo;
     }
 
     public Problem(int issueId, String dField1, String dField2, String probName, String critical, String raiseTime, int downtime, int flag) {
@@ -83,6 +85,14 @@ public class Problem implements Comparable<Problem> {
 
     public void setFlag(int flag) {
         this.flag = flag;
+    }
+
+    public int getAppNo() {
+        return appNo;
+    }
+
+    public void setAppNo(int appNo) {
+        this.appNo = appNo;
     }
 
     @Override

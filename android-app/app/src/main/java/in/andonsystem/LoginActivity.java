@@ -131,11 +131,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    Long id = response.getLong("id");
                     String username = response.getString("name");
                     String role = response.getString("role");
                     String userType = response.getString("userType");
                     String level = response.getString("level");
                     userPref.edit()
+                            .putLong(Constants.USER_ID,id)
                             .putString(Constants.USER_EMAIL, email)
                             .putString(Constants.USER_NAME, username)
                             .putString(Constants.USER_ROLE, role)

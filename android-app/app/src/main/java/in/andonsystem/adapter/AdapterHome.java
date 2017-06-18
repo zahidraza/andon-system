@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import java.util.TreeSet;
 
 import in.andonsystem.R;
+import in.andonsystem.activity.v1.IssueDetailActivity;
 import in.andonsystem.v2.activity.IssueDetailActivity2;
 import in.andonsystem.dto.Problem;
 
@@ -30,15 +32,22 @@ public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
     public HolderHome onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_home,parent,false);
-        LinearLayout container = (LinearLayout) view.findViewById(R.id.issue_container);
+        final LinearLayout container = (LinearLayout) view.findViewById(R.id.issue_container);
 
         container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String idStr = ((TextView)v.findViewById(R.id.issue_id)).getText().toString();
-                Intent i = new Intent(context, IssueDetailActivity2.class);
-                i.putExtra("issueId", Long.parseLong(idStr));
-                context.startActivity(i);
+                String appNo = ((TextView)v.findViewById(R.id.appNo)).getText().toString();
+                Intent intent;
+                Log.d("Adapter","$$$ appNo = " + appNo);
+                if (appNo.equals("1")) {
+                    intent = new Intent(context, IssueDetailActivity.class);
+                }else {
+                    intent = new Intent(context, IssueDetailActivity2.class);
+                }
+                intent.putExtra("issueId", Long.parseLong(idStr));
+                context.startActivity(intent);
             }
         });
         if(viewType == 0){
@@ -64,6 +73,7 @@ public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
         holder.problem.setText(prob);
         holder.time.setText(problem.getRaiseTime());
         holder.team.setText(problem.getdField1());
+        holder.appNo.setText(String.valueOf(problem.getAppNo()));
         String field2 = problem.getdField2();
         if (problem.getDowntime() >= 0){
             field2 = String.format("%s [ %03d min ]",field2,problem.getDowntime()/(1000*60));

@@ -93,8 +93,8 @@ public class UserService {
         if (user.getActive() == null) {
             user.setActive(true);
         }
-        if (userDto.getDesignation() != null) {
-            Designation designation = designationRepository.findByName(userDto.getDesignation());
+        if (userDto.getDesgnId() != null) {
+            Designation designation = designationRepository.findOne(userDto.getDesgnId());
             user.setDesignation(designation);
             user.setLevel( "LEVEL" + designation.getLevel());
         }
@@ -118,8 +118,8 @@ public class UserService {
             user.getBuyers().clear();
             userDto.getBuyers().forEach(buyer -> user.getBuyers().add(buyer));
         }
-        if (userDto.getDesignation() != null) {
-            Designation designation = designationRepository.findByName(userDto.getDesignation());
+        if (userDto.getDesgnId() != null) {
+            Designation designation = designationRepository.findOne(userDto.getDesgnId());
             user.setDesignation(designation);
             user.setLevel( "LEVEL" + designation.getLevel());
         }

@@ -48,6 +48,7 @@ public class Designation implements Serializable{
     )
     private Set<Problem> problems = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "designation")
     private Set<User> users = new HashSet<>();
 

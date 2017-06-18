@@ -463,7 +463,7 @@ public class HomeActivity extends AppCompatActivity {
         String raiseTime = df.format(issue2.getRaisedAt());
         long downtime = (issue2.getFixAt() != null) ? (issue2.getFixAt().getTime() - issue2.getRaisedAt().getTime() ): -1L;
         int flag = (issue2.getFixAt() != null) ? 2 : ( (issue2.getAckAt() != null) ? 1: 0);
-        return new Problem(issue2.getId(), issue2.getBuyer().getTeam(), issue2.getBuyer().getName(), issue2.getProblem(),raiseTime,downtime,flag);
+        return new Problem(issue2.getId(), issue2.getBuyer().getTeam(), issue2.getBuyer().getName(), issue2.getProblem(),raiseTime,downtime,flag,2);
     }
 
     private Issue2 getIssue(JSONObject i) {

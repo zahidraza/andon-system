@@ -168,6 +168,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.andonsystem.activity.v1.HomeActivity" />
         </activity>
+        <activity
+            android:name=".activity.v1.IssueDetailActivity"
+            android:label="@string/title_activity_issue_detail"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v1.NotificationActivity"
+            android:label="@string/title_activity_notification"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
