@@ -39,7 +39,7 @@ public class UserRestController{
         logger.debug("listAllUsers(): after = {}", after);
         List<UserDto> list = userService.findAllAfter(after);
         Map<String, Object> response = new HashedMap();
-        response.put("users",list);
+        response.put("users",userAssembler.toResources(list));
         response.put("userSync", System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -48,6 +48,24 @@ public class UserRestController{
     public ResponseEntity<?> getUser(@PathVariable("userId") long id) {
         logger.debug("getUser(): id = {}",id);
         UserDto user = userService.findOne(id);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+    }
+
+    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_NAME)
+    public ResponseEntity<?> searchByName(@RequestParam("name") String name){
+        UserDto user = userService.findByUsername(name);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userAssembler.toResource(user), HttpStatus.OK);
+    }
+
+    @GetMapping(ApiUrls.URL_USERS_USER_SEARCH_BY_EMAIL)
+    public ResponseEntity<?> searchByEmail(@RequestParam("email") String email){
+        UserDto user = userService.findByEmail(email);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

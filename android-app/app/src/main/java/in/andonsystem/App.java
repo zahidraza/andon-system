@@ -2,12 +2,10 @@ package in.andonsystem;
 
 import android.app.Application;
 
-import com.android.volley.RequestQueue;
-
 import org.greenrobot.greendao.database.Database;
 
-import in.andonsystem.v2.entity.DaoMaster;
-import in.andonsystem.v2.entity.DaoSession;
+import in.andonsystem.entity.DaoMaster;
+import in.andonsystem.entity.DaoSession;
 
 /**
  * Created by razamd on 3/31/2017.

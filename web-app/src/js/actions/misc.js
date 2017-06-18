@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import {MISC_CONSTANTS as m, USER_CONSTANTS as u, NAV_ACTIVATE} from  '../utils/constants';
+import {getHeaders} from  '../utils/restUtil';
 
 export function initialize () {
   console.log("initialize()");
@@ -8,14 +9,14 @@ export function initialize () {
   return function (dispatch) {
 
     axios.all([
-      axios.get(window.serviceHost + '/v2/teams'),
-      axios.get(window.serviceHost + '/v2/problems'),
-      axios.get(window.serviceHost + '/v2/buyers'),
-      axios.get(window.serviceHost + '/v1/sections'),
-      axios.get(window.serviceHost + '/v1/departments'),
-      axios.get(window.serviceHost + '/v1/problems'),
-      axios.get(window.serviceHost + '/v1/designations'),
-      axios.get(window.serviceHost + '/v2/users')
+      axios.get(window.serviceHost + '/v2/teams', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v2/problems', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v2/buyers', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v1/sections', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v1/departments', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v1/problems', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v1/designations', {headers: getHeaders()}),
+      axios.get(window.serviceHost + '/v2/users', {headers: getHeaders()})
     ])
     .then(axios.spread(function (teams, problems, buyers, sections, departments, problms, designations, users) {
       dispatch({type: m.INITIALIZE_TEAM, payload: { teams: teams.data }});

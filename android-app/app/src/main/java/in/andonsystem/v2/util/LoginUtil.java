@@ -1,9 +1,6 @@
 package in.andonsystem.v2.util;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Base64;
@@ -23,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import in.andonsystem.AppController;
+import in.andonsystem.Constants;
 import in.andonsystem.v2.authenticator.AuthConstants;
 
 /**

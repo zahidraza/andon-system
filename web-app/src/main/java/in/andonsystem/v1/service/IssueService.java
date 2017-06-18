@@ -6,7 +6,6 @@ import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.Scheduler;
 import in.andonsystem.v1.dto.IssueDto;
 import in.andonsystem.v1.dto.IssuePatchDto;
-import in.andonsystem.v1.entity.Designation;
 import in.andonsystem.v1.entity.Issue1;
 import in.andonsystem.v1.entity.Problem;
 import in.andonsystem.v1.repository.IssueRepository;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 @Service("issueService1")
 @Transactional(readOnly = true)
 public class IssueService {
-    private final Logger logger = LoggerFactory.getLogger(in.andonsystem.v2.service.IssueService.class);
+    private final Logger logger = LoggerFactory.getLogger(IssueService.class);
 
     private final IssueRepository issueRepository;
 
@@ -65,7 +64,7 @@ public class IssueService {
     }
 
     public List<IssueDto> findAllAfter(Long after){
-        logger.debug("findAllAfter: after = " + after);
+        logger.debug("findAllAfter:v1 after = " + after);
         Date date = MiscUtil.getTodayMidnight();
         //If after value is greater than today midnight value, then return issues after this value, else return issue after today midnight
         if(after > date.getTime()){
@@ -77,7 +76,7 @@ public class IssueService {
     }
 
     public List<IssueDto> findAllBetween(Long start, Long end){
-        logger.debug("findAllBetween: start = {}, end = {}", start, end);
+        logger.debug("findAllBetween:v1 start = {}, end = {}", start, end);
         Date date1 = new Date(start);
         Date date2 = new Date(end);
         return issueRepository.findByLastModifiedBetweenOrderByRaisedAtDesc(date1,date2).stream()
@@ -92,6 +91,7 @@ public class IssueService {
         issue.setRaisedAt(new Date());
         issue.setRaisedBy(userRespository.findOne(issueDto.getRaisedBy()));
         issue.setProcessingAt(1);
+        issue.setSeekHelp(0);
         if (issue.getDeleted() == null) issue.setDeleted(false);
         issue = issueRepository.save(issue);
 

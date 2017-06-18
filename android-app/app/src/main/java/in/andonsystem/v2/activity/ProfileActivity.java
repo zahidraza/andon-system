@@ -37,12 +37,12 @@ import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
+import in.andonsystem.util.MyJsonObjectRequest;
 import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MyJsonRequest;
-import in.andonsystem.v2.view.LetterImageView;
+import in.andonsystem.entity.User;
+import in.andonsystem.service.UserService;
+import in.andonsystem.Constants;
+import in.andonsystem.view.LetterImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -220,7 +220,7 @@ public class ProfileActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        MyJsonRequest request = new MyJsonRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
         request.setTag(TAG);
         AppController.getInstance().addToRequestQueue(request);
     }
@@ -282,7 +282,7 @@ public class ProfileActivity extends AppCompatActivity {
                 return;
             }
 
-            MyJsonRequest request = new MyJsonRequest(Request.Method.PUT, url, null, listener, errorListener, accessToken);
+            MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PUT, url, null, listener, errorListener, accessToken);
             request.setTag(TAG);
             AppController.getInstance().addToRequestQueue(request);
 

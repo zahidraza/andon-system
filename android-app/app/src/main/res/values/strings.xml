@@ -53,6 +53,8 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_home1">Andon System</string>
     <string name="title_activity_forgot_password">Forgot Password</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_load">LoadActivity</string>
 
 
 </resources>

@@ -6,6 +6,8 @@ package in.andonsystem.v2;
 public class ApiUrls {
     public static final String ROOT_URL_USERS = "/api/v2/users";
     public static final String URL_USERS_USER = "/{userId}";
+    public static final String URL_USERS_USER_SEARCH_BY_NAME = "/search/byName";
+    public static final String URL_USERS_USER_SEARCH_BY_EMAIL = "/search/byEmail";
     public static final String ROOT_URL_PROBLEMS = "/api/v2/problems";
     public static final String ROOT_URL_TEAMS = "/api/v2/teams";
     public static final String ROOT_URL_BUYERS = "/api/v2/buyers";

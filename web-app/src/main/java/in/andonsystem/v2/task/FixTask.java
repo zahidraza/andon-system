@@ -1,18 +1,13 @@
 package in.andonsystem.v2.task;
 
 import in.andonsystem.util.MiscUtil;
-import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.Issue2;
-import in.andonsystem.v2.entity.User;
 import in.andonsystem.Level;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.util.ApplicationContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Checks whether specific issue is fixed by intended level (processingAt)

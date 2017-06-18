@@ -4,7 +4,7 @@
 Get UserType: SAMPLING|MERCHANDISING
 MERCHANDISING:
     if ackAt == null : problem is not acknowledged yet
-        if(user.buyers.contains(issue.dField2)) : If user is concerned to this issue
+        if(user.buyers.contains(issue2.dField2)) : If user is concerned to this issue2
             if processingAt > 1 : Both level1 and level2 user can acknowledge
                 if user.level == LEVEL1 || user.level == LEVEL2
                     add ackButton
@@ -12,11 +12,11 @@ MERCHANDISING:
                 if user.level == LEVEL1
                     add ackButton
     else if fixAt == null: problem is acknowledged but not fixed yet
-        if(user.buyers.contains(issue.dField2)) : If user is concerned to this issue
-            if processingAt > 1 : level2 should fix the issue
+        if(user.buyers.contains(issue2.dField2)) : If user is concerned to this issue2
+            if processingAt > 1 : level2 should fix the issue2
                 if user.level == LEVEL2
                     add fixButton
-            else : level 1 should fix the issue
+            else : level 1 should fix the issue2
                 if user.level == LEVEL1
                     add fixButton
 
@@ -33,10 +33,10 @@ SAMPLING:
     else
         Problem X for dField1 Y:Buyer Z was raised by you.
 MERCHANDISING:
-    Get All issues for which user is related to.
-    for level3: filter issue with processingAt == 3
-    for level2: filter issue with processingAt >= 2
-    for level1: filter issue with processingAt >= 1
+    Get All issue2s for which user is related to.
+    for level3: filter issue2 with processingAt == 3
+    for level2: filter issue2 with processingAt >= 2
+    for level1: filter issue2 with processingAt >= 1
     for level
         if fixAt != null : problem is fixed
             ProblemX of teamY:BuyerZ is resolved.

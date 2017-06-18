@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import axios from "axios";
 
 import { localeData } from '../reducers/localization';
-import {initialize,navActivate} from '../actions/misc';
-import {authenticate} from '../actions/user';
+import {navActivate} from '../actions/misc';
+import {authenticate, searchUser} from '../actions/user';
 import {USER_TYPE as u} from  '../utils/constants';
 
 //Components
@@ -23,7 +23,7 @@ class Login extends Component {
   constructor () {
     super();
     this.state = {
-      initializing: true,
+      initializing: false,
       credential: {},
       error: {},
       email: '',
@@ -41,28 +41,29 @@ class Login extends Component {
   componentWillMount () {
     console.log('componentWillMount');
     this.props.dispatch(navActivate(false));
-    this.props.dispatch(initialize());
+    //this.props.dispatch(initialize());
     
   }
 
   componentWillReceiveProps (nextProps) {
     console.log('componentWillReceiveProps');
-    if (nextProps.misc.initialized) {
-      this.setState({initializing: false});
-    }
+    // if (nextProps.misc.initialized) {
+    //   this.setState({initializing: false});
+    // }
 
     if (this.props.user.authProgress && !nextProps.user.authProgress && sessionStorage.session == undefined) {
       this.setState({errorMsg: "Incorrect email or password, try again!"});
     }
-
-    if (sessionStorage.session == 'true') {
+    if (!this.props.user.authenticated && nextProps.user.authenticated) {
+      this.props.dispatch(searchUser(sessionStorage.email));
+    }
+    if (!this.props.user.userFound && nextProps.user.userFound) {
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard2');
       } else {
         this.context.router.push('/dashboard2');
       }
     }
-
   }
 
   _login () {

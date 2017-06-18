@@ -34,13 +34,13 @@ import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
+import in.andonsystem.entity.Issue2;
+import in.andonsystem.service.IssueService2;
+import in.andonsystem.util.MyJsonObjectRequest;
 import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.v2.entity.Issue;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.service.IssueService;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MyJsonRequest;
+import in.andonsystem.entity.User;
+import in.andonsystem.service.UserService;
+import in.andonsystem.Constants;
 
 public class IssueDetailActivity2 extends AppCompatActivity {
 
@@ -67,7 +67,7 @@ public class IssueDetailActivity2 extends AppCompatActivity {
     private ProgressBar progress;
 
 
-    private IssueService issueService;
+    private IssueService2 issueService2;
     private UserService userService;
     private Long issueId;
     private SharedPreferences userPref;
@@ -87,7 +87,7 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         mContext = this;
         app = (App)getApplication();
         mAccountManager = AccountManager.get(this);
-        issueService = new IssueService(app);
+        issueService2 = new IssueService2(app);
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF, 0);
         user = userService.findByEmail(userPref.getString(Constants.USER_EMAIL, null));
@@ -134,30 +134,30 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         DateFormat df = new SimpleDateFormat("hh:mm aa");
         df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
 
-        Issue issue = issueService.findOne(issueId);
+        Issue2 issue2 = issueService2.findOne(issueId);
 
-        problem.setText(issue.getProblem());
-        team.setText(issue.getBuyer().getTeam());
-        buyer.setText(issue.getBuyer().getName());
-        raisedAt.setText(df.format(issue.getRaisedAt()));
-        raisedBy.setText(issue.getRaisedByUser().getName());
-        ackAt.setText(( (issue.getAckAt() != null) ? df.format(issue.getAckAt()) : "-" ));
-        ackBy.setText(( (issue.getAckByUser() != null) ? issue.getAckByUser().getName() : "-" ));
-        fixAt.setText(( (issue.getFixAt() != null) ? df.format(issue.getFixAt()) : "-" ));
-        fixBy.setText(( (issue.getFixByUser() != null) ? issue.getFixByUser().getName() : "-" ));
-        if (issue.getProcessingAt() == 4 || issue.getFixAt() != null){
+        problem.setText(issue2.getProblem());
+        team.setText(issue2.getBuyer().getTeam());
+        buyer.setText(issue2.getBuyer().getName());
+        raisedAt.setText(df.format(issue2.getRaisedAt()));
+        raisedBy.setText(issue2.getRaisedByUser().getName());
+        ackAt.setText(( (issue2.getAckAt() != null) ? df.format(issue2.getAckAt()) : "-" ));
+        ackBy.setText(( (issue2.getAckByUser() != null) ? issue2.getAckByUser().getName() : "-" ));
+        fixAt.setText(( (issue2.getFixAt() != null) ? df.format(issue2.getFixAt()) : "-" ));
+        fixBy.setText(( (issue2.getFixByUser() != null) ? issue2.getFixByUser().getName() : "-" ));
+        if (issue2.getProcessingAt() == 4 || issue2.getFixAt() != null){
             processingAt.setText("Fixed");
         }else {
-            processingAt.setText("Processing At Level " + issue.getProcessingAt());
+            processingAt.setText("Processing At Level " + issue2.getProcessingAt());
         }
         
-        desc.setText(issue.getDescription());
+        desc.setText(issue2.getDescription());
 
         /*////////// Adding ack or fix button ///////////////*/
         if (user.getUserType().equalsIgnoreCase(Constants.USER_MERCHANDISING)){
-            if(issue.getAckAt() == null){
-                if(user.getBuyers().contains(issue.getBuyer())){
-                    if( issue.getProcessingAt() > 1){
+            if(issue2.getAckAt() == null){
+                if(user.getBuyers().contains(issue2.getBuyer())){
+                    if( issue2.getProcessingAt() > 1){
                         if(user.getLevel().contains(Constants.USER_LEVEL2)){
                             layout.addView(ackButton);
                         }
@@ -168,9 +168,9 @@ public class IssueDetailActivity2 extends AppCompatActivity {
                         }
                     }
                 }
-            }else if (issue.getFixAt() == null){
-                if(user.getBuyers().contains(issue.getBuyer())){
-                    if( issue.getProcessingAt() > 1){
+            }else if (issue2.getFixAt() == null){
+                if(user.getBuyers().contains(issue2.getBuyer())){
+                    if( issue2.getProcessingAt() > 1){
                         if(user.getLevel().contains(Constants.USER_LEVEL2)){
                             layout.addView(fixButton);
                         }
@@ -234,7 +234,7 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        MyJsonRequest request = new MyJsonRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
         request.setTag(TAG);
         AppController.getInstance().addToRequestQueue(request);
     }
@@ -280,7 +280,7 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        MyJsonRequest request = new MyJsonRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
         request.setTag(TAG);
         AppController.getInstance().addToRequestQueue(request);
     }

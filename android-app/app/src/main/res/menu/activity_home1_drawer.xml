@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group  android:checkableBehavior="single" android:id="@+id/side_bar">
+        <item
+            android:id="@+id/nav_stylechangeover"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Style Changeover" />
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/ic_insert_chart_white_36dp"
+            android:title="Downtime Report" />
+        <item
+            android:id="@+id/nav_contacts"
+            android:icon="@drawable/ic_contact_phone_white_36dp"
+            android:title="Contacts" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help_outline_white_36dp"
+            android:title="Help" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_outline_white_36dp"
+            android:title="About" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_power_settings_new_white_36dp"
+            android:title="Logout" />
+    </group>
+
+</menu>

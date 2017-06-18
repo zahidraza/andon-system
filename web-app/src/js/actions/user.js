@@ -48,6 +48,26 @@ export function authenticate (username, password) {
 }
 
 
+export function searchUser (email) {
+  console.log('addUser');
+
+  return function (dispatch) {
+    dispatch({type: c.USER_BUSY});
+    axios.get(window.serviceHost + '/v2/users/search/byEmail?email=' + email, {headers: getHeaders()})
+    .then((response) => {
+      console.log(response);
+      if (response.status == 200) {
+        dispatch({type: c.USER_SEARCH_SUCCESS, payload: {user: response.data}});
+      }
+    }).catch( (err) => {
+      console.log(err);
+      dispatch({type: c.USER_SEARCH_FAIL});
+    });
+  };
+}
+
+
+
 export function addUser (user) {
   console.log('addUser');
 

@@ -18,11 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -33,16 +29,16 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
 import in.andonsystem.R;
-import in.andonsystem.v2.adapter.CustomBuyerAdapter;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
+import in.andonsystem.adapter.CustomBuyerAdapter;
 import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.service.BuyerService;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MyJsonRequest;
+import in.andonsystem.entity.Buyer;
+import in.andonsystem.entity.User;
+import in.andonsystem.service.BuyerService;
+import in.andonsystem.service.UserService;
+import in.andonsystem.Constants;
 
 public class RaiseIssueActivity2 extends AppCompatActivity {
 
@@ -176,6 +172,9 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
 
     private void raiseIssue(){
 
+        RestUtility restUtility = new RestUtility(this);
+
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -190,35 +189,43 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
                 finish();
             }
         };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
+        ErrorListener errorListener = new ErrorListener(mContext) {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                NetworkResponse resp = error.networkResponse;
-//                String data = new String(resp.data != null ? resp.data : "empty body".getBytes());
-//                Log.d(TAG,data);
-                if (resp != null && resp.statusCode == 400){
-                    showMessage("Some error occured. inform developer.");
-                }
-                else if (resp != null && resp.statusCode == 401){
-                    invalidateAccessToken();
-                    getAuthToken();
-                }
-                else{
-                    showMessage("check your internet connection");
-                }
+            protected void handleTokenExpiry() {
+                raiseIssue();
             }
         };
+//        Response.ErrorListener errorListener = new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                NetworkResponse resp = error.networkResponse;
+////                String data = new String(resp.data != null ? resp.data : "empty body".getBytes());
+////                Log.d(TAG,data);
+//                if (resp != null && resp.statusCode == 400){
+//                    showMessage("Some error occured. inform developer.");
+//                }
+//                else if (resp != null && resp.statusCode == 401){
+//                    invalidateAccessToken();
+//                    getAuthToken();
+//                }
+//                else{
+//                    showMessage("check your internet connection");
+//                }
+//            }
+//        };
+
         String url = Constants.API2_BASE_URL + "/issues";
-        Log.d(TAG, "Issue Raise url:" + url);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-        if(accessToken == null){
-            getAuthToken();
-            return;
-        }
-        MyJsonRequest request = new MyJsonRequest(Request.Method.POST,url,issue,listener,errorListener,accessToken);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        request.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request);
+        Log.d(TAG, "Issue2 Raise url:" + url);
+        restUtility.post(url,issue,listener,errorListener);
+//        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
+//        if(accessToken == null){
+//            getAuthToken();
+//            return;
+//        }
+//        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.POST,url,issue,listener,errorListener,accessToken);
+//        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//        request.setTag(TAG);
+//        AppController.getInstance().addToRequestQueue(request);
     }
 
     private void showMessage(String msg){

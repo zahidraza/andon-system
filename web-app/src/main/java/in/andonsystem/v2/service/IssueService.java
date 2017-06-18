@@ -44,7 +44,7 @@ public class IssueService {
     private final Mapper mapper;
 
     @Autowired
-    public IssueService(IssueRepository issueRepository, UserRespository userRespository,BuyerRepository
+    public IssueService(IssueRepository issueRepository, UserRespository userRespository, BuyerRepository
             buyerRepository, Mapper
                         mapper) {
         this.issueRepository = issueRepository;

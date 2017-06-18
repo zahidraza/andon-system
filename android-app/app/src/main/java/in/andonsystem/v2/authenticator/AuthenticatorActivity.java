@@ -29,8 +29,7 @@ import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
 import in.andonsystem.v2.activity.ForgotPasswordActivity;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.LoginUtil;
+import in.andonsystem.Constants;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
@@ -116,7 +115,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
-                params.put("Authorization", "Basic " + Base64.encodeToString("client-android:super-secret".getBytes(),0));
+                params.put("Authorization", "Basic " + Base64.encodeToString("client-web:super-secret".getBytes(),0));
                 params.put("Accept", "application/json; charset=utf-8");
                 return params;
             }

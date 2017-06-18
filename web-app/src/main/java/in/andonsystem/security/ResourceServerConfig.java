@@ -20,7 +20,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .requestMatchers().antMatchers("/api/**")
                 .and()
                 .authorizeRequests()
-//                    .antMatchers("/api/users","/api/users/**").access("hasRole('ADMIN')")
+                    //.antMatchers("/api/users","/api/users/**").access("hasRole('ADMIN')")
+                    .antMatchers("/api/users","/api/users/**").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v1/sections").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v1/departments").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v2/teams").permitAll()
@@ -29,9 +30,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers(HttpMethod.GET,"/api/v2/users").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v2/misc/config").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/v2/misc/current_time").permitAll()
+                    .antMatchers("/api/").permitAll()
                     .antMatchers("/api/v2/misc/forgot_password/**").permitAll()
-                    //.antMatchers("/api/**").authenticated()
-                .antMatchers("/api/**").permitAll()
+                    .antMatchers("/api/**").authenticated()
+                //.antMatchers("/api/**").permitAll()
                 .and()
                 .exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
 

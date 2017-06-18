@@ -44,14 +44,14 @@ import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
-import in.andonsystem.v2.adapter.AdapterReport;
+import in.andonsystem.adapter.AdapterReport;
+import in.andonsystem.util.MyJsonObjectRequest;
 import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.v2.dto.Problem;
-import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.service.BuyerService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MyJsonRequest;
-import in.andonsystem.v2.view.DividerItemDecoration;
+import in.andonsystem.dto.Problem;
+import in.andonsystem.entity.Buyer;
+import in.andonsystem.service.BuyerService;
+import in.andonsystem.Constants;
+import in.andonsystem.view.DividerItemDecoration;
 
 public class ReportActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private final String TAG = ReportActivity.class.getSimpleName();
@@ -142,7 +142,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG, "Issue Response :" + response.toString());
+                Log.i(TAG, "Issue2 Response :" + response.toString());
                 try {
                     JSONArray issues = response.getJSONArray("issues");
                     if (issues.length() > 0){
@@ -202,7 +202,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
             return;
         }
 
-        MyJsonRequest request = new MyJsonRequest(Request.Method.GET, url, null, listener, errorListener, accessToken);
+        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.GET, url, null, listener, errorListener, accessToken);
         request.setTag(TAG);
         AppController.getInstance().addToRequestQueue(request);
     }

@@ -4,7 +4,6 @@ import in.andonsystem.Constants;
 import in.andonsystem.util.ConfigUtility;
 import in.andonsystem.util.MiscUtil;
 import in.andonsystem.v2.entity.Issue2;
-import in.andonsystem.v2.entity.User;
 import in.andonsystem.Level;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.util.ApplicationContextUtil;
@@ -12,8 +11,6 @@ import in.andonsystem.util.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-
-import java.util.List;
 
 /**
  * Created by razamd on 4/4/2017.

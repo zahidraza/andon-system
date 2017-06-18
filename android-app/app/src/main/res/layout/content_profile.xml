@@ -27,7 +27,7 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="16sp">
 
-                <in.andonsystem.v2.view.LetterImageView
+                <in.andonsystem.view.LetterImageView
                     android:id="@+id/profile_letter_image"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

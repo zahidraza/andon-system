@@ -30,12 +30,9 @@ import com.splunk.mint.Mint;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import in.andonsystem.AppController;
 import in.andonsystem.R;
-import in.andonsystem.v2.util.Constants;
+import in.andonsystem.Constants;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     

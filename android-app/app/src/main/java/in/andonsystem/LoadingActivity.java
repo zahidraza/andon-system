@@ -26,16 +26,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.andonsystem.service.IssueService2;
 import in.andonsystem.v2.activity.HomeActivity;
-import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.entity.UserBuyer;
-import in.andonsystem.v2.service.BuyerService;
-import in.andonsystem.v2.service.IssueService;
-import in.andonsystem.v2.service.UserBuyerService;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MiscUtil;
+import in.andonsystem.entity.Buyer;
+import in.andonsystem.entity.User;
+import in.andonsystem.entity.UserBuyer;
+import in.andonsystem.service.BuyerService;
+import in.andonsystem.service.UserBuyerService;
+import in.andonsystem.service.UserService;
+import in.andonsystem.util.MiscUtil;
 
 public class LoadingActivity extends AppCompatActivity {
     private final String TAG = LoadingActivity.class.getSimpleName();
@@ -45,7 +44,7 @@ public class LoadingActivity extends AppCompatActivity {
     private BuyerService buyerService;
     private UserService userService;
     private UserBuyerService userBuyerService;
-    private IssueService issueService;
+    private IssueService2 issueService2;
     private ProgressBar progress;
     private SharedPreferences appPref;
     private SharedPreferences userPref;
@@ -67,7 +66,7 @@ public class LoadingActivity extends AppCompatActivity {
         app = (App) getApplication();
         buyerService = new BuyerService(app);
         userService = new UserService(app);
-        issueService = new IssueService(app);
+        issueService2 = new IssueService2(app);
         userBuyerService = new UserBuyerService(app);
         progress = (ProgressBar) findViewById(R.id.loading_progress);
         appPref = getSharedPreferences(Constants.APP_PREF, 0);
@@ -88,13 +87,13 @@ public class LoadingActivity extends AppCompatActivity {
         } else {
             progress.setVisibility(View.VISIBLE);
 
-            firstLaunch = appPref.getBoolean(Constants.FIRST_LAUNCH, true);
+            firstLaunch = appPref.getBoolean(Constants.APP2_FIRST_LAUNCH, true);
             Log.i(TAG, "first launch: " + firstLaunch);
             if (firstLaunch) {
                 init();
             } else {
                 //Delete older issue
-                new IssueService(app).deleteAllOlder();
+                new IssueService2(app).deleteAllOlder();
 
                 String url = Constants.API2_BASE_URL + "/misc/config?version=" + getString(R.string.version2);
                 Log.i(TAG, "config url: " + url);
@@ -114,7 +113,7 @@ public class LoadingActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
-                                        appPref.edit().putBoolean(Constants.FIRST_LAUNCH,true).commit();
+                                        appPref.edit().putBoolean(Constants.APP1_FIRST_LAUNCH,true).commit();
                                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://andonsystem.in/download.jsp"));
                                         startActivity(intent);
                                     }
@@ -165,7 +164,7 @@ public class LoadingActivity extends AppCompatActivity {
         AppController appController = AppController.getInstance();
         buyerService.deleteAll();
         userService.deleteAll();
-        issueService.deleteAll();
+        issueService2.deleteAll();
         userBuyerService.deleteAll();
         syncPref.edit()
                     .putLong(Constants.LAST_USER_SYNC,0L)
@@ -280,7 +279,7 @@ public class LoadingActivity extends AppCompatActivity {
         noOfRequest++;
         if (firstLaunch && noOfRequest == 4) {
             Log.i(TAG, "setting first launch to false");
-            appPref.edit().putBoolean(Constants.FIRST_LAUNCH, false).commit();
+            appPref.edit().putBoolean(Constants.APP1_FIRST_LAUNCH, false).commit();
             progress.setVisibility(View.GONE);
             goToHome();
         }

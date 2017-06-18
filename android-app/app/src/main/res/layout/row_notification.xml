@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <in.andonsystem.v2.view.LetterImageView
+    <in.andonsystem.view.LetterImageView
         android:id="@+id/nfn_icon"
         android:layout_width="50sp"
         android:layout_height="50sp"

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <in.andonsystem.v2.view.LetterImageView
+    <in.andonsystem.view.LetterImageView
         android:id="@+id/report_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"

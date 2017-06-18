@@ -25,16 +25,13 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -63,7 +60,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
@@ -72,17 +68,18 @@ import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.LoadingActivity;
 import in.andonsystem.R;
-import in.andonsystem.v2.adapter.AdapterHome;
+import in.andonsystem.entity.Issue2;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
+import in.andonsystem.adapter.AdapterHome;
 import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.v2.dto.Problem;
-import in.andonsystem.v2.entity.Issue;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.entity.UserBuyer;
-import in.andonsystem.v2.service.IssueService;
-import in.andonsystem.v2.service.UserBuyerService;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.util.MyJsonRequest;
+import in.andonsystem.dto.Problem;
+import in.andonsystem.entity.User;
+import in.andonsystem.entity.UserBuyer;
+import in.andonsystem.service.IssueService2;
+import in.andonsystem.service.UserBuyerService;
+import in.andonsystem.service.UserService;
+import in.andonsystem.Constants;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -109,7 +106,7 @@ public class HomeActivity extends AppCompatActivity {
     private int accountSelected = -1;
     private Context mContext;
     private App app;
-    private IssueService issueService;
+    private IssueService2 issueService2;
     private UserService userService;
     private UserBuyerService userBuyerService;
     private SharedPreferences syncPref;
@@ -202,7 +199,7 @@ public class HomeActivity extends AppCompatActivity {
         app = (App)getApplication();
         mAccountManager = AccountManager.get(this);
         mAccountManager.addOnAccountsUpdatedListener(accountsUpdateListener, new Handler(),true);
-        issueService = new IssueService(app);
+        issueService2 = new IssueService2(app);
         userService = new UserService(app);
         userBuyerService = new UserBuyerService(app);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
@@ -348,6 +345,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void syncIssues(){
         Log.d(TAG, "synchIssues(): appNo = " + appNo);
+        RestUtility restUtility = new RestUtility(this);
 
         if(appNo == 2) {
             refreshLayout2.setRefreshing(true);
@@ -356,7 +354,7 @@ public class HomeActivity extends AppCompatActivity {
             Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    Log.i(TAG, "Issue Response :" + response.toString());
+                    Log.i(TAG, "Issue2 Response :" + response.toString());
                     Long syncTime;
 
                     try {
@@ -373,21 +371,21 @@ public class HomeActivity extends AppCompatActivity {
                                 rvAdded = true;
                             }
                             /*Save or Update Issues in database*/
-                            List<Issue> issueList = new ArrayList<>();
+                            List<Issue2> issue2List = new ArrayList<>();
                             for (int i = 0; i < issues.length(); i++) {
-                                issueList.add(getIssue(issues.getJSONObject(i)));
+                                issue2List.add(getIssue(issues.getJSONObject(i)));
                             }
-                            issueService.saveOrUpdate(issueList);
+                            issueService2.saveOrUpdate(issue2List);
 
-                            for (Issue issue : issueList) {
+                            for (Issue2 issue : issue2List) {
 
-                                if (true) {      //If Issue belongs to applied filter then add or update rvAdapter
+                                if (true) {      //If Issue2 belongs to applied filter then add or update rvAdapter
 
                                     if (issue.getFixAt() == null && issue.getAckAt() == null) {
-                                        Log.i(TAG, "Adapter : add Issue");
+                                        Log.i(TAG, "Adapter : add Issue2");
                                         rvAdapter2.insert(getProblem(issue));
                                     } else {
-                                        Log.i(TAG, "Adapter : update Issue");
+                                        Log.i(TAG, "Adapter : update Issue2");
                                         rvAdapter2.update(getProblem(issue));
                                     }
                                 }
@@ -401,37 +399,44 @@ public class HomeActivity extends AppCompatActivity {
                     refreshLayout2.setRefreshing(false);
                 }
             };
-            Response.ErrorListener errorListener = new Response.ErrorListener() {
+            ErrorListener errorListener = new ErrorListener(this) {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, error.toString());
-                    NetworkResponse resp = error.networkResponse;
-//                    String data = new String(resp.data);
-//                    Log.i(TAG, "response status: " + data);
-                    if (resp != null && resp.statusCode == 401) {
-                        invalidateAccessToken();
-                        getAuthToken();
-                    } else {
-                        Toast.makeText(mContext, "Unable to Sync. Check your Internet Connection.", Toast.LENGTH_SHORT).show();
-                    }
-                    refreshLayout2.setRefreshing(false);
+                protected void handleTokenExpiry() {
+                    syncIssues();
                 }
             };
-
-            String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-            if (accessToken == null) {
-                if(accountSelected != -1) {
-                    getAuthToken();
-                }else if (removedLoggedUser) {
-                    removedLoggedUser = false;
-                    getTokenForAccountCreateIfNeeded();
-                }
-                return;
-            }
-
-            MyJsonRequest request = new MyJsonRequest(Request.Method.GET, url, null, listener, errorListener, accessToken);
-            request.setTag(TAG);
-            AppController.getInstance().addToRequestQueue(request);
+//            Response.ErrorListener errorListener = new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    Log.e(TAG, error.toString());
+//                    NetworkResponse resp = error.networkResponse;
+////                    String data = new String(resp.data);
+////                    Log.i(TAG, "response status: " + data);
+//                    if (resp != null && resp.statusCode == 401) {
+//                        invalidateAccessToken();
+//                        getAuthToken();
+//                    } else {
+//                        Toast.makeText(mContext, "Unable to Sync. Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+//                    }
+//                    refreshLayout2.setRefreshing(false);
+//                }
+//            };
+//
+//            String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
+//            if (accessToken == null) {
+//                if(accountSelected != -1) {
+//                    getAuthToken();
+//                }else if (removedLoggedUser) {
+//                    removedLoggedUser = false;
+//                    getTokenForAccountCreateIfNeeded();
+//                }
+//                return;
+//            }
+//
+//            MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.GET, url, null, listener, errorListener, accessToken);
+//            request.setTag(TAG);
+//            AppController.getInstance().addToRequestQueue(request);
+            restUtility.get(url,listener,errorListener);
         }
     }
 
@@ -441,48 +446,48 @@ public class HomeActivity extends AppCompatActivity {
         df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
 
         TreeSet<Problem> issues = new TreeSet<>();
-        List<Issue> list;
+        List<Issue2> list;
         if(selectedTeam.contains("All Team")){
-            list = issueService.findAll();
+            list = issueService2.findAll();
         }else{
-            list = issueService.findAllByTeam(selectedTeam);
+            list = issueService2.findAllByTeam(selectedTeam);
         }
-        Log.d(TAG, "Issue size = " + list.size());
-        for (Issue i : list) {
+        Log.d(TAG, "Issue2 size = " + list.size());
+        for (Issue2 i : list) {
             issues.add(getProblem(i));
         }
         return issues;
     }
 
-    private Problem getProblem(Issue issue){
-        String raiseTime = df.format(issue.getRaisedAt());
-        long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
-        int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
-        return new Problem(issue.getId(),issue.getBuyer().getTeam(),issue.getBuyer().getName(),issue.getProblem(),raiseTime,downtime,flag);
+    private Problem getProblem(Issue2 issue2){
+        String raiseTime = df.format(issue2.getRaisedAt());
+        long downtime = (issue2.getFixAt() != null) ? (issue2.getFixAt().getTime() - issue2.getRaisedAt().getTime() ): -1L;
+        int flag = (issue2.getFixAt() != null) ? 2 : ( (issue2.getAckAt() != null) ? 1: 0);
+        return new Problem(issue2.getId(), issue2.getBuyer().getTeam(), issue2.getBuyer().getName(), issue2.getProblem(),raiseTime,downtime,flag);
     }
 
-    private Issue getIssue(JSONObject i) {
-        Issue mIssue = null;
+    private Issue2 getIssue(JSONObject i) {
+        Issue2 mIssue2 = null;
         try {
-            mIssue = new Issue(i.getLong("id"),i.getLong("buyerId"), i.getString("problem"), i.getString("description"), new Date(i.getLong("raisedAt")), null, null, i.getInt("processingAt"));
-            mIssue.setRaisedBy(i.getLong("raisedBy"));
+            mIssue2 = new Issue2(i.getLong("id"),i.getLong("buyerId"), i.getString("problem"), i.getString("description"), new Date(i.getLong("raisedAt")), null, null, i.getInt("processingAt"));
+            mIssue2.setRaisedBy(i.getLong("raisedBy"));
 
             if (! i.getString("ackBy").equals("null")) {
-                mIssue.setAckBy(i.getLong("ackBy"));
+                mIssue2.setAckBy(i.getLong("ackBy"));
             }
             if (! i.getString("ackAt").equals("null")) {
-                mIssue.setAckAt(new Date(i.getLong("ackAt")));
+                mIssue2.setAckAt(new Date(i.getLong("ackAt")));
             }
             if (! i.getString("fixBy").equals("null")) {
-                mIssue.setFixBy(i.getLong("fixBy"));
+                mIssue2.setFixBy(i.getLong("fixBy"));
             }
             if (! i.getString("fixAt").equals("null")) {
-                mIssue.setFixAt(new Date(i.getLong("fixAt")));
+                mIssue2.setFixAt(new Date(i.getLong("fixAt")));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return mIssue;
+        return mIssue2;
     }
 
     private void prepareScreen(){
@@ -830,7 +835,7 @@ public class HomeActivity extends AppCompatActivity {
                 String email = userPref.getString(Constants.USER_EMAIL, null);
                 User user = userService.findByEmail(email);
                 if (user == null) {
-                    appPref.edit().putBoolean(Constants.FIRST_LAUNCH, true).commit();
+                    appPref.edit().putBoolean(Constants.APP1_FIRST_LAUNCH, true).commit();
                     Intent i = new Intent(mContext, LoadingActivity.class);
                     startActivity(i);
                 }
@@ -865,7 +870,7 @@ public class HomeActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = userPref.edit();
                             editor.putString(Constants.USER_EMAIL,username);
                             editor.putString(Constants.USER_ACCESS_TOKEN,authToken);
-                            editor.putBoolean(Constants.IS_USER_LOGGED_IN, true);
+                            editor.putBoolean(Constants.IS_LOGGED_IN, true);
                             editor.commit();
                             //updateAppNo(username);
 //                            updateAccountHeader(username);

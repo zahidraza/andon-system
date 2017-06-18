@@ -30,13 +30,13 @@ import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
-import in.andonsystem.v2.adapter.AdapterContact;
-import in.andonsystem.v2.entity.User;
-import in.andonsystem.v2.entity.UserBuyer;
-import in.andonsystem.v2.service.UserBuyerService;
-import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.Constants;
-import in.andonsystem.v2.view.DividerItemDecoration;
+import in.andonsystem.adapter.AdapterContact;
+import in.andonsystem.entity.User;
+import in.andonsystem.entity.UserBuyer;
+import in.andonsystem.service.UserBuyerService;
+import in.andonsystem.service.UserService;
+import in.andonsystem.Constants;
+import in.andonsystem.view.DividerItemDecoration;
 
 public class ContactActivity extends AppCompatActivity {
 
