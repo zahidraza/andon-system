@@ -592,6 +592,10 @@ public class HomeActivity extends AppCompatActivity
             userBuyerService.deleteAll();
             buyerService.deleteAll();
             userService.deleteAll();
+            syncPref.edit()
+                    .putLong(Constants.LAST_USER_SYNC,0)
+                    .putLong(Constants.LAST_ISSUE2_SYNC,0)
+                    .apply();
 
             Response.Listener<JSONArray> listenerteam = new Response.Listener<JSONArray>() {
                 @Override

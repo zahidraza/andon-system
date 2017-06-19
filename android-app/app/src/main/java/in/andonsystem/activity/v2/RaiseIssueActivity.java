@@ -1,8 +1,5 @@
 package in.andonsystem.activity.v2;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,17 +27,16 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
+import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
-import in.andonsystem.util.ErrorListener;
-import in.andonsystem.util.RestUtility;
 import in.andonsystem.adapter.CustomBuyerAdapter;
-import in.andonsystem.v2.authenticator.AuthConstants;
 import in.andonsystem.entity.Buyer;
 import in.andonsystem.entity.User;
 import in.andonsystem.service.BuyerService;
 import in.andonsystem.service.UserService;
-import in.andonsystem.Constants;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 
 public class RaiseIssueActivity extends AppCompatActivity {
 

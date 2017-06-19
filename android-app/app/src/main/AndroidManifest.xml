@@ -31,7 +31,7 @@
         </service>
 
         <activity
-            android:name=".LoadActivity"
+            android:name=".LoadingActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -127,10 +127,6 @@
         <activity
             android:name=".v2.authenticator.AuthenticatorActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".LoadingActivity"
-            android:label="@string/title_activity_load"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.v1.HomeActivity"

@@ -683,6 +683,10 @@ public class HomeActivity extends AppCompatActivity
             problemService.deleteAll();
             designationService.deleteAll();
             userService.deleteAll();
+            syncPref.edit()
+                    .putLong(Constants.LAST_USER_SYNC,0)
+                    .putLong(Constants.LAST_ISSUE1_SYNC,0)
+                    .apply();
 
 
             Response.Listener<JSONArray> listenerSection = new Response.Listener<JSONArray>() {

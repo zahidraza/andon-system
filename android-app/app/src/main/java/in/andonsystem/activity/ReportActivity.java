@@ -1,8 +1,5 @@
 package in.andonsystem.activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -22,12 +19,8 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -43,19 +36,16 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
+import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterReport;
-import in.andonsystem.service.ProblemService;
-import in.andonsystem.util.ErrorListener;
-import in.andonsystem.util.MyJsonObjectRequest;
-import in.andonsystem.util.RestUtility;
-import in.andonsystem.v2.authenticator.AuthConstants;
 import in.andonsystem.dto.Problem;
 import in.andonsystem.entity.Buyer;
 import in.andonsystem.service.BuyerService;
-import in.andonsystem.Constants;
+import in.andonsystem.service.ProblemService;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 import in.andonsystem.view.DividerItemDecoration;
 
 public class ReportActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {

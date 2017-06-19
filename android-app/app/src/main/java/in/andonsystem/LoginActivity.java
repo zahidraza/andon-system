@@ -50,7 +50,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_authenticator);
+        setContentView(R.layout.activity_login);
         Log.d(TAG,"onCreate()");
         AppClose.activity2 = this;
 
@@ -110,6 +110,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             }
         };
         String url = Constants.API2_BASE_URL + "/misc/config?version=" + getString(R.string.version2);
+        restUtility.setProtected(false);
         restUtility.get(url,listener,errorListener);
 
     }
@@ -192,6 +193,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         String url = Constants.AUTH_BASE_URL + "?grant_type=password&username=" + email + "&password=" + passwd;
         restUtility.setIsloginRequest(true);
+        restUtility.setProtected(true);
         restUtility.post(url, null, listener, errorListener);
     }
 
@@ -234,6 +236,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             }
         };
         restUtility.setIsloginRequest(false);
+        restUtility.setProtected(true);
         restUtility.get(url, listener, errorListener);
     }
 

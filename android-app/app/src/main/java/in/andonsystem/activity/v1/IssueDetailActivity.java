@@ -1,8 +1,5 @@
 package in.andonsystem.activity.v1;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,10 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -30,7 +24,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,21 +31,17 @@ import java.util.TimeZone;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
+import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.entity.Designation;
 import in.andonsystem.entity.Issue1;
-import in.andonsystem.entity.Problem;
+import in.andonsystem.entity.User;
 import in.andonsystem.service.IssueService1;
+import in.andonsystem.service.UserService;
 import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.MiscUtil;
-import in.andonsystem.util.MyJsonObjectRequest;
 import in.andonsystem.util.RestUtility;
-import in.andonsystem.v2.authenticator.AuthConstants;
-import in.andonsystem.entity.User;
-import in.andonsystem.service.UserService;
-import in.andonsystem.Constants;
 
 public class IssueDetailActivity extends AppCompatActivity {
 

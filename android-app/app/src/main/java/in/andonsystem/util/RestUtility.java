@@ -40,6 +40,7 @@ public abstract class RestUtility {
     protected final Context mContext;
     private SharedPreferences userPref;
     private Boolean isloginRequest = false;
+    private Boolean isProtected = true;
 
     public RestUtility(Context context) {
         this.mContext = context;
@@ -69,7 +70,7 @@ public abstract class RestUtility {
     public void getJsonArray(String url, Response.Listener<JSONArray> listener, ErrorListener errorListener) {
         Boolean isConnected = MiscUtil.isConnectedToInternet(mContext);
         if (isConnected) {
-            Log.d(TAG, "RestUtility: get url = " + url);
+            Log.d(TAG, "RestUtility: get JsonArray url = " + url);
             String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
 
             MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
@@ -107,13 +108,17 @@ public abstract class RestUtility {
             MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data, listener, errorListener,isloginRequest);
             request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             request.setTag("");  //TODO:
-
-            if (!isloginRequest && accessToken == null) {
-                redirectToLogin();
+            if (isProtected) {
+                if (!isloginRequest && accessToken == null) {
+                    redirectToLogin();
+                } else {
+                    request.setAccessToken(accessToken);
+                    appController.addToRequestQueue(request);
+                }
             }else {
-                request.setAccessToken(accessToken);
                 appController.addToRequestQueue(request);
             }
+
         }else {
             getAlertDialog().show();
         }
@@ -191,5 +196,13 @@ public abstract class RestUtility {
      */
     public void setIsloginRequest(Boolean isloginRequest) {
         this.isloginRequest = isloginRequest;
+    }
+
+    /**
+     * Set false for unprotected resources
+     * @param aProtected
+     */
+    public void setProtected(Boolean aProtected) {
+        isProtected = aProtected;
     }
 }

@@ -1,33 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="in.andonsystem.LoginActivity">
+    android:id="@+id/login_container"
+    android:paddingRight="30dp"
+    android:paddingLeft="30dp"
+    android:background="@color/colorPrimaryDark"
+    tools:context="in.andonsystem.v2.authenticator.AuthenticatorActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:id="@+id/login_msg"
+            android:textColor="@color/color9"/>
 
-    </android.support.design.widget.AppBarLayout>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/userId"
+            android:hint="Email Id"
+            android:textColor="@color/white"
+            android:textColorHint="@android:color/white"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="10dp"
+            android:inputType="textEmailAddress"/>
 
-    <include layout="@layout/content_login" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/password"
+            android:hint="Password"
+            android:textColor="@color/white"
+            android:textColorHint="@android:color/white"
+            android:fontFamily="monospace"
+            android:inputType="textPassword"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_btn"
+            android:text="@string/login_btn_text"
+            android:background="@color/colorPrimary"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="25dp"
+            android:onClick="signIn"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:id="@+id/forgot_passwd"
+        android:text="@string/forgot_passwd_btn_text"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="30sp"
+        android:gravity="center_horizontal"
+        android:clickable="true"
+        android:onClick="forgotPassword"
+        android:layout_alignParentBottom="true"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>
