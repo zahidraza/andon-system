@@ -1,10 +1,8 @@
 package in.andonsystem.activity.v1;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,27 +11,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.VolleyError;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.CustomProblemAdapter;
 import in.andonsystem.entity.Problem;
@@ -47,9 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class RaiseIssueActivity extends AppCompatActivity {
@@ -57,7 +47,6 @@ public class RaiseIssueActivity extends AppCompatActivity {
 
     private final String TAG = RaiseIssueActivity.class.getSimpleName();
 
-    private LinearLayout container;
     private Spinner lines;
     private Spinner sections;
     private Spinner depts;
@@ -65,13 +54,11 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private EditText operatorNo;
     private EditText issueDesc;
     private RadioGroup radioGroup;
-    private Button raiseBtn;
+    private ProgressBar progress;
 
     private SharedPreferences appPref;
     private SharedPreferences userPref;
-    private ProgressDialog pDialog;
     private Context context;
-    private SQLiteDatabase db;
     private RestUtility restUtility;
 
     @Override
@@ -82,20 +69,20 @@ public class RaiseIssueActivity extends AppCompatActivity {
         setContentView(R.layout.activity_raise_issue1);
         Log.i(TAG,"onCreate()");
         context = this;
+        AppClose.activity3 = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //View mapping
-        container = (LinearLayout)findViewById(R.id.raise_container);
         lines = (Spinner)findViewById(R.id.line_dropdown);
         sections = (Spinner)findViewById(R.id.section_dropdown);
         depts = (Spinner)findViewById(R.id.dept_dropdown);
         problems = (Spinner)findViewById(R.id.problem_dropdown);
         operatorNo = (EditText)findViewById(R.id.operator_no);
         issueDesc = (EditText)findViewById(R.id.issue_desc);
-        raiseBtn = (Button)findViewById(R.id.raise_btn);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
         //Initialization
         appPref = getSharedPreferences(Constants.APP_PREF,0);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
@@ -141,20 +128,7 @@ deptList.add("Select Department");
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-/*
-        issueDesc.setImeActionLabel("Raise",KeyEvent.KEYCODE_ENTER);
-        issueDesc.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-                    raiseBtn.performClick();
-                    return true;
-                }
-                return false;
-            }
-        });
-*/
+
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
@@ -237,6 +211,7 @@ deptList.add("Select Department");
     }
 
     private void raiseIssue(JSONObject issue){
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -248,6 +223,7 @@ deptList.add("Select Department");
                         e.printStackTrace();
                     }
                 }
+                progress.setVisibility(View.INVISIBLE);
                 finish();
             }
         };
@@ -256,6 +232,11 @@ deptList.add("Select Department");
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(context, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -311,5 +292,10 @@ deptList.add("Select Department");
     @Override
     public void finish() {
         super.finish();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
     }
 }

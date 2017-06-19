@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 
 import in.andonsystem.AppController;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 
 /**
  * Created by mdzahidraza on 18/06/17.

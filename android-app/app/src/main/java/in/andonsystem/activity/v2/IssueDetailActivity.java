@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -28,7 +29,7 @@ import java.util.TimeZone;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.entity.Issue2;
 import in.andonsystem.entity.User;
@@ -80,7 +81,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
         mContext = this;
         app = (App)getApplication();
         issueService2 = new IssueService2(app);
@@ -122,6 +123,11 @@ public class IssueDetailActivity extends AppCompatActivity {
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         restUtility = new RestUtility(this){
@@ -205,6 +211,7 @@ public class IssueDetailActivity extends AppCompatActivity {
     }
 
     private void acknowledge(){
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -214,11 +221,12 @@ public class IssueDetailActivity extends AppCompatActivity {
                     }else if (response.has("id")){
                         showMessage("Issue acknowledged successfully");
                     }
-                    finish();
+
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
-
+                progress.setVisibility(View.INVISIBLE);
+                finish();
             }
         };
         String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_ACK";
@@ -233,6 +241,7 @@ public class IssueDetailActivity extends AppCompatActivity {
 
     private void fix(){
         Log.d(TAG,"fix");
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -242,11 +251,11 @@ public class IssueDetailActivity extends AppCompatActivity {
                     }else if (response.has("id")){
                         showMessage("Issue fixed successfully");
                     }
-                    finish();
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
-
+                progress.setVisibility(View.INVISIBLE);
+                finish();
             }
         };
         String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_FIX";
@@ -274,4 +283,9 @@ public class IssueDetailActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 }

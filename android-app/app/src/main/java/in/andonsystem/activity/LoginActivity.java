@@ -1,4 +1,4 @@
-package in.andonsystem;
+package in.andonsystem.activity;
 
 import android.accounts.AccountAuthenticatorActivity;
 import android.content.DialogInterface;
@@ -7,39 +7,34 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import in.andonsystem.AppClose;
+import in.andonsystem.Constants;
+import in.andonsystem.R;
 import in.andonsystem.activity.v2.HomeActivity;
 import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.RestUtility;
-import in.andonsystem.activity.ForgotPasswordActivity;
 
-public class LoginActivity extends AccountAuthenticatorActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private final String TAG = LoginActivity.class.getSimpleName();
 
     private EditText username;
     private EditText password;
+    private ProgressBar progress;
 
     private RestUtility restUtility;
     private ErrorListener errorListener;
@@ -52,14 +47,14 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Log.d(TAG,"onCreate()");
-        AppClose.activity2 = this;
+        AppClose.activity1 = this;
 
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
         appPref = getSharedPreferences(Constants.APP_PREF,0);
         username = (EditText) findViewById(R.id.userId);
         password = (EditText) findViewById(R.id.password);
-
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
@@ -76,11 +71,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //Check App update and re-initialization
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG,"config response: " + response.toString());
+                progress.setVisibility(View.INVISIBLE);
                 try {
                     boolean update = response.getBoolean("update");
                     long appSync = response.getLong("appSync");
@@ -95,6 +91,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                         .putLong(Constants.LAST_APP_SYNC, appSync)
                                     .commit();
                         }
+
                         login();
                     }
 
@@ -107,6 +104,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             protected void handleTokenExpiry() {
 
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         String url = Constants.API2_BASE_URL + "/misc/config?version=" + getString(R.string.version2);
@@ -162,7 +164,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             Toast.makeText(this,"Username or password cannot be empty",Toast.LENGTH_SHORT).show();
             return;
         }
-
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -189,6 +191,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             protected void handleBadRequest() {
                 showMessage("Incorrect credentials. Try again");
             }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+            }
         };
 
         String url = Constants.AUTH_BASE_URL + "?grant_type=password&username=" + email + "&password=" + passwd;
@@ -202,6 +209,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                progress.setVisibility(View.INVISIBLE);
                 try {
                     Long id = response.getLong("id");
                     String username = response.getString("name");
@@ -221,8 +229,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     }else {
                         redirectToHome(2);
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -233,6 +239,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             protected void handleTokenExpiry() {
                 showMessage("Session Expired. Login again.");
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         restUtility.setIsloginRequest(false);

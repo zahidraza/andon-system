@@ -66,7 +66,9 @@ public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
         Object[] array = set.toArray();
         Problem problem = (Problem)array[position];
         String prob = problem.getProbName();
-
+        if (problem.getCritical() != null && problem.getCritical().equalsIgnoreCase("YES")) {
+            prob = prob + "*";
+        }
         holder.icon.setLetter(prob.charAt(0));
         holder.icon.setOval(true);
         holder.problem.setText(prob);

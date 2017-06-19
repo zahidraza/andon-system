@@ -12,14 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -30,8 +29,7 @@ import java.util.TreeSet;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterNotification;
 import in.andonsystem.dto.Notification;
@@ -71,7 +69,7 @@ public class NotificationActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userService = new UserService(app);
@@ -80,7 +78,7 @@ public class NotificationActivity extends AppCompatActivity {
         user = userService.findByEmail(userPref.getString(Constants.USER_EMAIL, null));
 
         container = (RelativeLayout) findViewById(R.id.content_nfn2);
-        progress = (ProgressBar) findViewById(R.id.nfn2_loading);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
         prepareScreen();
         getCurrentTime();
     }
@@ -191,6 +189,7 @@ public class NotificationActivity extends AppCompatActivity {
     }
 
     private void getCurrentTime(){
+        progress.setVisibility(View.VISIBLE);
         RestUtility restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
@@ -213,6 +212,7 @@ public class NotificationActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                progress.setVisibility(View.INVISIBLE);
                 onStart();
             }
         };
@@ -222,7 +222,17 @@ public class NotificationActivity extends AppCompatActivity {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
             }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+            }
         };
         restUtility.get(url, listener, errorListener);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
     }
 }

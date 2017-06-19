@@ -1,6 +1,5 @@
 package in.andonsystem.activity.v1;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,11 +19,12 @@ import com.android.volley.Response;
 
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.RestUtility;
 
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -42,7 +43,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
 
     private String fromStr,toStr,remarksStr,lineStr;
 
-    private ProgressDialog pDialog;
+    private ProgressBar progress;
     private String username;
     private RestUtility restUtility;
 
@@ -54,6 +55,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         setContentView(R.layout.activity_style_change_over);
         Log.i(TAG,"onCreate()");
         context = this;
+        AppClose.activity3 = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,6 +66,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         from = (EditText)findViewById(R.id.style_from);
         to = (EditText)findViewById(R.id.style_to);
         remarks = (EditText)findViewById(R.id.style_remarks);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
 
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         username = userPref.getString(Constants.USER_NAME,"");
@@ -91,8 +94,6 @@ public class StyleChangeOverActivity extends AppCompatActivity {
     }
 
     public void submit(View view){
-        pDialog = new ProgressDialog(context);
-        pDialog.setMessage("Please wait...");
 
         lineStr = ((TextView)line.findViewById(R.id.spinner_item)).getText().toString();
         toStr = to.getText().toString();
@@ -102,10 +103,29 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         if(fromStr.equals("") || toStr.equals("") || remarksStr.equals("")){
             Toast.makeText(context,"Fields cannot be blank",Toast.LENGTH_SHORT).show();
         }else{
-            pDialog.show();
+            progress.setVisibility(View.VISIBLE);
+            Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.i(TAG, "style changeover Response : " + response);
+                    //TODO: modify processing of response
+                    progress.setVisibility(View.INVISIBLE);
+                }
+            };
 
+            ErrorListener errorListener = new ErrorListener(context) {
+                @Override
+                protected void handleTokenExpiry() {
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                }
+
+                @Override
+                protected void onError(VolleyError error) {
+                    progress.setVisibility(View.INVISIBLE);
+                }
+            };
             String url = "http://andonsystem.in/restapi/style_changeover"; //TODO: change url
-
             JSONObject data = new JSONObject();
             try {
                 data.put("line", lineStr.split(" ")[1]);
@@ -116,27 +136,13 @@ public class StyleChangeOverActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.i(TAG, "style changeover Response : " + response);
-                    //TODO: modify processing of response
-                }
-            };
-
-            ErrorListener errorListener = new ErrorListener(context) {
-                @Override
-                protected void handleTokenExpiry() {
-                    Intent intent = new Intent(context, LoginActivity.class);
-                    startActivity(intent);
-                }
-            };
             restUtility.post(url, data, listener,errorListener);
         }
 
     }
-
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 }

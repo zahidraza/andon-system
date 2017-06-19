@@ -30,9 +30,13 @@ import com.splunk.mint.Mint;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import in.andonsystem.App;
+import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
 import in.andonsystem.Constants;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     
@@ -40,7 +44,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     
     private Context context;
     private LinearLayout container;
-    private ProgressDialog pDialog;
     private ProgressBar progress;
 
     private Button submit;
@@ -53,7 +56,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     private EditText newPasswd;
     private EditText newPasswd2;
 
-    Response.ErrorListener errorListener;
+    private RestUtility restUtility;
+    ErrorListener errorListener;
 
     private String email;
     private int otpValue;
@@ -66,6 +70,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
         Mint.initAndStartSession(getApplication(), "39a8187d");
         setContentView(R.layout.activity_forgot_password);
+        AppClose.activity2 = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,7 +87,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         newPasswd = createEditText("new password");
         newPasswd2 = createEditText("confirm new password");
         progress = (ProgressBar) findViewById(R.id.loading_progress);
-        progress.setVisibility(View.GONE);
 
         otp.setInputType(InputType.TYPE_CLASS_NUMBER);
         otp.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
@@ -128,19 +133,28 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
             }
         });
-        errorListener = new Response.ErrorListener() {
+        errorListener = new ErrorListener(this) {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(TAG,"Error: " + error.toString());
-                progress.setVisibility(View.GONE);
-                NetworkResponse resp = error.networkResponse;
-                if (resp != null && resp.statusCode == 404){
-                    Snackbar.make(container,"User with email id : "+email +" not found.",Snackbar.LENGTH_SHORT).show();
-                }else {
-                    Snackbar.make(container,"Slow Internet Connection, Retry.",Snackbar.LENGTH_SHORT).show();
-                }
+            protected void handleTokenExpiry() {
+
+            }
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
+        restUtility = new RestUtility(this) {
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
+        restUtility.setProtected(false);
 
     }
 
@@ -154,7 +168,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, "send otp Response :" + response.toString());
-                progress.setVisibility(View.GONE);
+                progress.setVisibility(View.INVISIBLE);
                 try {
                     if (response.getString("status").equalsIgnoreCase("SUCCESS")){
                         container.removeAllViews();
@@ -169,11 +183,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
             }
         };
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT,url,null,listener,errorListener);
-        request.setTag(TAG);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.put(url,null,listener,errorListener);
     }
 
     private void verifyOTP(){
@@ -187,7 +197,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, "verify otp Response :" + response.toString());
-                progress.setVisibility(View.GONE);
+                progress.setVisibility(View.INVISIBLE);
                 try {
                     if (response.getString("status").equalsIgnoreCase("SUCCESS")){
                         container.removeAllViews();
@@ -204,10 +214,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             }
         };
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT,url,null,listener,errorListener);
-        request.setTag(TAG);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.put(url,null,listener,errorListener);
     }
 
     private void changePassword(String password){
@@ -221,7 +228,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, "verify otp Response :" + response.toString());
-                progress.setVisibility(View.GONE);
+                progress.setVisibility(View.INVISIBLE);
                 try {
                     if (response.getString("status").equalsIgnoreCase("SUCCESS")){
                         Toast.makeText(context,"Password reset successfully.",Toast.LENGTH_SHORT).show();
@@ -234,13 +241,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 }
             }
         };
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT,url,null,listener,errorListener);
-        request.setTag(TAG);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.put(url,null,listener,errorListener);
     }
-
 
     private EditText createEditText(String hint){
         EditText editText = new EditText(context);

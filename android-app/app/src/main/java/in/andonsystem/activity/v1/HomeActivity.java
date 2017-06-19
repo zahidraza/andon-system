@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +35,7 @@ import com.android.volley.Response;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.activity.ReportActivity;
 import in.andonsystem.adapter.AdapterHome;
 
@@ -59,6 +57,7 @@ import in.andonsystem.util.RestUtility;
 import in.andonsystem.activity.ContactActivity;
 import in.andonsystem.activity.ProfileActivity;
 
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -95,7 +94,6 @@ public class HomeActivity extends AppCompatActivity
     private Boolean rvViewAdded;
     private DateFormat df;
     private Context context;
-    private AlertDialog exitDialog;
 
     private AdapterHome rvAdapter;
     private SharedPreferences userPref;
@@ -128,7 +126,6 @@ public class HomeActivity extends AppCompatActivity
 
         //views mapping
         progress = (ProgressBar)findViewById(R.id.loading_progress);
-        progress.setVisibility(View.INVISIBLE);
         line = (Spinner)findViewById(R.id.home_line);
         section = (Spinner)findViewById(R.id.home_section);
         dept = (Spinner)findViewById(R.id.home_department);
@@ -167,6 +164,12 @@ public class HomeActivity extends AppCompatActivity
                 //onStart();
                 Intent intent = new Intent(context, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+                refreshLayout.setRefreshing(false);
             }
         };
         restUtility = new RestUtility(this){
@@ -344,7 +347,7 @@ public class HomeActivity extends AppCompatActivity
         String raiseTime = df.format(issue.getRaisedAt());
         long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
-        return new Problem(issue.getId(), "Line " + issue.getLine(), issue.getProblem().getDepartment(), issue.getProblem().getName(),raiseTime,downtime,flag,1);
+        return new Problem(issue.getId(), "Line " + issue.getLine(), issue.getProblem().getDepartment(), issue.getProblem().getName(),raiseTime,downtime,flag,1, issue.getCritical());
     }
 
     public void syncIssues(){
@@ -465,7 +468,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void syncUsers() {
         userService = new UserService((App)getApplication());
-
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -502,6 +505,7 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                progress.setVisibility(View.INVISIBLE);
             }
         };
 

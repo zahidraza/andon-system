@@ -19,10 +19,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -31,7 +33,6 @@ import org.json.JSONObject;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.entity.User;
 import in.andonsystem.service.UserService;
@@ -59,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText confirmNewPasswd;
     private Button changePasswdBtn;
     private Button savePasswdBtn;
+    private ProgressBar progress;
 
     private SharedPreferences userPref;
     private Context mContext;
@@ -79,12 +81,13 @@ public class ProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
         mContext = this;
         app = (App)getApplication();
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
 
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
         pImage = (LetterImageView)findViewById(R.id.profile_letter_image);
         username = (TextView) findViewById(R.id.profile_username);
         level = (TextView) findViewById(R.id.profile_level);
@@ -150,9 +153,13 @@ public class ProfileActivity extends AppCompatActivity {
         errorListener = new ErrorListener(this) {
             @Override
             protected void handleTokenExpiry() {
-                //onStart();
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         restUtility = new RestUtility(this){
@@ -192,6 +199,7 @@ public class ProfileActivity extends AppCompatActivity {
             showMessage("Incorrect mobile number");
             return;
         }
+        progress.setVisibility(View.VISIBLE);
         final String url = Constants.API2_BASE_URL + "/users/" + user.getId();
         Log.i(TAG, "url = " + url);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
@@ -206,8 +214,8 @@ public class ProfileActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                progress.setVisibility(View.INVISIBLE);
                 showMobileEdit();
-
             }
         };
 
@@ -237,6 +245,7 @@ public class ProfileActivity extends AppCompatActivity {
         else if (!newPass.trim().equals(confirmNewPass.trim())) {
             showMessage("Passwords do not match.");
         }else {
+            progress.setVisibility(View.VISIBLE);
             final String url = Constants.API2_BASE_URL + "/misc/change_password?email=" + user.getEmail() + "&oldPassword=" + currPass + "&newPassword=" + newPass;
             Log.i(TAG, "url = " + url);
             Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
@@ -254,6 +263,7 @@ public class ProfileActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    progress.setVisibility(View.INVISIBLE);
                     showPasswordBtn();
 
                 }
@@ -381,5 +391,9 @@ public class ProfileActivity extends AppCompatActivity {
     private void showMessage(String message){
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 }

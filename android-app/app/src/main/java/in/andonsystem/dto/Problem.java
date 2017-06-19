@@ -36,15 +36,16 @@ public class Problem implements Comparable<Problem> {
         this.appNo = appNo;
     }
 
-    public Problem(int issueId, String dField1, String dField2, String probName, String critical, String raiseTime, int downtime, int flag) {
+    public Problem(long issueId, String dField1, String dField2, String probName, String raiseTime, long downtime, int flag, int appNo, String critical) {
         this.issueId = issueId;
         this.dField1 = dField1;
         this.dField2 = dField2;
         this.probName = probName;
-        this.critical = critical;
         this.raiseTime = raiseTime;
         this.downtime = downtime;
         this.flag = flag;
+        this.appNo = appNo;
+        this.critical = critical;
     }
 
     public long getDowntime() {

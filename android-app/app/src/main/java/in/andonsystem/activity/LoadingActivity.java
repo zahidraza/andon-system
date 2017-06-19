@@ -1,4 +1,4 @@
-package in.andonsystem;
+package in.andonsystem.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.splunk.mint.Mint;
+
+import in.andonsystem.AppClose;
+import in.andonsystem.R;
 
 public class LoadingActivity extends AppCompatActivity {
     private final String TAG = LoadingActivity.class.getSimpleName();
@@ -21,7 +24,6 @@ public class LoadingActivity extends AppCompatActivity {
         Mint.initAndStartSession(getApplication(), "39a8187d");
         setContentView(R.layout.activity_loading);
         Log.d(TAG, "onCreate()");
-        AppClose.activity1 = this;
         progress = (ProgressBar) findViewById(R.id.loading_progress);
     }
 

@@ -12,10 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -26,7 +29,6 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterContact;
 import in.andonsystem.dto.Contact;
@@ -54,6 +56,7 @@ public class ContactActivity extends AppCompatActivity {
     private RelativeLayout container;
     private RecyclerView recyclerView;
     private TextView emptyMessage;
+    private ProgressBar progress;
 
 
     @Override
@@ -66,13 +69,14 @@ public class ContactActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
         container = (RelativeLayout) findViewById(R.id.content_contact_layout);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
 
         String email = userPref.getString(Constants.USER_EMAIL,"");
         if (email == "") {
@@ -153,7 +157,7 @@ public class ContactActivity extends AppCompatActivity {
 
     private void syncUsers() {
         final UserService userService = new UserService((App)getApplication());
-
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -188,6 +192,7 @@ public class ContactActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         ErrorListener errorListener = new ErrorListener(mContext) {
@@ -196,71 +201,22 @@ public class ContactActivity extends AppCompatActivity {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
             }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+            }
         };
         long lastUserSync = syncPref.getLong(Constants.LAST_USER_SYNC,0);
         String url = Constants.API2_BASE_URL + "/users?after=" + lastUserSync;
         restUtility.get(url, listener, errorListener);
     }
 
-//    private void syncUsers(){
-//        Log.d(TAG,"syncUsers()");
-//        final Long lastSync = syncPref.getLong(Constants.LAST_USER_SYNC,0L);
-//        String url4 = Constants.API2_BASE_URL + "/users?after=" + lastSync;
-//        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Log.i(TAG, "users Response :" + response.toString());
-//                try {
-//                    JSONArray jsonUsers = response.getJSONArray("users");
-//                    Long userSync = response.getLong("userSync");
-//                    List<User> users = new ArrayList<>();
-//                    Long userId;
-//                    JSONObject u, b;
-//                    JSONArray buyers;
-//                    List<UserBuyer> userBuyerList;
-//                    for (int i = 0; i < jsonUsers.length(); i++) {
-//
-//                        u = jsonUsers.getJSONObject(i);
-//                        userId = u.getLong("id");
-//                        if (userService.exists(userId)) {
-//                            userBuyerService.deleteByUser(userId);
-//                        }
-//                        userService.saveOrUpdate(new User(
-//                                userId,
-//                                u.getString("name"),
-//                                u.getString("email"),
-//                                u.getString("mobile"),
-//                                u.getString("role"),
-//                                u.getString("userType"),
-//                                u.getString("level")
-//                        ));
-//                        buyers = u.getJSONArray("buyers");
-//                        if (buyers.length() > 0) {
-//                            userBuyerList = new ArrayList<>();
-//                            for (int j = 0; j < buyers.length(); j++){
-//                                b = buyers.getJSONObject(j);
-//                                userBuyerList.add(new UserBuyer(null,u.getLong("id"), b.getLong("id")));
-//                            }
-//                            userBuyerService.saveBatch(userBuyerList);
-//                        }
-//                    }
-//                    syncPref.edit().putLong(Constants.LAST_USER_SYNC, userSync).commit();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                showContacts();
-//            }
-//        };
-//        Response.ErrorListener errorListener = new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                //Log.e(TAG, error.getMessage());
-//            }
-//        };
-//        JsonObjectRequest request4 = new JsonObjectRequest(Request.Method.GET, url4, null, listener, errorListener);
-//        request4.setTag(TAG);
-//        AppController.getInstance().addToRequestQueue(request4);
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 
 
 }

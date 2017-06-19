@@ -12,11 +12,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -28,7 +30,7 @@ import java.util.List;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.CustomBuyerAdapter;
 import in.andonsystem.entity.Buyer;
@@ -54,6 +56,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private Spinner buyerFilter;
     private Spinner problemFilter;
     private EditText description;
+    private ProgressBar progress;
 
     private String selectedTeam = "Select Team";
 
@@ -68,7 +71,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
 
         mContext = this;
         app = (App) getApplication();
@@ -80,7 +83,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
         buyerFilter = (Spinner) findViewById(R.id.ri_buyer_filter);
         problemFilter = (Spinner) findViewById(R.id.ri_problem_filter);
         description = (EditText) findViewById(R.id.ri_problem_desc);
-
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
         /*//////////////// Populating team filter //////////////////////*/
         final String[] teams = appPref.getString(Constants.APP_TEAMS,"").split(";");
         final List<String> teamList = new ArrayList<>();
@@ -183,6 +186,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     }
 
     private void raiseIssue(JSONObject issue){
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -194,6 +198,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                progress.setVisibility(View.INVISIBLE);
                 finish();
             }
         };
@@ -202,6 +207,11 @@ public class RaiseIssueActivity extends AppCompatActivity {
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -213,4 +223,9 @@ public class RaiseIssueActivity extends AppCompatActivity {
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 }

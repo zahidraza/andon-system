@@ -48,16 +48,7 @@
         android:layout_height="wrap_content"
         style="?android:attr/progressBarStyle"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
 
-    <!--
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/home_filter">
-
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-    -->
 </RelativeLayout>

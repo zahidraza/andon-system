@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -37,7 +38,6 @@ import java.util.List;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterReport;
 import in.andonsystem.dto.Problem;
@@ -76,7 +76,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity4 = this;
+        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userPref = getSharedPreferences(Constants.USER_PREF,0);
@@ -160,6 +160,11 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
             }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+            }
         };
 
         if (userType.equalsIgnoreCase(Constants.USER_FACTORY)) {
@@ -203,7 +208,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+                    progress.setVisibility(View.INVISIBLE);
                 }
             };
         }else {
@@ -246,10 +251,11 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+                    progress.setVisibility(View.INVISIBLE);
                 }
             };
         }
+        progress.setVisibility(View.VISIBLE);
         restUtility.get(url, listener, errorListener);
 
     }
@@ -278,5 +284,9 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
             return new DatePickerDialog(getActivity(), (ReportActivity)getActivity(), year, month, day);
         }
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppClose.activity3 = null;
+    }
 }

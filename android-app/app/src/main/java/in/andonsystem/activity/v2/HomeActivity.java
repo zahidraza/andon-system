@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -33,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -50,7 +50,7 @@ import java.util.TreeSet;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.activity.ContactActivity;
 import in.andonsystem.activity.ProfileActivity;
@@ -62,9 +62,7 @@ import in.andonsystem.entity.Issue2;
 import in.andonsystem.entity.User;
 import in.andonsystem.entity.UserBuyer;
 import in.andonsystem.service.BuyerService;
-import in.andonsystem.service.DesignationService;
 import in.andonsystem.service.IssueService2;
-import in.andonsystem.service.ProblemDesignationService;
 import in.andonsystem.service.UserBuyerService;
 import in.andonsystem.service.UserService;
 import in.andonsystem.util.ErrorListener;
@@ -163,6 +161,12 @@ public class HomeActivity extends AppCompatActivity
                 //onStart();
                 Intent intent = new Intent(context, LoginActivity.class);
                 startActivity(intent);
+            }
+
+            @Override
+            protected void onError(VolleyError error) {
+                progress.setVisibility(View.INVISIBLE);
+                refreshLayout.setRefreshing(false);
             }
         };
         restUtility = new RestUtility(this){
@@ -451,7 +455,7 @@ public class HomeActivity extends AppCompatActivity
     private void syncUsers() {
         final UserService userService = new UserService((App)getApplication());
         final UserBuyerService userBuyerService = new UserBuyerService((App)getApplication());
-
+        progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -494,6 +498,7 @@ public class HomeActivity extends AppCompatActivity
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                progress.setVisibility(View.INVISIBLE);
             }
         };
         long lastUserSync = syncPref.getLong(Constants.LAST_USER_SYNC,0);
