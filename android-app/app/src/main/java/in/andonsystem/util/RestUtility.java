@@ -45,31 +45,22 @@ public class RestUtility {
 
     public void get(String url, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
         Log.d(TAG, "RestUtility: get url = " + url);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
+        send(Request.Method.GET,url,null,listener,errorListener);
+    }
 
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.GET, url, null,listener,errorListener);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        request.setTag("");  //TODO:
+    public void post(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
+        Log.d(TAG, "RestUtility: post url = " + url);
+        send(Request.Method.POST,url,data,listener,errorListener);
+    }
 
-        if (accessToken != null) {
-            request.setAccessToken(accessToken);
-            appController.addToRequestQueue(request);
-        }else {
-            redirectToLogin();
-//            String refreshToken = userPref.getString(Constants.USER_REFRESH_TOKEN, null);
-//            if (refreshToken != null) {
-//                accessToken = getAccessToken(refreshToken);
-//                if (accessToken != null) {
-//                    request.setAccessToken(accessToken);
-//                    appController.addToRequestQueue(request);
-//                }else {
-//                    redirectToLogin();
-//                }
-//            }else {
-//                redirectToLogin();
-//            }
-        }
+    public void patch(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
+        Log.d(TAG, "RestUtility: patch url = " + url);
+        send(Request.Method.PATCH,url,data,listener,errorListener);
+    }
 
+    public void put(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
+        Log.d(TAG, "RestUtility: put url = " + url);
+        send(Request.Method.PUT,url,data,listener,errorListener);
     }
 
     public void getJsonArray(String url, Response.Listener<JSONArray> listener, ErrorListener errorListener) {
@@ -101,39 +92,10 @@ public class RestUtility {
 
     }
 
-    public void post(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
-        Log.d(TAG, "RestUtility: post url = " + url);
+    private void send(int method, String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener){
         String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
 
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.POST, url, data,listener,errorListener);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        request.setTag("");  //TODO:
-
-        if (accessToken != null) {
-            request.setAccessToken(accessToken);
-            appController.addToRequestQueue(request);
-        }else {
-            redirectToLogin();
-//            String refreshToken = userPref.getString(Constants.USER_REFRESH_TOKEN, null);
-//            if (refreshToken != null) {
-//                accessToken = getAccessToken(refreshToken);
-//                if (accessToken != null) {
-//                    request.setAccessToken(accessToken);
-//                    appController.addToRequestQueue(request);
-//                }else {
-//                    redirectToLogin();
-//                }
-//            }else {
-//                redirectToLogin();
-//            }
-        }
-    }
-
-    public void patch(String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener) {
-        Log.d(TAG, "RestUtility: post url = " + url);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, data,listener,errorListener);
+        MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data,listener,errorListener);
         request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         request.setTag("");  //TODO:
 

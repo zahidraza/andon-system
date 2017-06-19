@@ -30,8 +30,12 @@ public class UserService {
                 .unique();
     }
 
-    public List<User> findAll(){
-        return userDao.loadAll();
+    public List<User> findAllCity(String userType){
+        return userDao.queryBuilder().where(UserDao.Properties.UserType.eq(userType)).list();
+    }
+
+    public List<User> findAllFactory(String userType){
+        return userDao.queryBuilder().where(UserDao.Properties.UserType.notEq(userType)).list();
     }
 
     public void saveOrUpdateBatch(List<User> users){

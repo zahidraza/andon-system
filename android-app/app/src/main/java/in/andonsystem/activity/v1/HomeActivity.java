@@ -38,6 +38,7 @@ import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
+import in.andonsystem.activity.ReportActivity;
 import in.andonsystem.adapter.AdapterHome;
 //import in.andonsystem.database.DatabaseManager;
 //import in.andonsystem.database.DatabaseSchema;
@@ -64,10 +65,8 @@ import in.andonsystem.service.UserService;
 import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.RestUtility;
-import in.andonsystem.v2.activity.AboutActivity;
-import in.andonsystem.v2.activity.ContactActivity;
-import in.andonsystem.v2.activity.HelpActivity;
-import in.andonsystem.v2.activity.ProfileActivity;
+import in.andonsystem.activity.ContactActivity;
+import in.andonsystem.activity.ProfileActivity;
 
 import com.splunk.mint.Mint;
 
@@ -268,13 +267,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_contacts) {
             Intent i = new Intent(context,ContactActivity.class);
             startActivity(i);
-        } else if (id == R.id.nav_help) {
-            Intent i = new Intent(context,HelpActivity.class);
-            startActivity(i);
-        }else if (id == R.id.nav_about) {
-            Intent i = new Intent(context,AboutActivity.class);
-            startActivity(i);
-        } else if (id == R.id.nav_logout) {
+        }else if (id == R.id.nav_logout) {
             userPref.edit()
                     .putBoolean(Constants.IS_LOGGED_IN, false)
                     .putString(Constants.USER_ACCESS_TOKEN,null)
@@ -753,10 +746,15 @@ public class HomeActivity extends AppCompatActivity
                             desgns = p.getJSONArray("designations");
                             Log.d(TAG, "prob = " + p.getString("name") + ", designations size = " + desgns.length());
                             if (desgns.length() > 0) {
+
+                                //Debugging
+                                if (probId == 11) {
+                                    Log.d(TAG,"no of designation = " + p.getJSONArray("designations"));
+                                }
                                 dpList = new ArrayList<>();
                                 for (int j = 0; j < desgns.length(); j++){
                                     d = desgns.getJSONObject(j);
-                                    dpList.add(new ProblemDesignation(null,d.getLong("id"), p.getLong("id")));
+                                    dpList.add(new ProblemDesignation(null,p.getLong("id"), d.getLong("id")));
                                 }
                                 dpService.saveBatch(dpList);
                             }

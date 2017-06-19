@@ -14,13 +14,14 @@ import in.andonsystem.view.LetterImageView;
 public class HolderContact extends RecyclerView.ViewHolder {
 
     LetterImageView icon;
-    TextView details;
+    TextView name;
+    TextView number;
 
     public HolderContact(View view){
         super(view);
 
         icon = (LetterImageView)view.findViewById(R.id.contact_icon);
-        details = (TextView)view.findViewById(R.id.contact_datails);
-
+        name = (TextView)view.findViewById(R.id.contact_name);
+        number = (TextView)view.findViewById(R.id.contact_number);
     }
 }

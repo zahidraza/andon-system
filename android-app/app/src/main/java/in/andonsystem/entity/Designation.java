@@ -143,14 +143,26 @@ public class Designation {
         myDao.update(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Designation that = (Designation) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1358289227)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getDesignationDao() : null;
     }
-
-
-
-
 }

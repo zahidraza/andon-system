@@ -16,21 +16,18 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
 import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterNotification;
@@ -92,68 +89,46 @@ public class NotificationActivity extends AppCompatActivity {
         if(currentTime == null){
             return;
         }
-        TreeSet<Notification> list = new TreeSet<>();
-        String message;
-        long timeAt;
-
+        TreeSet<Notification> list = null;
+        List<Issue1> issues;
         if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)) {
-            if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL0)) {
-                List<Issue1> issues = issueService.findAllByUser(user);
 
-                if (issues.size() > 0) {
-                    for (Issue1 issue : issues) {
-                        Log.d(TAG, "LEVEL0: issue = " + issue.getProblem());
-                        if (issue.getFixAt() != null) {
-                            message = (issue.getFixByUser().getId() == user.getId() ? "You " : issue.getAckByUser().getName() ) + " fixed " + "problem " +  issue.getProblem().getName() + " of department  " + issue.getProblem().getDepartment();
-                            timeAt = currentTime - issue.getAckAt().getTime();
-                            list.add(new Notification(issue.getId(),message,timeAt, 2));
-                        }else if (issue.getAckAt() != null) {
-                            message = (issue.getAckByUser().getId() == user.getId() ? "You " : issue.getAckByUser().getName() ) + " acknowledged " + "problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment();
-                            timeAt = currentTime - issue.getAckAt().getTime();
-                            list.add(new Notification(issue.getId(),message,timeAt, 1));
-                        }else {
-                            message = "Problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment() + " was raised by " + (issue.getRaisedByUser().getId() == user.getId() ? "you " : issue.getAckByUser().getName() );
-                            timeAt = currentTime - issue.getRaisedAt().getTime();
-                            list.add(new Notification(issue.getId(),message,timeAt, 0));
+            if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL0)) {
+                issues = issueService.findAllByUser(user);
+
+                list = getNotifications(issues);
+
+            }else {
+                Log.d(TAG, "user desgn = " + user.getDesignation().getName());
+                issues = issueService.getAllIssueForDesignation(user.getDesignation());
+                Log.d(TAG, "no of issues:" + issues.size());
+                List<Issue1> filteredIssue = new ArrayList<>();
+                if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL3)){
+                    for (Issue1 issue: issues) {
+                        if (issue.getProcessingAt() == 3){
+                            filteredIssue.add(issue);
+                        }
+                    }
+                }else if(user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL2)){
+                    for (Issue1 issue: issues) {
+                        if (issue.getProcessingAt() >= 2) {
+                            filteredIssue.add(issue);
+                        }
+                    }
+                }else if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL1)){
+                    for (Issue1 issue: issues) {
+                        if (issue.getProcessingAt() >= 1) {
+                            filteredIssue.add(issue);
                         }
                     }
                 }
-
+                list = getNotifications(filteredIssue);
             }
-
-//            List<Issue1> issues = issueService.findAllByBuyers(user.getBuyers());
-//
-//            if (issues.size() > 0){
-//                for ( Issue1 issue : issues){
-//                    Log.d(TAG, "MERCHANDISING: issue = " + issue.getProblem());
-//                    if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL3) && issue.getProcessingAt() != 3){
-//                        continue;
-//                    }else if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL2) && issue.getProcessingAt() < 2){
-//                        continue;
-//                    }
-//                    if(issue.getFixAt() != null){
-//                        message = "Problem " + issue.getProblem() + " of " + issue.getBuyer().getTeam() + ":" + issue.getBuyer().getName() + " was resolved.";
-//                        timeAt = currentTime - issue.getFixAt().getTime();
-//                        list.add(new Notification(issue.getId(),message,timeAt, 2));
-//                    }
-//                    else if(issue.getAckAt() != null){
-//                        message = "Problem " +  issue.getProblem() + " of " + issue.getBuyer().getTeam() + ":" + issue.getBuyer().getName() + " was acknowledged by "
-//                                + (issue.getAckBy() == user.getId() ? "you" : issue.getAckByUser().getName());
-//                        timeAt = currentTime - issue.getAckAt().getTime();
-//                        list.add(new Notification(issue.getId(),message,timeAt, 1));
-//                    }
-//                    else {
-//                        message = "Problem " +  issue.getProblem() + " of " + issue.getBuyer().getTeam() + ":" + issue.getBuyer().getName() + " was raised by " + issue.getRaisedByUser().getName();
-//                        timeAt = currentTime - issue.getRaisedAt().getTime();
-//                        list.add(new Notification(issue.getId(),message,timeAt, 0));
-//                    }
-//                }
 
         }
 
-
         ///////////////////////////
-        if (list.size() > 0){
+        if (list == null || list.size() > 0){
             Log.d(TAG, "No of Notifications: = " + list.size());
             container.addView(recyclerView);
             AdapterNotification adapter = new AdapterNotification(mContext,list,2);
@@ -168,6 +143,28 @@ public class NotificationActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         container.removeAllViews();
+    }
+
+    private TreeSet<Notification> getNotifications(List<Issue1> issues){
+        TreeSet<Notification> list = new TreeSet<>();
+        String message;
+        Long timeAt;
+        for (Issue1 issue : issues) {
+            if (issue.getFixAt() != null) {
+                message = (issue.getFixByUser().getId() == user.getId() ? "You " : issue.getFixByUser().getName() ) + " fixed " + "problem " +  issue.getProblem().getName() + " of department  " + issue.getProblem().getDepartment();
+                timeAt = currentTime - issue.getAckAt().getTime();
+                list.add(new Notification(issue.getId(),message,timeAt, 2));
+            }else if (issue.getAckAt() != null) {
+                message = (issue.getAckByUser().getId() == user.getId() ? "You " : issue.getAckByUser().getName() ) + " acknowledged " + "problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment();
+                timeAt = currentTime - issue.getAckAt().getTime();
+                list.add(new Notification(issue.getId(),message,timeAt, 1));
+            }else {
+                message = "Problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment() + " was raised by " + (issue.getRaisedByUser().getId() == user.getId() ? "you " : issue.getRaisedByUser().getName() );
+                timeAt = currentTime - issue.getRaisedAt().getTime();
+                list.add(new Notification(issue.getId(),message,timeAt, 0));
+            }
+        }
+        return list;
     }
 
     private void prepareScreen(){

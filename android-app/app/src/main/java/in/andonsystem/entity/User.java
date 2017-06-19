@@ -38,6 +38,9 @@ public class User {
 
     private Long desgnId;
 
+    @ToOne(joinProperty = "desgnId")
+    private Designation designation;
+
     @ToMany
     @JoinEntity(
             entity = UserBuyer.class,
@@ -53,6 +56,9 @@ public class User {
     /** Used for active entity operations. */
     @Generated(hash = 1507654846)
     private transient UserDao myDao;
+
+    @Generated(hash = 1433887650)
+    private transient Long designation__resolvedKey;
 
     public User(Long id, @NotNull String name, String email, String mobile,
                 String role, String userType, String level) {
@@ -228,10 +234,41 @@ public class User {
         return id.hashCode();
     }
 
+    /** To-one relationship, resolved on first access. */
+    @Generated(hash = 1683235924)
+    public Designation getDesignation() {
+        Long __key = this.desgnId;
+        if (designation__resolvedKey == null || !designation__resolvedKey.equals(__key)) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            DesignationDao targetDao = daoSession.getDesignationDao();
+            Designation designationNew = targetDao.load(__key);
+            synchronized (this) {
+                designation = designationNew;
+                designation__resolvedKey = __key;
+            }
+        }
+        return designation;
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1194385037)
+    public void setDesignation(Designation designation) {
+        synchronized (this) {
+            this.designation = designation;
+            desgnId = designation == null ? null : designation.getId();
+            designation__resolvedKey = desgnId;
+        }
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 2059241980)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getUserDao() : null;
     }
+
+
 }

@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".v2.activity.ProfileActivity"
+            android:name=".activity.ProfileActivity"
             android:label="@string/title_activity_profile"
             android:parentActivityName=".v2.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -49,7 +49,7 @@
                 android:value="in.andonsystem.v2.activity.HomeActivity" />
         </activity>
         <activity
-            android:name=".v2.activity.ContactActivity"
+            android:name=".activity.ContactActivity"
             android:label="@string/title_activity_contact"
             android:parentActivityName=".v2.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -107,7 +107,7 @@
             android:label="@string/title_activity_home1"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".v2.activity.ReportActivity"
+            android:name=".activity.ReportActivity"
             android:label="@string/title_activity_report"
             android:parentActivityName=".v2.activity.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -144,15 +144,6 @@
         <activity
             android:name=".activity.v1.StyleChangeOverActivity"
             android:label="@string/title_activity_style_change_over"
-            android:parentActivityName=".activity.v1.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.activity.v1.HomeActivity" />
-        </activity>
-        <activity
-            android:name=".activity.v1.ReportActivity"
-            android:label="@string/title_activity_report"
             android:parentActivityName=".activity.v1.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

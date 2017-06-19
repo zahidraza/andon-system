@@ -46,6 +46,7 @@ import in.andonsystem.entity.Issue1;
 import in.andonsystem.entity.Problem;
 import in.andonsystem.service.IssueService1;
 import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.MyJsonObjectRequest;
 import in.andonsystem.util.RestUtility;
 import in.andonsystem.v2.authenticator.AuthConstants;
@@ -192,37 +193,37 @@ public class IssueDetailActivity extends AppCompatActivity {
         }
         desc.setText(issue.getDescription());
 
-        Log.d(TAG, "issueId = " + issue.getId() + ", problem = " + issue.getProblem().getName());
+        Log.d(TAG, "issueId = " + issue.getId() + ", problem = " + issue.getProblem().getName() + ", for line = " + issue.getLine());
+        Log.d(TAG, "user desgn = " + user.getDesignation().getName());
 
         List<Designation> designations = issue.getProblem().getDesignations();
 
-        Log.d(TAG, "no of designation = " + designations.size());
+        Log.d(TAG, "designation concerned are:" + designations.size());
         Set<User> usersConcerned = new HashSet<>();
-        String[] lines;
-        Set<Integer> lineList = new HashSet<>();
         for (Designation designation: designations) {
-            lineList.clear();
-            String lins = designation.getLines();
-            lines = lins.substring(1,lins.length()-1).split(",");
-            for (String l: lines) {
-                if (l.trim().length() > 0){
-                    lineList.add(Integer.parseInt(l));
-                }
-            }
-            if (lineList.contains(issue.getLine())){
+            Log.d(TAG, "desgn = " + designation.getName());
+            if (MiscUtil.getLines(designation.getLines()).contains(issue.getLine())){
                 usersConcerned.addAll(designation.getUsers());
             }
         }
-        Log.d(TAG, "no. of users = " + usersConcerned.size());
+        Log.d(TAG, "concerned users are : " + usersConcerned.size());
+        for (User u: usersConcerned) {
+            Log.d(TAG, "user: " + u.getName());
+        }
+
+        Log.d(TAG, "is user concerned = " + usersConcerned.contains(user));
+
 
         if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)) {
             if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL0)){
                 if (issue.getFixAt() == null) {
                     if (issue.getAckAt() == null) {
                         //add ackbutton
+                        Log.d(TAG, "ADD ACK BUTTON");
                         layout.addView(ackButton);
                     }else {
                         //add Fix button
+                        Log.d(TAG, "ADD FIX BUTTON");
                         layout.addView(fixButton);
                     }
                 }
@@ -231,18 +232,22 @@ public class IssueDetailActivity extends AppCompatActivity {
                     if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL1)) {
                         if (issue.getAckAt() == null) {
                             //add ack button
+                            Log.d(TAG, "ADD ACK BUTTON");
                             layout.addView(ackButton);
                         }else if (issue.getFixAt() == null && issue.getSeekHelp() == 0) {
                             //add seek help button
                             layout.addView(seekHelpBtn);
+                            Log.d(TAG, "ADD SEEKHELP BUTTON");
                         }
                     }else if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL2)) {
                         if (issue.getProcessingAt() == 2) {
                             if (issue.getAckAt() == null) {
                                 //add ack button
+                                Log.d(TAG, "ADD ACK BUTTON");
                                 layout.addView(ackButton);
                             }else if (issue.getSeekHelp() < 2) {
                                 // add seekhelp button
+                                Log.d(TAG, "ADD SEEKHELP BUTTON");
                                 layout.addView(seekHelpBtn);
                             }
                         }

@@ -1,9 +1,7 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -24,10 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
@@ -35,13 +30,13 @@ import org.json.JSONObject;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
+import in.andonsystem.Constants;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
-import in.andonsystem.util.MyJsonObjectRequest;
-import in.andonsystem.v2.authenticator.AuthConstants;
 import in.andonsystem.entity.User;
 import in.andonsystem.service.UserService;
-import in.andonsystem.Constants;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 import in.andonsystem.view.LetterImageView;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -70,7 +65,8 @@ public class ProfileActivity extends AppCompatActivity {
     private App app;
     private UserService userService;
     private User user;
-    private AccountManager mAccountManager;
+    private RestUtility restUtility;
+    private ErrorListener errorListener;
 
 
     @Override
@@ -88,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
         app = (App)getApplication();
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
-        mAccountManager = AccountManager.get(this);
+        restUtility = new RestUtility(mContext);
 
         pImage = (LetterImageView)findViewById(R.id.profile_letter_image);
         username = (TextView) findViewById(R.id.profile_username);
@@ -143,12 +139,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         String emailId = userPref.getString(Constants.USER_EMAIL,null);
         Log.i(TAG, "email: " + emailId);
-        if (emailId == null) {
-            //Go to loading activity with first launch true
+        if (emailId != null) {
+            user = userService.findByEmail(emailId);
         }
-        user = userService.findByEmail(emailId);
 
-
+        errorListener = new ErrorListener(mContext) {
+            @Override
+            protected void handleTokenExpiry() {
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+            }
+        };
     }
 
     @Override
@@ -163,7 +164,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         showMobileEdit();
         showPasswordBtn();
-
 
     }
 
@@ -194,25 +194,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-                NetworkResponse resp = error.networkResponse;
-                if (resp != null && resp.statusCode == 401) {
-                    invalidateAccessToken();
-                    getAuthToken("CHANGE_MOBILE");
-                } else {
-                    showMessage("Check your internet connection.");
-                }
-            }
-        };
 
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-        if (accessToken == null) {
-            getAuthToken("CHANGE_MOBILE");
-            return;
-        }
         JSONObject reqData = new JSONObject();
         try {
             reqData.put("mobile",mobile);
@@ -220,9 +202,7 @@ public class ProfileActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
-        request.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.patch(url,reqData,listener,errorListener);
     }
 
     private void changePassword(){
@@ -262,30 +242,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 }
             };
-            Response.ErrorListener errorListener = new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(TAG, error.toString());
-                    NetworkResponse resp = error.networkResponse;
-                    if (resp != null && resp.statusCode == 401) {
-                        invalidateAccessToken();
-                        getAuthToken("CHANGE_PASSWORD");
-                    } else {
-                        showMessage("Check your internet connection.");
-                    }
-                }
-            };
-
-            String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-            if (accessToken == null) {
-                getAuthToken("CHANGE_PASSWORD");
-                return;
-            }
-
-            MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PUT, url, null, listener, errorListener, accessToken);
-            request.setTag(TAG);
-            AppController.getInstance().addToRequestQueue(request);
-
+            restUtility.put(url,null,listener,errorListener);
         }
 
     }
@@ -301,8 +258,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void showMobileSave(){
         layoutMobile.removeAllViews();;
-        //layoutMobile.removeView(mobileTextView);
-        //layoutMobile.removeView(mobileEdit);
 
         mobileEditText.setText(user.getMobile());
         mobileEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -405,47 +360,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private int convertDpToPixel(float dp){
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-
-    private void invalidateAccessToken(){
-        Log.d(TAG,"invalidateAccessToken");
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-        mAccountManager.invalidateAuthToken(AuthConstants.VALUE_ACCOUNT_TYPE,accessToken);
-    }
-
-    private void getAuthToken(final String method){
-        Log.d(TAG,"getAuthToken");
-        Account[] accounts = mAccountManager.getAccounts();
-        String email = userPref.getString(Constants.USER_EMAIL, null);
-        Account account = null;
-        for (Account a: accounts){
-            if(a.name.equals(email)){
-                account = a;
-                break;
-            }
-        }
-
-        final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(account, AuthConstants.AUTH_TOKEN_TYPE_FULL_ACCESS, null, this, null, null);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Bundle bnd = future.getResult();
-                    String authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                    userPref.edit().putString(Constants.USER_ACCESS_TOKEN,authToken).commit();
-                    if (method.equals("CHANGE_MOBILE")){
-                        changeMobile();
-                    }else if (method.equals("CHANGE_PASSWORD")){
-                        changePassword();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG,e.getMessage());
-                }
-            }
-        }).start();
     }
 
     private void showMessage(String message){

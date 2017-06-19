@@ -1,6 +1,7 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -14,10 +15,7 @@ import android.view.Gravity;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -28,14 +26,15 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterContact;
+import in.andonsystem.dto.Contact;
 import in.andonsystem.entity.User;
-import in.andonsystem.entity.UserBuyer;
-import in.andonsystem.service.UserBuyerService;
 import in.andonsystem.service.UserService;
 import in.andonsystem.Constants;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 import in.andonsystem.view.DividerItemDecoration;
 
 public class ContactActivity extends AppCompatActivity {
@@ -44,8 +43,8 @@ public class ContactActivity extends AppCompatActivity {
 
     private Context mContext;
     private App app;
+    private RestUtility restUtility;
     private UserService userService;
-    private UserBuyerService userBuyerService;
     private SharedPreferences userPref;
     private SharedPreferences syncPref;
     private User user;
@@ -70,8 +69,8 @@ public class ContactActivity extends AppCompatActivity {
         AppClose.activity4 = this;
         mContext = this;
         app = (App) getApplication();
+        restUtility = new RestUtility(mContext);
         userService = new UserService(app);
-        userBuyerService = new UserBuyerService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
         container = (RelativeLayout) findViewById(R.id.content_contact_layout);
@@ -81,8 +80,9 @@ public class ContactActivity extends AppCompatActivity {
             Log.d(TAG, "User email  not found in userPref file. handle inconsistency");
         }
         user = userService.findByEmail(email);
-        prepareScreen();
         syncUsers();
+        prepareScreen();
+
     }
 
     @Override
@@ -112,14 +112,17 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     private void showContacts(){
-        List<String> contacts = new ArrayList<>();
-        if (!user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)){
-            List<User> users = userService.findAll();
+        List<Contact> contacts = new ArrayList<>();
+        if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)){
+            List<User> users = userService.findAllFactory(Constants.USER_FACTORY);
             for (User user: users){
-                contacts.add(user.getName() + "\n +91 " + user.getMobile());
+                contacts.add(new Contact(user.getName(), "+91 " + user.getMobile()));
             }
         }else {
-
+            List<User> users = userService.findAllCity(Constants.USER_FACTORY);
+            for (User user: users){
+                contacts.add(new Contact(user.getName(), user.getMobile()));
+            }
         }
         if(contacts.size() > 0){
             adapterContact = new AdapterContact(this, contacts);
@@ -139,10 +142,9 @@ public class ContactActivity extends AppCompatActivity {
         }
     }
 
-    private void syncUsers(){
-        Log.d(TAG,"syncUsers()");
-        final Long lastSync = syncPref.getLong(Constants.LAST_USER_SYNC,0L);
-        String url4 = Constants.API2_BASE_URL + "/users?after=" + lastSync;
+    private void syncUsers() {
+        final UserService userService = new UserService((App)getApplication());
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -151,53 +153,105 @@ public class ContactActivity extends AppCompatActivity {
                     JSONArray jsonUsers = response.getJSONArray("users");
                     Long userSync = response.getLong("userSync");
                     List<User> users = new ArrayList<>();
-                    Long userId;
-                    JSONObject u, b;
-                    JSONArray buyers;
-                    List<UserBuyer> userBuyerList;
+                    JSONObject u;
+                    User user;
                     for (int i = 0; i < jsonUsers.length(); i++) {
 
                         u = jsonUsers.getJSONObject(i);
-                        userId = u.getLong("id");
-                        if (userService.exists(userId)) {
-                            userBuyerService.deleteByUser(userId);
-                        }
-                        userService.saveOrUpdate(new User(
-                                userId,
+                        user = new User(
+                                u.getLong("id"),
                                 u.getString("name"),
                                 u.getString("email"),
                                 u.getString("mobile"),
                                 u.getString("role"),
                                 u.getString("userType"),
                                 u.getString("level")
-                        ));
-                        buyers = u.getJSONArray("buyers");
-                        if (buyers.length() > 0) {
-                            userBuyerList = new ArrayList<>();
-                            for (int j = 0; j < buyers.length(); j++){
-                                b = buyers.getJSONObject(j);
-                                userBuyerList.add(new UserBuyer(null,u.getLong("id"), b.getLong("id")));
-                            }
-                            userBuyerService.saveBatch(userBuyerList);
+                        );
+
+                        if (! u.getString("desgnId").equals("null")) {
+                            user.setDesgnId(u.getLong("desgnId"));
                         }
+                        users.add(user);
+
                     }
+                    userService.saveOrUpdateBatch(users);
                     syncPref.edit().putLong(Constants.LAST_USER_SYNC, userSync).commit();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                showContacts();
             }
         };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
+        ErrorListener errorListener = new ErrorListener(mContext) {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                //Log.e(TAG, error.getMessage());
+            protected void handleTokenExpiry() {
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
             }
         };
-        JsonObjectRequest request4 = new JsonObjectRequest(Request.Method.GET, url4, null, listener, errorListener);
-        request4.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request4);
+        long lastUserSync = syncPref.getLong(Constants.LAST_USER_SYNC,0);
+        String url = Constants.API2_BASE_URL + "/users?after=" + lastUserSync;
+        restUtility.get(url, listener, errorListener);
     }
+
+//    private void syncUsers(){
+//        Log.d(TAG,"syncUsers()");
+//        final Long lastSync = syncPref.getLong(Constants.LAST_USER_SYNC,0L);
+//        String url4 = Constants.API2_BASE_URL + "/users?after=" + lastSync;
+//        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                Log.i(TAG, "users Response :" + response.toString());
+//                try {
+//                    JSONArray jsonUsers = response.getJSONArray("users");
+//                    Long userSync = response.getLong("userSync");
+//                    List<User> users = new ArrayList<>();
+//                    Long userId;
+//                    JSONObject u, b;
+//                    JSONArray buyers;
+//                    List<UserBuyer> userBuyerList;
+//                    for (int i = 0; i < jsonUsers.length(); i++) {
+//
+//                        u = jsonUsers.getJSONObject(i);
+//                        userId = u.getLong("id");
+//                        if (userService.exists(userId)) {
+//                            userBuyerService.deleteByUser(userId);
+//                        }
+//                        userService.saveOrUpdate(new User(
+//                                userId,
+//                                u.getString("name"),
+//                                u.getString("email"),
+//                                u.getString("mobile"),
+//                                u.getString("role"),
+//                                u.getString("userType"),
+//                                u.getString("level")
+//                        ));
+//                        buyers = u.getJSONArray("buyers");
+//                        if (buyers.length() > 0) {
+//                            userBuyerList = new ArrayList<>();
+//                            for (int j = 0; j < buyers.length(); j++){
+//                                b = buyers.getJSONObject(j);
+//                                userBuyerList.add(new UserBuyer(null,u.getLong("id"), b.getLong("id")));
+//                            }
+//                            userBuyerService.saveBatch(userBuyerList);
+//                        }
+//                    }
+//                    syncPref.edit().putLong(Constants.LAST_USER_SYNC, userSync).commit();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                showContacts();
+//            }
+//        };
+//        Response.ErrorListener errorListener = new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                //Log.e(TAG, error.getMessage());
+//            }
+//        };
+//        JsonObjectRequest request4 = new JsonObjectRequest(Request.Method.GET, url4, null, listener, errorListener);
+//        request4.setTag(TAG);
+//        AppController.getInstance().addToRequestQueue(request4);
+//    }
 
 
 }
