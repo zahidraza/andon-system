@@ -84,7 +84,6 @@ public class ProfileActivity extends AppCompatActivity {
         app = (App)getApplication();
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
-        restUtility = new RestUtility(mContext);
 
         pImage = (LetterImageView)findViewById(R.id.profile_letter_image);
         username = (TextView) findViewById(R.id.profile_username);
@@ -135,8 +134,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
-
         String emailId = userPref.getString(Constants.USER_EMAIL,null);
         Log.i(TAG, "email: " + emailId);
         if (emailId != null) {
@@ -148,6 +145,25 @@ public class ProfileActivity extends AppCompatActivity {
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
+            }
+        };
+        errorListener = new ErrorListener(this) {
+            @Override
+            protected void handleTokenExpiry() {
+                //onStart();
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+            }
+        };
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
             }
         };
     }

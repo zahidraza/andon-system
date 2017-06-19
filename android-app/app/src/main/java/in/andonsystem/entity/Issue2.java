@@ -50,6 +50,8 @@ public class Issue2 implements Comparable<Issue2>{
 
     private Integer processingAt;
 
+    private Boolean deleted;
+
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -81,10 +83,20 @@ public class Issue2 implements Comparable<Issue2>{
         this.processingAt = processingAt;
     }
 
+    public Issue2(Long id, Long buyerId, String problem, String description, Long raisedBy, Date raisedAt, Integer processingAt, Boolean deleted) {
+        this.id = id;
+        this.buyerId = buyerId;
+        this.problem = problem;
+        this.description = description;
+        this.raisedBy = raisedBy;
+        this.raisedAt = raisedAt;
+        this.processingAt = processingAt;
+        this.deleted = deleted;
+    }
 
-    @Generated(hash = 1949037530)
-    public Issue2(Long id, Long buyerId, String problem, String description, Long raisedBy, Long ackBy, Long fixBy, Date raisedAt, Date ackAt,
-            Date fixAt, Integer processingAt) {
+    @Generated(hash = 2011293297)
+    public Issue2(Long id, Long buyerId, String problem, String description, Long raisedBy, Long ackBy, Long fixBy, Date raisedAt, Date ackAt, Date fixAt,
+            Integer processingAt, Boolean deleted) {
         this.id = id;
         this.buyerId = buyerId;
         this.problem = problem;
@@ -96,8 +108,8 @@ public class Issue2 implements Comparable<Issue2>{
         this.ackAt = ackAt;
         this.fixAt = fixAt;
         this.processingAt = processingAt;
+        this.deleted = deleted;
     }
-
 
     @Generated(hash = 1956790151)
     public Issue2() {
@@ -201,6 +213,14 @@ public class Issue2 implements Comparable<Issue2>{
 
     public void setFixAt(Date fixAt) {
         this.fixAt = fixAt;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     /**

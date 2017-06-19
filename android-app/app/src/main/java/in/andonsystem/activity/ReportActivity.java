@@ -92,22 +92,15 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         buyerService = new BuyerService(app);
         problemService = new ProblemService(app);
-        restUtility = new RestUtility(mContext);
         userType = userPref.getString(Constants.USER_TYPE,"");
 
         progress = (ProgressBar)findViewById(R.id.loading_progress);
         container = (LinearLayout)findViewById(R.id.report_container);
 
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
 
-
-        String date = String.format("%02d/%02d/%04d",day,month+1,year);
 
         dateView = (TextView)findViewById(R.id.date_view);
-        dateView.setText(date);
+        dateView.setText(getTodayDate());
 
         recyclerView = new RecyclerView(this);
         RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
@@ -126,8 +119,31 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         params2.weight = 1.0f;
         message.setText("No Report for selected day found");
         message.setTextColor(ContextCompat.getColor(this,R.color.tomato));
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
 
-        showReport(date);
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showReport(getTodayDate());
+    }
+
+    private String getTodayDate() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        return String.format("%02d/%02d/%04d",day,month+1,year);
     }
 
     public void selectDate(View view){
@@ -152,6 +168,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
             @Override
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
             }
         };
 

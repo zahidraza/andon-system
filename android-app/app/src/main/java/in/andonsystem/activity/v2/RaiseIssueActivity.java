@@ -1,9 +1,10 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity.v2;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.RestUtility;
@@ -40,12 +42,12 @@ import in.andonsystem.service.BuyerService;
 import in.andonsystem.service.UserService;
 import in.andonsystem.Constants;
 
-public class RaiseIssueActivity2 extends AppCompatActivity {
+public class RaiseIssueActivity extends AppCompatActivity {
 
-    private final String TAG = RaiseIssueActivity2.class.getSimpleName();
+    private final String TAG = RaiseIssueActivity.class.getSimpleName();
 
     private Context mContext;
-    private AccountManager mAccountManager;
+    private RestUtility restUtility;
     private App app;
 
     private SharedPreferences userPref;
@@ -58,7 +60,6 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
     private EditText description;
 
     private String selectedTeam = "Select Team";
-    private JSONObject issue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,6 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
 
         mContext = this;
         app = (App) getApplication();
-        mAccountManager = AccountManager.get(this);
         userPref = getSharedPreferences(Constants.USER_PREF, 0);
         appPref = getSharedPreferences(Constants.APP_PREF,0);
         userService = new UserService(app);
@@ -115,7 +115,23 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
         problemAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         problemFilter.setAdapter(problemAdapter);
 
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
 
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     private void updateBuyer(){
@@ -158,7 +174,7 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
             showMessage("Enter problem description.");
             return;
         }
-        issue = new JSONObject();
+        JSONObject issue = new JSONObject();
         try {
             issue.put("buyerId",buyerId);
             issue.put("problem",problem);
@@ -167,14 +183,10 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        raiseIssue();
+        raiseIssue(issue);
     }
 
-    private void raiseIssue(){
-
-        RestUtility restUtility = new RestUtility(this);
-
-
+    private void raiseIssue(JSONObject issue){
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -192,80 +204,17 @@ public class RaiseIssueActivity2 extends AppCompatActivity {
         ErrorListener errorListener = new ErrorListener(mContext) {
             @Override
             protected void handleTokenExpiry() {
-                raiseIssue();
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
             }
         };
-//        Response.ErrorListener errorListener = new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                NetworkResponse resp = error.networkResponse;
-////                String data = new String(resp.data != null ? resp.data : "empty body".getBytes());
-////                Log.d(TAG,data);
-//                if (resp != null && resp.statusCode == 400){
-//                    showMessage("Some error occured. inform developer.");
-//                }
-//                else if (resp != null && resp.statusCode == 401){
-//                    invalidateAccessToken();
-//                    getAuthToken();
-//                }
-//                else{
-//                    showMessage("check your internet connection");
-//                }
-//            }
-//        };
 
         String url = Constants.API2_BASE_URL + "/issues";
-        Log.d(TAG, "Issue2 Raise url:" + url);
         restUtility.post(url,issue,listener,errorListener);
-//        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-//        if(accessToken == null){
-//            getAuthToken();
-//            return;
-//        }
-//        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.POST,url,issue,listener,errorListener,accessToken);
-//        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//        request.setTag(TAG);
-//        AppController.getInstance().addToRequestQueue(request);
     }
 
     private void showMessage(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
-    }
-
-    private void invalidateAccessToken(){
-        Log.d(TAG,"invalidateAccessToken");
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-        mAccountManager.invalidateAuthToken(AuthConstants.VALUE_ACCOUNT_TYPE,accessToken);
-    }
-
-    private void getAuthToken(){
-        Log.d(TAG,"getAuthToken");
-        Account[] accounts = mAccountManager.getAccounts();
-        String email = userPref.getString(Constants.USER_EMAIL, null);
-        Account account = null;
-        for (Account a: accounts){
-            if(a.name.equals(email)){
-                account = a;
-                break;
-            }
-        }
-
-        final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(account, AuthConstants.AUTH_TOKEN_TYPE_FULL_ACCESS, null, this, null, null);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Bundle bnd = future.getResult();
-                    String authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                    userPref.edit().putString(Constants.USER_ACCESS_TOKEN,authToken).commit();
-                    raiseIssue();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG,e.getMessage());
-                }
-            }
-        }).start();
     }
 
 }

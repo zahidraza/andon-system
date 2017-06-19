@@ -14,8 +14,7 @@ import android.widget.TextView;
 import java.util.TreeSet;
 
 import in.andonsystem.R;
-import in.andonsystem.activity.v1.IssueDetailActivity;
-import in.andonsystem.v2.activity.IssueDetailActivity2;
+import in.andonsystem.activity.v2.IssueDetailActivity;
 import in.andonsystem.dto.Problem;
 
 public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
@@ -42,9 +41,9 @@ public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
                 Intent intent;
                 Log.d("Adapter","$$$ appNo = " + appNo);
                 if (appNo.equals("1")) {
-                    intent = new Intent(context, IssueDetailActivity.class);
+                    intent = new Intent(context, in.andonsystem.activity.v1.IssueDetailActivity.class);
                 }else {
-                    intent = new Intent(context, IssueDetailActivity2.class);
+                    intent = new Intent(context, IssueDetailActivity.class);
                 }
                 intent.putExtra("issueId", Long.parseLong(idStr));
                 context.startActivity(intent);

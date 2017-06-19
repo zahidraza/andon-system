@@ -1,6 +1,7 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity.v2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import java.util.TreeSet;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterNotification;
 import in.andonsystem.dto.Notification;
@@ -38,10 +40,12 @@ import in.andonsystem.entity.User;
 import in.andonsystem.service.IssueService2;
 import in.andonsystem.service.UserService;
 import in.andonsystem.Constants;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 
-public class NotificationActivity2 extends AppCompatActivity {
+public class NotificationActivity extends AppCompatActivity {
 
-    private final String TAG = NotificationActivity2.class.getSimpleName();
+    private final String TAG = NotificationActivity.class.getSimpleName();
 
     private Context mContext;
     private App app;
@@ -187,28 +191,38 @@ public class NotificationActivity2 extends AppCompatActivity {
     }
 
     private void getCurrentTime(){
+        RestUtility restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
         String url = Constants.API2_BASE_URL + "/misc/current_time";
+
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, "Response :" + response.toString());
                 try {
-                   currentTime = response.getLong("currentTime");
+                    currentTime = response.getLong("currentTime");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 onStart();
             }
         };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
+        ErrorListener errorListener = new ErrorListener(this) {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                //Log.e(TAG, error.getMessage());
+            protected void handleTokenExpiry() {
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
             }
         };
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
-        request.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request);
-
+        restUtility.get(url, listener, errorListener);
     }
 }

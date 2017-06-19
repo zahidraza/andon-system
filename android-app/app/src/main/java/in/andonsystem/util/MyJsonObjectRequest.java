@@ -19,9 +19,11 @@ import java.util.Map;
 public class MyJsonObjectRequest extends JsonObjectRequest {
 
     private String accessToken;
+    private Boolean isloginRequest = false;
 
-    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, boolean isloginRequest) {
         super(method, url, jsonRequest, listener, errorListener);
+        this.isloginRequest = isloginRequest;
     }
 
     public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, String accessToken) {
@@ -32,9 +34,12 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headers = new HashMap<>();
-        Log.d("TAG","access token: " + accessToken);
-        headers.put("Authorization", "Bearer " + accessToken);
-        //headers.put("Accept", "application/json; charset=utf-8");
+        if (isloginRequest) {
+            headers.put("Authorization", "Basic " + Base64.encodeToString("client-android:super-secret".getBytes(),0));
+        }else {
+            headers.put("Authorization", "Bearer " + accessToken);
+        }
+        headers.put("Accept", "application/json; charset=utf-8");
         return headers;
     }
 

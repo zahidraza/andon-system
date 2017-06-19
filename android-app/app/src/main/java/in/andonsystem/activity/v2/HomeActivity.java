@@ -1,4 +1,4 @@
-package in.andonsystem.activity.v1;
+package in.andonsystem.activity.v2;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,23 +8,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
@@ -33,32 +33,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Response;
-
-import in.andonsystem.App;
-import in.andonsystem.AppClose;
-import in.andonsystem.Constants;
-import in.andonsystem.LoginActivity;
-import in.andonsystem.activity.ReportActivity;
-import in.andonsystem.adapter.AdapterHome;
-
-import in.andonsystem.R;
-import in.andonsystem.dto.Problem;
-import in.andonsystem.entity.Designation;
-import in.andonsystem.entity.ProblemDesignation;
-import in.andonsystem.entity.Issue1;
-
-import in.andonsystem.entity.User;
-import in.andonsystem.service.ProblemDesignationService;
-import in.andonsystem.service.DesignationService;
-import in.andonsystem.service.IssueService1;
-import in.andonsystem.service.ProblemService;
-import in.andonsystem.service.UserService;
-import in.andonsystem.util.ErrorListener;
-import in.andonsystem.util.MiscUtil;
-import in.andonsystem.util.RestUtility;
-import in.andonsystem.activity.ContactActivity;
-import in.andonsystem.activity.ProfileActivity;
-
 import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
@@ -73,17 +47,37 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
+import in.andonsystem.App;
+import in.andonsystem.AppClose;
+import in.andonsystem.Constants;
+import in.andonsystem.LoginActivity;
+import in.andonsystem.R;
+import in.andonsystem.activity.ContactActivity;
+import in.andonsystem.activity.ProfileActivity;
+import in.andonsystem.activity.ReportActivity;
+import in.andonsystem.adapter.AdapterHome;
+import in.andonsystem.dto.Problem;
+import in.andonsystem.entity.Buyer;
+import in.andonsystem.entity.Issue2;
+import in.andonsystem.entity.User;
+import in.andonsystem.entity.UserBuyer;
+import in.andonsystem.service.BuyerService;
+import in.andonsystem.service.DesignationService;
+import in.andonsystem.service.IssueService2;
+import in.andonsystem.service.ProblemDesignationService;
+import in.andonsystem.service.UserBuyerService;
+import in.andonsystem.service.UserService;
+import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.MiscUtil;
+import in.andonsystem.util.RestUtility;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final String TAG = HomeActivity.class.getSimpleName();
 
-    private Spinner line;
-    private Spinner section;
-    private Spinner dept;
-    private Integer lineNo;
-    private String secSelected;
-    private String deptSelected;
+    private Spinner teamFilter;
+    private String teamSelected = "All Teams";
     private RecyclerView recyclerView;
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout container;
@@ -93,7 +87,9 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar;
 
     private Boolean rvViewAdded;
+    private SQLiteDatabase db;
     private DateFormat df;
+    private SharedPreferences sharedPref;
     private Context context;
     private AlertDialog exitDialog;
 
@@ -105,7 +101,8 @@ public class HomeActivity extends AppCompatActivity
     private RestUtility restUtility;
     private ErrorListener errorListener;
     private UserService userService;
-    private IssueService1 issueService;
+    private UserBuyerService userBuyerService;
+    private IssueService2 issueService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +110,7 @@ public class HomeActivity extends AppCompatActivity
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
         Mint.initAndStartSession(getApplication(), "544df31b");
         Mint.leaveBreadcrumb("home activity created");
-        setContentView(R.layout.activity_home1
+        setContentView(R.layout.activity_home2
         );
         Log.i(TAG,"onCreate()");
         AppClose.activity2 = this;
@@ -129,9 +126,8 @@ public class HomeActivity extends AppCompatActivity
         //views mapping
         progress = (ProgressBar)findViewById(R.id.loading_progress);
         progress.setVisibility(View.INVISIBLE);
-        line = (Spinner)findViewById(R.id.home_line);
-        section = (Spinner)findViewById(R.id.home_section);
-        dept = (Spinner)findViewById(R.id.home_department);
+        
+        teamFilter = (Spinner)findViewById(R.id.home_team_filter);
         container = (RelativeLayout)findViewById(R.id.home_container);
         //Create swipe refresh layout
         refreshLayout = new SwipeRefreshLayout(context);
@@ -139,7 +135,7 @@ public class HomeActivity extends AppCompatActivity
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT
         );
-        param1.addRule(RelativeLayout.BELOW,R.id.home_filter);
+        param1.addRule(RelativeLayout.BELOW,R.id.home_team_filter);
         refreshLayout.setLayoutParams(param1);
         //create recycler view
         recyclerView = new RecyclerView(context);
@@ -153,7 +149,7 @@ public class HomeActivity extends AppCompatActivity
         RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT
         );
-        params1.addRule(RelativeLayout.BELOW,R.id.home_filter);
+        params1.addRule(RelativeLayout.BELOW,R.id.home_team_filter);
         params1.topMargin = 50;
         textView.setLayoutParams(params1);
         textView.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -181,7 +177,8 @@ public class HomeActivity extends AppCompatActivity
             }
         };
         userService = new UserService((App)getApplication());
-        issueService = new IssueService1((App)getApplication());
+        userBuyerService = new UserBuyerService((App)getApplication());
+        issueService = new IssueService2((App)getApplication());
     }
 
     @Override
@@ -199,9 +196,6 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
-//        if(desgnId == 43) {     ///SMED Executive
-//            menu.removeItem(R.id.action_notification);
-//        }
         return true;
     }
 
@@ -212,7 +206,7 @@ public class HomeActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_sync) {
-           syncIssues();
+            syncIssues();
         }
         if(id == R.id.action_notification){
             Intent i = new Intent(context,NotificationActivity.class);
@@ -230,8 +224,7 @@ public class HomeActivity extends AppCompatActivity
 
         boolean firstLaunch = appPref.getBoolean(Constants.APP1_FIRST_LAUNCH, true);
         int lastAppUsed = appPref.getInt(Constants.LAST_APP_USED,0);
-        Log.d(TAG, "firstLaunch = " + firstLaunch + ", lastAppUsed = " + lastAppUsed);
-        if (firstLaunch || lastAppUsed == 2) {
+        if (firstLaunch || lastAppUsed == 1) {
             progress.setVisibility(View.VISIBLE);
             initializeApp();
         }else {
@@ -260,10 +253,7 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_stylechangeover) {
-            Intent i = new Intent(context,StyleChangeOverActivity.class);
-            startActivity(i);
-        } else if (id == R.id.nav_report) {
+        if (id == R.id.nav_report) {
             Intent i = new Intent(context,ReportActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_contacts) {
@@ -292,12 +282,16 @@ public class HomeActivity extends AppCompatActivity
     public void showIssues(){
         Log.i(TAG,"showIssues()");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        IssueService1 issueService = new IssueService1((App)getApplication());
+        IssueService2 issueService = new IssueService2((App)getApplication());
+        List<Issue2> issueList;
+        if (teamSelected == null || teamSelected.contains("All")) {
+            issueList = issueService.findAll();
+        }else {
+            issueList = issueService.findAllByTeam(teamSelected);
+        }
 
-        List<Issue1> issueList = issueService.findAllWithFilter(lineNo,secSelected,deptSelected);
-        
         TreeSet<Problem> issues = getIssue(issueList);
-        
+
         if(!issues.isEmpty()){
             //Remove both views first if exist
             container.removeView(textView);
@@ -324,15 +318,15 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-    private TreeSet<Problem> getIssue(List<Issue1> list){
+    private TreeSet<Problem> getIssue(List<Issue2> list){
         Log.d(TAG,"getIssue2");
-        df = new SimpleDateFormat("hh:mm aa");
+        df = new SimpleDateFormat("dd MMM, hh:mm a");
         df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
 
-        TreeSet<in.andonsystem.dto.Problem> issues = new TreeSet<>();
-        
+        TreeSet<Problem> issues = new TreeSet<>();
+
         Log.d(TAG, "Issue2 size = " + list.size());
-        for (Issue1 i : list) {
+        for (Issue2 i : list) {
             Log.d(TAG,"issue: " + i.toString());
             issues.add(getProblem(i));
         }
@@ -340,19 +334,17 @@ public class HomeActivity extends AppCompatActivity
         return issues;
     }
 
-    private Problem getProblem(Issue1 issue){
+    private Problem getProblem(Issue2 issue){
         String raiseTime = df.format(issue.getRaisedAt());
         long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
-        return new Problem(issue.getId(), "Line " + issue.getLine(), issue.getProblem().getDepartment(), issue.getProblem().getName(),raiseTime,downtime,flag,1);
+        return new Problem(issue.getId(), "Line " + issue.getBuyer().getTeam(), issue.getBuyer().getName(), issue.getProblem(),raiseTime,downtime,flag,2);
     }
 
     public void syncIssues(){
         Log.i(TAG,"syncIssues()");
         refreshLayout.setRefreshing(true);
-        final IssueService1 issueService = new IssueService1((App)getApplication());
-
-        Long syncTime = syncPref.getLong(Constants.LAST_ISSUE1_SYNC,0);
+        final IssueService2 issueService = new IssueService2((App)getApplication());
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
@@ -379,21 +371,19 @@ public class HomeActivity extends AppCompatActivity
                             rvViewAdded = true;
                         }
                             /*Save or Update Issues in database*/
-                        List<Issue1> issueList = new ArrayList<>();
+                        List<Issue2> issueList = new ArrayList<>();
                         for (int i = 0; i < issues.length(); i++) {
                             issueList.add(getIssueEntity(issues.getJSONObject(i)));
                         }
                         issueService.saveOrUpdate(issueList);
-                        Issue1 i;
-                        for (Issue1 issue : issueList) {
+                        Issue2 i;
+                        for (Issue2 issue : issueList) {
                             i = issueService.findOne(issue.getId());
                             //If Issue2 belongs to applied filter then add or update rvAdapter
-                            Log.d(TAG,"lineNo = " + lineNo + ", sec = " + secSelected + ", dept = " + deptSelected);
-                            Log.d(TAG,"lineNo = " + i.getLine() + ", sec = " + i.getSection() + ", dept = " + i.getProblem().getDepartment());
+                            Log.d(TAG,"selectedTeam = " + teamSelected);
+                            Log.d(TAG,"team for issue = " + i.getBuyer().getTeam());
 
-                            if (lineNo == null || secSelected == null || deptSelected == null || lineNo == 0 || secSelected.contains("All") ||
-                                    deptSelected.contains("All") || i.getLine().equals(lineNo) || i.getSection().equalsIgnoreCase(secSelected) ||
-                                    i.getProblem().getDepartment().equalsIgnoreCase(deptSelected)) {
+                            if (teamSelected == null || teamSelected.contains("All") || teamSelected.equalsIgnoreCase(i.getBuyer().getTeam())) {
 
                                 if (issue.getFixAt() == null && issue.getAckAt() == null) {
                                     Log.i(TAG, "Adapter : add Issue2");
@@ -406,7 +396,7 @@ public class HomeActivity extends AppCompatActivity
                         }
 
                     }
-                    syncPref.edit().putLong(Constants.LAST_ISSUE1_SYNC, syncTime).commit();
+                    syncPref.edit().putLong(Constants.LAST_ISSUE2_SYNC, syncTime).commit();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -421,27 +411,22 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(intent);
             }
         };
-
-        String url = Constants.API1_BASE_URL + "/issues?start=" + syncTime;
+        Long lastSync = syncPref.getLong(Constants.LAST_ISSUE2_SYNC,0);
+        String url = Constants.API2_BASE_URL + "/issues?start=" + lastSync;
         restUtility.get(url,listener,errorListener1);
     }
 
-    private Issue1 getIssueEntity(JSONObject i) {
-        Issue1 mIssue = null;
+    private Issue2 getIssueEntity(JSONObject i) {
+        Issue2 mIssue = null;
         try {
-            mIssue = new Issue1(
+            mIssue = new Issue2(
                     i.getLong("id"),
-                    i.getInt("line"),
-                    i.getString("section"),
-                    i.getLong("problemId"),
-                    i.getString("critical"),
-                    i.getString("operatorNo"),
+                    i.getLong("buyerId"),
+                    i.getString("problem"),
                     i.getString("description"),
                     i.getLong("raisedBy"),
                     new Date(i.getLong("raisedAt")),
                     i.getInt("processingAt"),
-//                    i.getInt("seekHelp"),
-                    null,
                     i.getBoolean("deleted")
             );
 
@@ -464,38 +449,45 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void syncUsers() {
-        userService = new UserService((App)getApplication());
+        final UserService userService = new UserService((App)getApplication());
+        final UserBuyerService userBuyerService = new UserBuyerService((App)getApplication());
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG, "users Response :" + response.toString());
                 try {
                     JSONArray jsonUsers = response.getJSONArray("users");
                     Long userSync = response.getLong("userSync");
-                    List<User> users = new ArrayList<>();
-                    JSONObject u;
-                    User user;
+                    Long userId;
+                    JSONObject u, b;
+                    JSONArray buyers;
+                    List<UserBuyer> userBuyerList;
                     for (int i = 0; i < jsonUsers.length(); i++) {
 
                         u = jsonUsers.getJSONObject(i);
-                        user = new User(
-                                u.getLong("id"),
+                        userId = u.getLong("id");
+                        if (userService.exists(userId)) {
+                            userBuyerService.deleteByUser(userId);
+                        }
+                        userService.saveOrUpdate(new User(
+                                userId,
                                 u.getString("name"),
                                 u.getString("email"),
                                 u.getString("mobile"),
                                 u.getString("role"),
                                 u.getString("userType"),
                                 u.getString("level")
-                        );
-
-                        if (! u.getString("desgnId").equals("null")) {
-                            user.setDesgnId(u.getLong("desgnId"));
+                        ));
+                        buyers = u.getJSONArray("buyers");
+                        if (buyers.length() > 0) {
+                            userBuyerList = new ArrayList<>();
+                            for (int j = 0; j < buyers.length(); j++){
+                                b = buyers.getJSONObject(j);
+                                userBuyerList.add(new UserBuyer(null,u.getLong("id"), b.getLong("id")));
+                            }
+                            userBuyerService.saveBatch(userBuyerList);
                         }
-                        users.add(user);
-
                     }
-                    userService.saveOrUpdateBatch(users);
                     syncPref.edit()
                             .putLong(Constants.LAST_USER_SYNC, userSync)
                             .commit();
@@ -504,7 +496,6 @@ public class HomeActivity extends AppCompatActivity
                 }
             }
         };
-
         long lastUserSync = syncPref.getLong(Constants.LAST_USER_SYNC,0);
         String url = Constants.API2_BASE_URL + "/users?after=" + lastUserSync;
         restUtility.get(url, listener, errorListener);
@@ -547,106 +538,31 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(i);
             }
         });
-        if(!level.equalsIgnoreCase(Constants.USER_LEVEL0)){
-            Menu menu = navigationView.getMenu();
-            menu.removeItem(R.id.nav_stylechangeover);
-        }
+        
 
-//        //Filters
-        int noOfLines = Constants.NO_OF_LINES;
-        String[] lineArray = new String[noOfLines+1];
-        lineArray[0] = "All Lines";
-        for(int i = 1; i < lineArray.length; i++){
-            lineArray[i] = "Line " + i;
-        }
-        /*//// Line Filter //////*/
-        ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this,R.layout.spinner_list_item,R.id.spinner_item,lineArray);
-        lineAdapter.setDropDownViewResource(R.layout.spinner_list_item);
-        line.setAdapter(lineAdapter);
+
         /*//// Section Filter //////*/
-        String[] sections = appPref.getString(Constants.APP_SECTIONS, "").split(";");
-        final List<String> sectionList = new ArrayList<>();
-        sectionList.add("All Sections");
-        for (String s: sections) {
-            sectionList.add(s);
+        String[] teams = appPref.getString(Constants.APP_TEAMS, "").split(";");
+        final List<String> teamList = new ArrayList<>();
+        teamList.add("All Teams");
+        for (String t: teams) {
+            teamList.add(t);
         }
-        ArrayAdapter<String> sectionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sectionList);
-        sectionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        section.setAdapter(sectionAdapter);
+        ArrayAdapter<String> teamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, teamList);
+        teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teamFilter.setAdapter(teamAdapter);
 
-        /*//// Department Filter //////*/
-        String[] departments = appPref.getString(Constants.APP_DEPARTMENTS, "").split(";");
-        final List<String> deptList = new ArrayList<>();
-        deptList.add("All Departments");
-        for (String d: departments) {
-            deptList.add(d);
-        }
-        ArrayAdapter<String> deptAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, deptList);
-        deptAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dept.setAdapter(deptAdapter);
-
-        line.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG,"onItemSelect() : line");
-                if(line == null || view == null){
-                    return;
-                }
-
-                String lineStr = parent.getItemAtPosition(position).toString();
-                if(lineStr.contains("All")){
-                    lineNo = null;
-                }else{
-                    lineNo = Integer.parseInt(lineStr.split(" ")[1]);
-                }
-                showIssues();
-//                if(flagLine == false){
-//                    flagLine = true;
-//                }else {
-//                    //showIssues();
-//                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        section.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        
+        teamFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG,"onItemSelect() : section");
-                if(section == null || view == null){
+                if(teamFilter == null || view == null){
                     return;
                 }
-                secSelected = parent.getItemAtPosition(position).toString();
-                if(secSelected.contains("All")){
-                    secSelected = null;
-                }
-                showIssues();
-                
-//                if(flagSection == false){
-//                    flagSection = true;
-//                }else {
-//                    //showIssues();
-//                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        dept.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG,"onItemSelect() : department");
-                if(dept == null || view == null){
-                    return;
-                }
-                deptSelected = parent.getItemAtPosition(position).toString();
-                if(deptSelected.contains("All")){
-                    deptSelected = null;
+                teamSelected = parent.getItemAtPosition(position).toString();
+                if(teamSelected.contains("All")){
+                    teamSelected = null;
                 }
                 showIssues();
             }
@@ -656,17 +572,13 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
-
-        //Swipe Refresh
+        
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 syncIssues();
             }
         });
-        //showIssues();
-
-
     }
 
     private void initializeApp(){
@@ -675,150 +587,103 @@ public class HomeActivity extends AppCompatActivity
         if (!isConnected) {
             dialog.show();
         }else {
-            final ProblemService problemService = new ProblemService((App)getApplication());
-            final DesignationService designationService = new DesignationService((App)getApplication());
-            final ProblemDesignationService dpService = new ProblemDesignationService((App)getApplication());
+            final BuyerService buyerService = new BuyerService((App)getApplication());
             issueService.deleteAll();
-            dpService.deleteAll();
-            problemService.deleteAll();
-            designationService.deleteAll();
+            userBuyerService.deleteAll();
+            buyerService.deleteAll();
             userService.deleteAll();
 
-
-            Response.Listener<JSONArray> listenerSection = new Response.Listener<JSONArray>() {
+            Response.Listener<JSONArray> listenerteam = new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.i(TAG, "section Response :" + response.toString());
+                    Log.i(TAG, "Team Response :" + response.toString());
 
-                    String[] section = new String[response.length()];
+                    String[] teams = new String[response.length()];
                     try {
                         for (int i = 0; i < response.length(); i++) {
-                            section[i] = response.getString(i);
+                            teams[i] = response.getString(i);
                         }
                         StringBuilder builder = new StringBuilder();
-                        for (String t : section) {
+                        for (String t : teams) {
                             builder.append(t + ";");
                         }
                         builder.setLength(builder.length() - 1);
-                        appPref.edit().putString(Constants.APP_SECTIONS, builder.toString()).commit();
+                        appPref.edit().putString(Constants.APP_TEAMS, builder.toString()).commit();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     noOfRequests++;
-                    if (noOfRequests == 4){
+                    if (noOfRequests == 3){
                         appInitComplete();
                     }
                 }
             };
-            Response.Listener<JSONArray> listenerDepartment = new Response.Listener<JSONArray>() {
-                @Override
-                public void onResponse(JSONArray response) {
-                    Log.i(TAG, "Department Response :" + response.toString());
 
-                    String[] departments = new String[response.length()];
-                    try {
-                        for (int i = 0; i < response.length(); i++) {
-                            departments[i] = response.getString(i);
-                        }
-                        StringBuilder builder = new StringBuilder();
-                        for (String t : departments) {
-                            builder.append(t + ";");
-                        }
-                        builder.setLength(builder.length() - 1);
-                        appPref.edit().putString(Constants.APP_DEPARTMENTS, builder.toString()).commit();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    noOfRequests++;
-                    if (noOfRequests == 4){
-                        appInitComplete();
-                    }
-                }
-            };
             Response.Listener<JSONArray> listenerProblem = new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.i(TAG, "problem Response :" + response.toString());
+                    Log.i(TAG, "Problem Response :" + response.toString());
+
+                    String[] problems = new String[response.length()];
                     try {
-                        List<in.andonsystem.entity.Problem> problems = new ArrayList<>();
-                        JSONObject p, d;
-                        JSONArray desgns;
-                        Long probId;
-                        List<ProblemDesignation> dpList;
                         for (int i = 0; i < response.length(); i++) {
-                            p = response.getJSONObject(i);
-                            probId = p.getLong("id");
-                            if (problemService.exists(probId)) {
-                                dpService.deleteByProblem(probId);
-                            }
-                            problemService.saveOrUpdate(new in.andonsystem.entity.Problem(p.getLong("id"), p.getString("name"), p.getString("department")));
-
-                            desgns = p.getJSONArray("designations");
-                            Log.d(TAG, "prob = " + p.getString("name") + ", designations size = " + desgns.length());
-                            if (desgns.length() > 0) {
-
-                                //Debugging
-                                if (probId == 11) {
-                                    Log.d(TAG,"no of designation = " + p.getJSONArray("designations"));
-                                }
-                                dpList = new ArrayList<>();
-                                for (int j = 0; j < desgns.length(); j++){
-                                    d = desgns.getJSONObject(j);
-                                    dpList.add(new ProblemDesignation(null,p.getLong("id"), d.getLong("id")));
-                                }
-                                dpService.saveBatch(dpList);
-                            }
+                            problems[i] = response.getString(i);
                         }
-                        problemService.saveAll(problems);
-                    } catch (Exception e) {
+                        StringBuilder builder = new StringBuilder();
+                        for (String p : problems) {
+                            builder.append(p + ";");
+                        }
+                        builder.setLength(builder.length() - 1);
+                        appPref.edit().putString(Constants.APP_PROBLEMS, builder.toString()).commit();
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     noOfRequests++;
-                    if (noOfRequests == 4){
+                    if (noOfRequests == 3){
                         appInitComplete();
                     }
                 }
             };
-            Response.Listener<JSONArray> listenerDesignation = new Response.Listener<JSONArray>() {
+            
+            Response.Listener<JSONArray> listenerBuyer = new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
-                    Log.i(TAG, "designation Response :" + response.toString());
+                    Log.i(TAG, "Buyer Response :" + response.toString());
                     try {
-                        List<Designation> designations = new ArrayList<>();
+                        List<Buyer> buyers = new ArrayList<>();
                         JSONObject obj;
                         for (int i = 0; i < response.length(); i++) {
                             obj = response.getJSONObject(i);
-                            designations.add(new Designation(obj.getLong("id"), obj.getString("name"), obj.getString("lines"), obj.getInt("level")));
+                            buyers.add(new Buyer(obj.getLong("id"), obj.getString("name"), obj.getString("team")));
                         }
 
-                        designationService.saveAll(designations);
+                        buyerService.saveAll(buyers);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     noOfRequests++;
-                    if (noOfRequests == 4){
+                    if (noOfRequests == 3){
                         appInitComplete();
                     }
                 }
             };
 
-            String urlSection = Constants.API1_BASE_URL + "/sections";
-            String urldepartment = Constants.API1_BASE_URL + "/departments";
-            String urlProblem = Constants.API1_BASE_URL + "/problems";
-            String urlDesignation = Constants.API1_BASE_URL + "/designations";
-            restUtility.getJsonArray(urlSection, listenerSection, errorListener);
-            restUtility.getJsonArray(urldepartment, listenerDepartment, errorListener);
-            restUtility.getJsonArray(urlProblem, listenerProblem, errorListener);
-            restUtility.getJsonArray(urlDesignation, listenerDesignation, errorListener);
+
+            String urlteam = Constants.API2_BASE_URL + "/teams";
+            String urlProblem = Constants.API2_BASE_URL + "/problems";
+            String urlBuyer = Constants.API2_BASE_URL + "/buyers";
+            restUtility.getJsonArray(urlteam, listenerteam, errorListener);
+            restUtility.getJsonArray(urlProblem,listenerProblem,errorListener);
+            restUtility.getJsonArray(urlBuyer, listenerBuyer, errorListener);
+
 
         }
     }
 
     private void appInitComplete(){
-        Log.d(TAG,"appInitComplete");
         appPref.edit()
                 .putBoolean(Constants.APP1_FIRST_LAUNCH,false)
-                .putInt(Constants.LAST_APP_USED,1)
+                .putInt(Constants.LAST_APP_USED,2)
                 .commit();
         progress.setVisibility(View.INVISIBLE);
         onStart();

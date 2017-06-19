@@ -28,7 +28,7 @@ import java.util.Map;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.R;
-import in.andonsystem.v2.activity.ForgotPasswordActivity;
+import in.andonsystem.activity.ForgotPasswordActivity;
 import in.andonsystem.Constants;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {

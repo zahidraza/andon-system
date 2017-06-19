@@ -1,5 +1,7 @@
 package in.andonsystem.service;
 
+import android.util.Log;
+
 import java.util.List;
 
 import in.andonsystem.App;
@@ -31,11 +33,13 @@ public class UserService {
     }
 
     public List<User> findAllCity(String userType){
-        return userDao.queryBuilder().where(UserDao.Properties.UserType.eq(userType)).list();
+        Log.d(TAG,"findAllCity");
+        return userDao.queryBuilder().where(UserDao.Properties.UserType.notEq(userType)).list();
     }
 
     public List<User> findAllFactory(String userType){
-        return userDao.queryBuilder().where(UserDao.Properties.UserType.notEq(userType)).list();
+        Log.d(TAG,"findAllFactory");
+        return userDao.queryBuilder().where(UserDao.Properties.UserType.eq(userType)).list();
     }
 
     public void saveOrUpdateBatch(List<User> users){

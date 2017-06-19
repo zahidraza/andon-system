@@ -38,7 +38,7 @@ public class IssueService2 {
     }
 
     public List<Issue2> findAll(){
-        Log.d(TAG, "findAllCity" );
+        Log.d(TAG, "findAll" );
         return issueDao.loadAll();
     }
 

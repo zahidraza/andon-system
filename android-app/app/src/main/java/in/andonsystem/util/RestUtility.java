@@ -1,8 +1,10 @@
 package in.andonsystem.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 
@@ -30,13 +32,14 @@ import in.andonsystem.LoginActivity;
  * Created by mdzahidraza on 18/06/17.
  */
 
-public class RestUtility {
+public abstract class RestUtility {
 
     private final String TAG = RestUtility.class.getSimpleName();
 
     private static final AppController appController = AppController.getInstance();
     protected final Context mContext;
     private SharedPreferences userPref;
+    private Boolean isloginRequest = false;
 
     public RestUtility(Context context) {
         this.mContext = context;
@@ -64,18 +67,20 @@ public class RestUtility {
     }
 
     public void getJsonArray(String url, Response.Listener<JSONArray> listener, ErrorListener errorListener) {
-        Log.d(TAG, "RestUtility: get url = " + url);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
+        Boolean isConnected = MiscUtil.isConnectedToInternet(mContext);
+        if (isConnected) {
+            Log.d(TAG, "RestUtility: get url = " + url);
+            String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
 
-        MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.GET, url, null,listener,errorListener);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        request.setTag("");  //TODO:
+            MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
+            request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            request.setTag("");  //TODO:
 
-        if (accessToken != null) {
-            request.setAccessToken(accessToken);
-            appController.addToRequestQueue(request);
-        }else {
-            redirectToLogin();
+            if (accessToken != null) {
+                request.setAccessToken(accessToken);
+                appController.addToRequestQueue(request);
+            } else {
+                redirectToLogin();
 //            String refreshToken = userPref.getString(Constants.USER_REFRESH_TOKEN, null);
 //            if (refreshToken != null) {
 //                accessToken = getAccessToken(refreshToken);
@@ -88,34 +93,29 @@ public class RestUtility {
 //            }else {
 //                redirectToLogin();
 //            }
+            }
+        } else {
+            getAlertDialog().show();
         }
 
     }
 
     private void send(int method, String url, JSONObject data, Response.Listener<JSONObject> listener, ErrorListener errorListener){
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
+        Boolean isConnected = MiscUtil.isConnectedToInternet(mContext);
+        if (isConnected) {
+            String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
+            MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data, listener, errorListener,isloginRequest);
+            request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            request.setTag("");  //TODO:
 
-        MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data,listener,errorListener);
-        request.setRetryPolicy( new DefaultRetryPolicy(20*1000,0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        request.setTag("");  //TODO:
-
-        if (accessToken != null) {
-            request.setAccessToken(accessToken);
-            appController.addToRequestQueue(request);
+            if (!isloginRequest && accessToken == null) {
+                redirectToLogin();
+            }else {
+                request.setAccessToken(accessToken);
+                appController.addToRequestQueue(request);
+            }
         }else {
-            redirectToLogin();
-//            String refreshToken = userPref.getString(Constants.USER_REFRESH_TOKEN, null);
-//            if (refreshToken != null) {
-//                accessToken = getAccessToken(refreshToken);
-//                if (accessToken != null) {
-//                    request.setAccessToken(accessToken);
-//                    appController.addToRequestQueue(request);
-//                }else {
-//                    redirectToLogin();
-//                }
-//            }else {
-//                redirectToLogin();
-//            }
+            getAlertDialog().show();
         }
     }
 
@@ -158,5 +158,38 @@ public class RestUtility {
 //            errorListener.onErrorResponse(new VolleyError(e));
         }
         return null;
+    }
+
+    private AlertDialog getAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("No Internet");
+        builder.setMessage("No Internet Connection Available.Do you want to try again?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                handleInternetConnRetry();
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                handleInternetConnExit();
+            }
+        });
+        return builder.create();
+    }
+
+    protected abstract void handleInternetConnRetry();
+
+    protected abstract void handleInternetConnExit();
+
+    /**
+     * set true if you are making login request
+     * @param isloginRequest
+     */
+    public void setIsloginRequest(Boolean isloginRequest) {
+        this.isloginRequest = isloginRequest;
     }
 }

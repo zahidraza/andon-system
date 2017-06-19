@@ -26,8 +26,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.andonsystem.activity.v1.HomeActivity;
 import in.andonsystem.service.IssueService2;
-import in.andonsystem.v2.activity.HomeActivity;
 import in.andonsystem.entity.Buyer;
 import in.andonsystem.entity.User;
 import in.andonsystem.entity.UserBuyer;

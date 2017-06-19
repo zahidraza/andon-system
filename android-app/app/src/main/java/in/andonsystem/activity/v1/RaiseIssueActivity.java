@@ -30,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import in.andonsystem.App;
+import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
 import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
@@ -38,6 +39,7 @@ import in.andonsystem.adapter.CustomProblemAdapter;
 import in.andonsystem.entity.Problem;
 import in.andonsystem.service.ProblemService;
 import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.RestUtility;
 
 import com.splunk.mint.Mint;
 
@@ -70,6 +72,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
     private Context context;
     private SQLiteDatabase db;
+    private RestUtility restUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +155,17 @@ deptList.add("Select Department");
             }
         });
 */
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
 
     }
 
@@ -218,22 +232,25 @@ deptList.add("Select Department");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG,"data = " + data.toString());
+        raiseIssue(data);
 
+    }
+
+    private void raiseIssue(JSONObject issue){
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if (response != null) {
+                Log.i(TAG,response.toString());
+                if (response.has("status")){
                     try {
                         showMessage(response.getString("message"));
-                        finish();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                finish();
             }
         };
-
         ErrorListener errorListener = new ErrorListener(context) {
             @Override
             protected void handleTokenExpiry() {
@@ -242,40 +259,8 @@ deptList.add("Select Department");
             }
         };
 
-
-        final String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-        if (accessToken == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }else {
-            String url = Constants.API1_BASE_URL + "/issues";
-            Log.d(TAG, "url = " + url);
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,url,data,listener,errorListener) {
-                @Override
-                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                    Log.d(TAG,response.toString());
-                    int status = response.statusCode;
-                    Log.d(TAG,"status code: " + status);
-                    if (status == 201) {
-                        //Toast.makeText(context,"Issue Raised Successfully", Toast.LENGTH_SHORT).show();
-                        RaiseIssueActivity.this.finish();
-                    }
-                    return super.parseNetworkResponse(response);
-                }
-
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> headers = new HashMap<>();
-                    Log.d("TAG","access token: " + accessToken);
-                    headers.put("Authorization", "Bearer " + accessToken);
-                    return headers;
-                }
-            };
-            request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            request.setTag(TAG);
-            AppController.getInstance().addToRequestQueue(request);
-        }
-
+        String url = Constants.API1_BASE_URL + "/issues";
+        restUtility.post(url,issue,listener,errorListener);
     }
 
     private void updateProblem(){

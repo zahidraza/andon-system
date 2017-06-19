@@ -69,7 +69,6 @@ public class ContactActivity extends AppCompatActivity {
         AppClose.activity4 = this;
         mContext = this;
         app = (App) getApplication();
-        restUtility = new RestUtility(mContext);
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
@@ -80,9 +79,19 @@ public class ContactActivity extends AppCompatActivity {
             Log.d(TAG, "User email  not found in userPref file. handle inconsistency");
         }
         user = userService.findByEmail(email);
-        syncUsers();
-        prepareScreen();
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                syncUsers();
+            }
 
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
+        prepareScreen();
+        syncUsers();
     }
 
     @Override
@@ -121,7 +130,7 @@ public class ContactActivity extends AppCompatActivity {
         }else {
             List<User> users = userService.findAllCity(Constants.USER_FACTORY);
             for (User user: users){
-                contacts.add(new Contact(user.getName(), user.getMobile()));
+                contacts.add(new Contact(user.getName(),"+91 " + user.getMobile()));
             }
         }
         if(contacts.size() > 0){

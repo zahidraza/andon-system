@@ -110,7 +110,6 @@ public class IssueDetailActivity extends AppCompatActivity {
         if (email != null) {
             user = userService.findByEmail(email);
         }
-        restUtility = new RestUtility(mContext);
 
         problem = (TextView)findViewById(R.id.detail_prob);
         dept = (TextView)findViewById(R.id.detail_dept);
@@ -159,6 +158,17 @@ public class IssueDetailActivity extends AppCompatActivity {
             protected void handleTokenExpiry() {
                 Intent intent = new Intent(mContext, LoginActivity.class);
                 startActivity(intent);
+            }
+        };
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
             }
         };
     }

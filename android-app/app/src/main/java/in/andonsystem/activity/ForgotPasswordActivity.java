@@ -1,4 +1,4 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;

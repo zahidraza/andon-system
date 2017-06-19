@@ -13,7 +13,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import in.andonsystem.R;
-import in.andonsystem.v2.activity.IssueDetailActivity2;
+import in.andonsystem.activity.v2.IssueDetailActivity;
 import in.andonsystem.dto.Notification;
 
 /**
@@ -43,10 +43,10 @@ public class AdapterNotification extends RecyclerView.Adapter<HolderNotification
                 String idStr = ((TextView)v.findViewById(R.id.nfn_id)).getText().toString();
                 Intent i;
                 if (appNo == 2){
-                    i = new Intent(context, IssueDetailActivity2.class);
+                    i = new Intent(context, IssueDetailActivity.class);
                 }else {
                     //Replcae it with IssueDetailActivity1
-                    i = new Intent(context, IssueDetailActivity2.class);
+                    i = new Intent(context, IssueDetailActivity.class);
                 }
                 i.putExtra("issueId",Long.parseLong(idStr));
                 context.startActivity(i);

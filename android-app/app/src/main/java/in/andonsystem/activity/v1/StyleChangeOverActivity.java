@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 
+import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
@@ -66,8 +67,6 @@ public class StyleChangeOverActivity extends AppCompatActivity {
 
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         username = userPref.getString(Constants.USER_NAME,"");
-        restUtility = new RestUtility(context);
-
 
         int noOfLines = Constants.NO_OF_LINES;
         String[] lineArray = new String[noOfLines];
@@ -78,6 +77,17 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this,R.layout.spinner_list_item,R.id.spinner_item,lineArray);
         lineAdapter.setDropDownViewResource(R.layout.spinner_list_item);
         line.setAdapter(lineAdapter);
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
     }
 
     public void submit(View view){

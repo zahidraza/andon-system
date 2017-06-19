@@ -11,6 +11,7 @@ public class Constants {
 
     /*Sync Preference file*/
     public static final String SYNC_PREF = "sync.pref";
+    public static final String LAST_APP_SYNC = "last.app.sync";
     public static final String LAST_ISSUE1_SYNC = "last.issue1.sync";
     public static final String LAST_ISSUE2_SYNC = "last.issue2.sync";
     public static final String LAST_USER_SYNC = "last.user.sync";
@@ -37,6 +38,7 @@ public class Constants {
     public static final String APP_TEAMS = "app.teams";
     public static final String APP_SECTIONS = "app.section";
     public static final String APP_DEPARTMENTS = "app.departments";
+    public static final String LAST_APP_USED = "last.app.used";  // user logged in to app1 or app2 last time
 
     public static final int ACK_TIME = 5;  //30 minutes
     public static final int FIX_L1_TIME = 180; //3 hours

@@ -1,9 +1,10 @@
-package in.andonsystem.v2.activity;
+package in.andonsystem.activity.v2;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,22 +34,25 @@ import java.util.TimeZone;
 import in.andonsystem.App;
 import in.andonsystem.AppClose;
 import in.andonsystem.AppController;
+import in.andonsystem.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.entity.Issue2;
 import in.andonsystem.service.IssueService2;
+import in.andonsystem.util.ErrorListener;
 import in.andonsystem.util.MyJsonObjectRequest;
+import in.andonsystem.util.RestUtility;
 import in.andonsystem.v2.authenticator.AuthConstants;
 import in.andonsystem.entity.User;
 import in.andonsystem.service.UserService;
 import in.andonsystem.Constants;
 
-public class IssueDetailActivity2 extends AppCompatActivity {
+public class IssueDetailActivity extends AppCompatActivity {
 
-    private final String TAG = IssueDetailActivity2.class.getSimpleName();
+    private final String TAG = IssueDetailActivity.class.getSimpleName();
 
     private Context mContext;
     private App app;
-    private AccountManager mAccountManager;
+    private RestUtility restUtility;
 
     private TextView problem;
     private TextView team;
@@ -72,6 +76,8 @@ public class IssueDetailActivity2 extends AppCompatActivity {
     private Long issueId;
     private SharedPreferences userPref;
     private User user;
+    private Issue2 issue;
+    private ErrorListener errorListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +92,6 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         AppClose.activity4 = this;
         mContext = this;
         app = (App)getApplication();
-        mAccountManager = AccountManager.get(this);
         issueService2 = new IssueService2(app);
         userService = new UserService(app);
         userPref = getSharedPreferences(Constants.USER_PREF, 0);
@@ -121,8 +126,24 @@ public class IssueDetailActivity2 extends AppCompatActivity {
                 fix();
             }
         });
-        //get current time
+        errorListener = new ErrorListener(mContext) {
+            @Override
+            protected void handleTokenExpiry() {
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                startActivity(intent);
+            }
+        };
+        restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
 
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
     }
 
     @Override
@@ -134,30 +155,30 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         DateFormat df = new SimpleDateFormat("hh:mm aa");
         df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
 
-        Issue2 issue2 = issueService2.findOne(issueId);
+        issue = issueService2.findOne(issueId);
 
-        problem.setText(issue2.getProblem());
-        team.setText(issue2.getBuyer().getTeam());
-        buyer.setText(issue2.getBuyer().getName());
-        raisedAt.setText(df.format(issue2.getRaisedAt()));
-        raisedBy.setText(issue2.getRaisedByUser().getName());
-        ackAt.setText(( (issue2.getAckAt() != null) ? df.format(issue2.getAckAt()) : "-" ));
-        ackBy.setText(( (issue2.getAckByUser() != null) ? issue2.getAckByUser().getName() : "-" ));
-        fixAt.setText(( (issue2.getFixAt() != null) ? df.format(issue2.getFixAt()) : "-" ));
-        fixBy.setText(( (issue2.getFixByUser() != null) ? issue2.getFixByUser().getName() : "-" ));
-        if (issue2.getProcessingAt() == 4 || issue2.getFixAt() != null){
+        problem.setText(issue.getProblem());
+        team.setText(issue.getBuyer().getTeam());
+        buyer.setText(issue.getBuyer().getName());
+        raisedAt.setText(df.format(issue.getRaisedAt()));
+        raisedBy.setText(issue.getRaisedByUser().getName());
+        ackAt.setText(( (issue.getAckAt() != null) ? df.format(issue.getAckAt()) : "-" ));
+        ackBy.setText(( (issue.getAckByUser() != null) ? issue.getAckByUser().getName() : "-" ));
+        fixAt.setText(( (issue.getFixAt() != null) ? df.format(issue.getFixAt()) : "-" ));
+        fixBy.setText(( (issue.getFixByUser() != null) ? issue.getFixByUser().getName() : "-" ));
+        if (issue.getProcessingAt() == 4 || issue.getFixAt() != null){
             processingAt.setText("Fixed");
         }else {
-            processingAt.setText("Processing At Level " + issue2.getProcessingAt());
+            processingAt.setText("Processing At Level " + issue.getProcessingAt());
         }
         
-        desc.setText(issue2.getDescription());
+        desc.setText(issue.getDescription());
 
         /*////////// Adding ack or fix button ///////////////*/
         if (user.getUserType().equalsIgnoreCase(Constants.USER_MERCHANDISING)){
-            if(issue2.getAckAt() == null){
-                if(user.getBuyers().contains(issue2.getBuyer())){
-                    if( issue2.getProcessingAt() > 1){
+            if(issue.getAckAt() == null){
+                if(user.getBuyers().contains(issue.getBuyer())){
+                    if( issue.getProcessingAt() > 1){
                         if(user.getLevel().contains(Constants.USER_LEVEL2)){
                             layout.addView(ackButton);
                         }
@@ -168,9 +189,9 @@ public class IssueDetailActivity2 extends AppCompatActivity {
                         }
                     }
                 }
-            }else if (issue2.getFixAt() == null){
-                if(user.getBuyers().contains(issue2.getBuyer())){
-                    if( issue2.getProcessingAt() > 1){
+            }else if (issue.getFixAt() == null){
+                if(user.getBuyers().contains(issue.getBuyer())){
+                    if( issue.getProcessingAt() > 1){
                         if(user.getLevel().contains(Constants.USER_LEVEL2)){
                             layout.addView(fixButton);
                         }
@@ -193,96 +214,58 @@ public class IssueDetailActivity2 extends AppCompatActivity {
     }
 
     private void acknowledge(){
-        Log.d(TAG,"acknowldege");
-
-        String url = Constants.API2_BASE_URL + "/issues/" + issueId + "?operation=OP_ACK";
-        Log.i(TAG, "config url: " + url);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG, "Config Response :" + response.toString());
-                progress.setVisibility(View.GONE);
-                finish();
-            }
-        };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-                NetworkResponse resp = error.networkResponse;
-
-//                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
-//                Log.i(TAG, "response data: " + data);
-                if (resp != null && resp.statusCode == 401) {
-                    invalidateAccessToken();
-                    getAuthToken("ACK");
-                } else {
-                    Toast.makeText(mContext, "Unable to Sync. Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+                try {
+                    if (response.has("status")){
+                        showMessage(response.getString("message"));
+                    }else if (response.has("id")){
+                        showMessage("Issue acknowledged successfully");
+                    }
+                    finish();
+                }catch (JSONException e){
+                    e.printStackTrace();
                 }
-                progress.setVisibility(View.GONE);
+
             }
         };
-        progress.setVisibility(View.VISIBLE);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-        if (accessToken == null) {
-            getAuthToken("ACK");
-            return;
-        }
-        JSONObject reqData = new JSONObject();
+        String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_ACK";
+        JSONObject data = new JSONObject();
         try {
-            reqData.put("ackBy", user.getId());
+            data.put("ackBy",user.getId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
-        request.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.patch(url, data, listener, errorListener);
     }
 
     private void fix(){
         Log.d(TAG,"fix");
-
-        String url = Constants.API2_BASE_URL + "/issues/" + issueId + "?operation=OP_FIX";
-        Log.i(TAG, "config url: " + url);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG, "Config Response :" + response.toString());
-                progress.setVisibility(View.GONE);
-                finish();
-            }
-        };
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-                NetworkResponse resp = error.networkResponse;
-//                String data = new String((resp.data != null) ? resp.data : "Empty body".getBytes());
-//                Log.i(TAG, "response data: " + data);
-                if (resp != null && resp.statusCode == 401) {
-                    invalidateAccessToken();
-                    getAuthToken("FIX");
-                } else {
-                    Toast.makeText(mContext, "Unable to Sync. Check your Internet Connection.", Toast.LENGTH_SHORT).show();
+                try {
+                    if (response.has("status")){
+                        showMessage(response.getString("message"));
+                    }else if (response.has("id")){
+                        showMessage("Issue fixed successfully");
+                    }
+                    finish();
+                }catch (JSONException e){
+                    e.printStackTrace();
                 }
-                progress.setVisibility(View.GONE);
+
             }
         };
-        progress.setVisibility(View.VISIBLE);
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-        if (accessToken == null) {
-            getAuthToken("FIX");
-            return;
-        }
-        JSONObject reqData = new JSONObject();
+        String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_FIX";
+        JSONObject data = new JSONObject();
         try {
-            reqData.put("fixBy", user.getId());
+            data.put("fixBy",user.getId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        MyJsonObjectRequest request = new MyJsonObjectRequest(Request.Method.PATCH, url, reqData, listener, errorListener, accessToken);
-        request.setTag(TAG);
-        AppController.getInstance().addToRequestQueue(request);
+        restUtility.patch(url, data, listener, errorListener);
     }
 
     private Button getButton(String name){
@@ -296,44 +279,8 @@ public class IssueDetailActivity2 extends AppCompatActivity {
         return btn;
     }
 
-
-    private void invalidateAccessToken(){
-        Log.d(TAG,"invalidateAccessToken");
-        String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN,null);
-        mAccountManager.invalidateAuthToken(AuthConstants.VALUE_ACCOUNT_TYPE,accessToken);
+    private void showMessage(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void getAuthToken(final String operation){
-        Log.d(TAG,"getAuthToken");
-        Account[] accounts = mAccountManager.getAccounts();
-        String email = userPref.getString(Constants.USER_EMAIL, null);
-        Account account = null;
-        for (Account a: accounts){
-            if(a.name.equals(email)){
-                account = a;
-                break;
-            }
-        }
-
-        final AccountManagerFuture<Bundle> future = mAccountManager.getAuthToken(account, AuthConstants.AUTH_TOKEN_TYPE_FULL_ACCESS, null, this, null, null);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Bundle bnd = future.getResult();
-                    String authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                    userPref.edit().putString(Constants.USER_ACCESS_TOKEN,authToken).commit();
-                    if(operation == "ACK") {
-                        acknowledge();
-                    }else if(operation == "FIX") {
-                        fix();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG,e.getMessage());
-                }
-            }
-        }).start();
-    }
 }

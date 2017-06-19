@@ -190,7 +190,17 @@ public class NotificationActivity extends AppCompatActivity {
     }
 
     private void getCurrentTime(){
-        RestUtility restUtility = new RestUtility(this);
+        RestUtility restUtility = new RestUtility(this){
+            @Override
+            protected void handleInternetConnRetry() {
+                onStart();
+            }
+
+            @Override
+            protected void handleInternetConnExit() {
+                AppClose.close();
+            }
+        };
         String url = Constants.API2_BASE_URL + "/misc/current_time";
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
