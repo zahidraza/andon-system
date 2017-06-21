@@ -108,7 +108,16 @@ class Report extends Component {
           }
           if (!(issue.fixAt == null || issue.fixAt == 'null')) {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
-            downtime = Math.trunc((issue.fixAt - issue.raisedAt)/(1000*60));
+            let fDays = Math.floor(moment.duration(issue.fixAt).asDays());
+            let aDays = Math.floor(moment.duration(issue.raisedAt).asDays());
+            console.log("fDays = " + fDays + ", aDays = " + aDays);
+            let dTime = (issue.fixAt - issue.raisedAt - (fDays-aDays)*(15*60*60*1000));
+            downtime = Math.floor(moment.duration(dTime).asMinutes());
+            if(downtime> 60) {
+              downtime = ''+ Math.floor((downtime/60))+ ' hour ' + (downtime%60) + ' mins';
+            }else{
+              downtime = '' + downtime + ' mins';
+            }
           }
           return {Team: buyer.team, Buyer: buyer.name,Problem: issue.problem, Description: issue.description,  raisedBy, ackBy,fixBy,raisedAt,ackAt,fixAt,downtime};
         });
@@ -140,7 +149,7 @@ class Report extends Component {
       issues = issues.filter(issue => buyerFilter.includes(issue.Buyer));   
     } 
     let filteredCount = issues.length;
-    let issuesDownload = [];
+    let issuesDownload = issues;
     if (filteredCount == 0) {
       issuesNotAvailable = true;
     }

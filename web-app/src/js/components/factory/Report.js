@@ -114,7 +114,12 @@ class Report extends Component {
           }
           if (!(issue.fixAt == null || issue.fixAt == 'null')) {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
-            downtime = Math.trunc((issue.fixAt - issue.raisedAt)/(1000*60));
+            downtime = Math.floor(moment.duration(issue.fixAt - issue.raisedAt).asMinutes());
+            if(downtime> 60) {
+              downtime = ''+ Math.floor((downtime/60))+ ' hour ' + (downtime%60) + ' mins';
+            }else{
+              downtime = '' + downtime + ' mins';
+            }
           }
           return {Line: 'Line '+issue.line, Section: issue.section, Department: p.department, Problem: p.name, Critical: issue.critical,
             OperatorNo: issue.operatorNo, Description: issue.description,  raisedBy, ackBy,fixBy,raisedAt,ackAt,fixAt,downtime};
