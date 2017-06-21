@@ -131,7 +131,7 @@ public class NotificationActivity extends AppCompatActivity {
         if (list == null || list.size() > 0){
             Log.d(TAG, "No of Notifications: = " + list.size());
             container.addView(recyclerView);
-            AdapterNotification adapter = new AdapterNotification(mContext,list,2);
+            AdapterNotification adapter = new AdapterNotification(mContext,list,1);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }else {

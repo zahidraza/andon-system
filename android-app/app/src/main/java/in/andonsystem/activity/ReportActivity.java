@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import in.andonsystem.App;
 import in.andonsystem.Constants;
@@ -234,9 +235,10 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                                     downtime = -1L;
                                 }else {
                                     fixAt = issue.getLong("fixAt");
-                                    downtime = fixAt - raisedAt;
+                                    long fDays = TimeUnit.MILLISECONDS.toDays(fixAt);
+                                    long rDays = TimeUnit.MILLISECONDS.toDays(raisedAt);
+                                    downtime = (fixAt - raisedAt - (fDays-rDays)*(1000*60*60*15)); //no of days multiplied with 15 hours
                                 }
-                                Log.d(TAG,"downtime="+ downtime);  //TODO: calculate downtime ignoring night hours
                                 if (!issue.getBoolean("deleted")){
                                     problems.add(new Problem(issue.getLong("id"),buyer.getTeam(),buyer.getName(),issue.getString("problem"),downtime));
                                 }

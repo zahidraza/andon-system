@@ -42,10 +42,9 @@ public class AdapterNotification extends RecyclerView.Adapter<HolderNotification
             public void onClick(View v) {
                 String idStr = ((TextView)v.findViewById(R.id.nfn_id)).getText().toString();
                 Intent i;
-                if (appNo == 2){
-                    i = new Intent(context, IssueDetailActivity.class);
+                if (appNo == 1){
+                    i = new Intent(context, in.andonsystem.activity.v1.IssueDetailActivity.class);
                 }else {
-                    //Replcae it with IssueDetailActivity1
                     i = new Intent(context, IssueDetailActivity.class);
                 }
                 i.putExtra("issueId",Long.parseLong(idStr));
