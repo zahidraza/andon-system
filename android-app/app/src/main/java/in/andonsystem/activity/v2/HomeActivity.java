@@ -48,7 +48,6 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -106,12 +105,11 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "544df31b");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         Mint.leaveBreadcrumb("home activity created");
         setContentView(R.layout.activity_home2
         );
         Log.i(TAG,"onCreate()");
-        AppClose.activity2 = this;
         context = this;
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -175,24 +173,24 @@ public class HomeActivity extends AppCompatActivity
                 onStart();
             }
 
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
-            }
         };
         userService = new UserService((App)getApplication());
         userBuyerService = new UserBuyerService((App)getApplication());
         issueService = new IssueService2((App)getApplication());
+        issueService.deleteAllOlder();
     }
 
     @Override
     public void onBackPressed() {
+        Log.d(TAG,"on back pressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            //Quit Application
-            AppClose.close();
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
         }
     }
 
@@ -331,7 +329,6 @@ public class HomeActivity extends AppCompatActivity
 
         Log.d(TAG, "Issue2 size = " + list.size());
         for (Issue2 i : list) {
-            Log.d(TAG,"issue: " + i.toString());
             issues.add(getProblem(i));
         }
 
@@ -342,7 +339,7 @@ public class HomeActivity extends AppCompatActivity
         String raiseTime = df.format(issue.getRaisedAt());
         long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
-        return new Problem(issue.getId(), "Line " + issue.getBuyer().getTeam(), issue.getBuyer().getName(), issue.getProblem(),raiseTime,downtime,flag,2);
+        return new Problem(issue.getId(), issue.getBuyer().getTeam(), issue.getBuyer().getName(), issue.getProblem(),raiseTime,downtime,flag,2);
     }
 
     public void syncIssues(){
@@ -384,12 +381,13 @@ public class HomeActivity extends AppCompatActivity
                         for (Issue2 issue : issueList) {
                             i = issueService.findOne(issue.getId());
                             //If Issue2 belongs to applied filter then add or update rvAdapter
-                            Log.d(TAG,"selectedTeam = " + teamSelected);
-                            Log.d(TAG,"team for issue = " + i.getBuyer().getTeam());
 
                             if (teamSelected == null || teamSelected.contains("All") || teamSelected.equalsIgnoreCase(i.getBuyer().getTeam())) {
 
-                                if (issue.getFixAt() == null && issue.getAckAt() == null) {
+                                if (issue.getDeleted()) {
+                                    rvAdapter.delete(getProblem(issue));
+                                }
+                                else if (issue.getFixAt() == null && issue.getAckAt() == null) {
                                     Log.i(TAG, "Adapter : add Issue2");
                                     rvAdapter.insert(getProblem(issue));
                                 } else {
@@ -397,6 +395,15 @@ public class HomeActivity extends AppCompatActivity
                                     rvAdapter.update(getProblem(issue));
                                 }
                             }
+                        }
+                        if (rvAdapter.getItemCount() == 0) {
+                            //Remove both views first if exist
+                            container.removeView(textView);
+                            refreshLayout.removeView(recyclerView);
+                            container.removeView(refreshLayout);
+                            rvViewAdded = false;
+                            //Add textView
+                            container.addView(textView);
                         }
 
                     }
@@ -719,30 +726,10 @@ public class HomeActivity extends AppCompatActivity
         return builder.create();
     }
 
-//
-//    public String getAccessToken(String refreshToken) {
-//        Log.d(TAG, "RestUtility: getAccessToken");
-//        String url = Constants.API2_BASE_URL + "/users";
-//        Log.d(TAG,"url = " + url);
-//        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,future,future);
-//        AppController.getInstance().addToRequestQueue(request);
-//
-//        try {
-//            JSONObject resp =  future.get(15, TimeUnit.SECONDS);
-//            Log.d(TAG, "$$$ refresh token response: " + resp.toString());
-//
-//        } catch (InterruptedException e) {
-//            Log.e(TAG,"Retrieve cards api call interrupted.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        } catch (ExecutionException e) {
-//            Log.e(TAG,"Retrieve cards api call failed.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        } catch (TimeoutException e) {
-//            Log.e(TAG,"Retrieve cards api call timed out.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        }
-//        return null;
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
+    }
 
 }

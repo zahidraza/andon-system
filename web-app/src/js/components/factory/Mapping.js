@@ -40,8 +40,8 @@ class Mapping extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     } else {
-      const {departments, problms} = this.props.misc;
-      this._loadMapping(departments, problms);
+      const {misc: {departments, problms}, user: {users}} = this.props;
+      this._loadMapping(departments, problms, users);
     }
   }
 
@@ -51,32 +51,39 @@ class Mapping extends Component {
     }
     if (!this.props.misc.initialized && nextProps.misc.initialized) {
       this.setState({initializing: false});
-      const {departments, problms} = nextProps.misc;
-      this._loadMapping(departments, problms);
+      const {misc: {departments, problms}, user: {users}} = nextProps;
+      this._loadMapping(departments, problms, users);
     }
   }
 
-  _loadMapping (departments, problms) {
+  _loadMapping (departments, problms, users) {
+    console.log('before filter: users = ' + users.length);
+    //Filter users of factory
+    users = users.filter(u => u.desgnId != null);
+    console.log('after filter: users = ' + users.length);
+
     let mapping = [];
     departments.forEach((dept) => {
       let probs = problms.filter((p) => p.department == dept);
+
       probs.forEach((p) => {
         let level1 = [] , level2 = [] , level3 = [];
         let desgn1 = [] , desgn2 = [] , desgn3 = [];
 
+
         p.designations.filter(d => d.level == 1).forEach(desgn => {
           desgn1.push(desgn.name);
-          desgn.users.forEach(u => level1.push(u.name));
+          users.filter(u => u.desgnId == desgn.id).forEach(usr => level1.push(usr.name));
         });
 
         p.designations.filter(d => d.level == 2).forEach(desgn => {
           desgn2.push(desgn.name);
-          desgn.users.forEach(u => level2.push(u.name));
+          users.filter(u => u.desgnId == desgn.id).forEach(usr => level2.push(usr.name));
         });
 
         p.designations.filter(d => d.level == 3).forEach(desgn => {
           desgn3.push(desgn.name);
-          desgn.users.forEach(u => level3.push(u.name));
+          users.filter(u => u.desgnId == desgn.id).forEach(usr => level3.push(usr.name));
         });
         mapping.push({dept, problem: p.name, level1, level2, level3, desgn1, desgn2, desgn3});
       });
@@ -285,7 +292,7 @@ Mapping.contextTypes = {
 };
 
 let select = (store) => {
-  return {misc: store.misc};
+  return {misc: store.misc, user: store.user};
 };
 
 export default connect(select)(Mapping);

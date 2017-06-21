@@ -47,17 +47,13 @@ class Login extends Component {
 
   componentWillReceiveProps (nextProps) {
     console.log('componentWillReceiveProps');
-    // if (nextProps.misc.initialized) {
-    //   this.setState({initializing: false});
-    // }
-
-    if (this.props.user.authProgress && !nextProps.user.authProgress && sessionStorage.session == undefined) {
+    if (this.props.user.authProgress && !nextProps.user.authProgress && !nextProps.user.authenticated) {
       this.setState({errorMsg: "Incorrect email or password, try again!"});
     }
     if (!this.props.user.authenticated && nextProps.user.authenticated) {
       this.props.dispatch(searchUser(sessionStorage.email));
     }
-    if (!this.props.user.userFound && nextProps.user.userFound) {
+    if (this.props.user.authenticated && sessionStorage.session != null) {
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard2');
       } else {

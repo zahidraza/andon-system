@@ -35,7 +35,7 @@ public class FixTask extends Thread{
         Issue1 issue = issueService.findOne(issueId,true);
 
         //If issue is not fixed yet and It is processing at level below or equal to checkProcessingAT
-        if(issue.getFixAt() == null && issue.getProcessingAt() <= checkProcessingAt){
+        if(!issue.getDeleted() && issue.getFixAt() == null && issue.getProcessingAt() <= checkProcessingAt){
             //Send notification to level (checkProcessingAt + 1)
             logger.debug("Sending notification to level " + (checkProcessingAt+1) + " users");
 

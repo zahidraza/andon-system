@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -56,6 +56,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private Spinner buyerFilter;
     private Spinner problemFilter;
     private EditText description;
+    private Button submit;
     private ProgressBar progress;
 
     private String selectedTeam = "Select Team";
@@ -64,14 +65,12 @@ public class RaiseIssueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_raise_issue2);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        AppClose.activity3 = this;
 
         mContext = this;
         app = (App) getApplication();
@@ -83,6 +82,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
         buyerFilter = (Spinner) findViewById(R.id.ri_buyer_filter);
         problemFilter = (Spinner) findViewById(R.id.ri_problem_filter);
         description = (EditText) findViewById(R.id.ri_problem_desc);
+        submit = (Button) findViewById(R.id.raise_btn);
         progress = (ProgressBar) findViewById(R.id.loading_progress);
         /*//////////////// Populating team filter //////////////////////*/
         final String[] teams = appPref.getString(Constants.APP_TEAMS,"").split(";");
@@ -105,7 +105,6 @@ public class RaiseIssueActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-
         updateBuyer();
 
          /*//////////////// Populating problem filter //////////////////////*/
@@ -114,15 +113,17 @@ public class RaiseIssueActivity extends AppCompatActivity {
         problemAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         problemFilter.setAdapter(problemAdapter);
 
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                raiseIssue();
+            }
+        });
+
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
-                onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
+                raiseIssue();
             }
         };
 
@@ -151,7 +152,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
 
     }
 
-    public void raiseIssue(View v){
+    public void raiseIssue(){
         Log.d(TAG,"raiseIssue");
         String email = userPref.getString(Constants.USER_EMAIL,null);
         User user = userService.findByEmail(email);
@@ -224,8 +225,8 @@ public class RaiseIssueActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

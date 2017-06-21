@@ -150,6 +150,16 @@ class UserAdd extends Component {
     } 
     this.setState({user});
   }
+
+  _onDesgnFilter (event) {
+    const {desgns} = this.props.misc;
+    let {user} = this.state;
+
+    let desgnName = event.value;
+    user.desgnId = desgns.find(desgn => desgn.name == desgnName).id;
+    user.designation = desgnName;
+    this.setState({user});
+  }
   
   _onClose (event) {
     this.props.dispatch({type: c.USER_ADD_FORM_TOGGLE, payload: {adding: false}});
@@ -325,7 +335,7 @@ class UserAdd extends Component {
     const desgnFilter = (user.role == ur.ROLE_ADMIN || userType != ut.FACTORY )? null : (
       <FormField label="User Designation" htmlFor="level" error={error.level}>
         <Select id="level" name="designation" options={desgns}
-          value={user.designation}  onChange={this._onFilter.bind(this)} />
+          value={user.designation}  onChange={this._onDesgnFilter.bind(this)} />
       </FormField>
     );
 

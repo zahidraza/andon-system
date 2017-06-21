@@ -105,10 +105,11 @@ public abstract class RestUtility {
         Boolean isConnected = MiscUtil.isConnectedToInternet(mContext);
         if (isConnected) {
             String accessToken = userPref.getString(Constants.USER_ACCESS_TOKEN, null);
-            MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data, listener, errorListener,isloginRequest);
+            MyJsonObjectRequest request = new MyJsonObjectRequest(method, url, data, listener, errorListener,isloginRequest,isProtected);
             request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             request.setTag("");  //TODO:
             if (isProtected) {
+                Log.d(TAG, "protected");
                 if (!isloginRequest && accessToken == null) {
                     redirectToLogin();
                 } else {
@@ -116,6 +117,7 @@ public abstract class RestUtility {
                     appController.addToRequestQueue(request);
                 }
             }else {
+                Log.d(TAG,"unprotected");
                 appController.addToRequestQueue(request);
             }
 
@@ -188,7 +190,12 @@ public abstract class RestUtility {
 
     protected abstract void handleInternetConnRetry();
 
-    protected abstract void handleInternetConnExit();
+    protected void handleInternetConnExit(){
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory( Intent.CATEGORY_HOME );
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mContext.startActivity(homeIntent);
+    }
 
     /**
      * set true if you are making login request

@@ -39,12 +39,12 @@ public class IssueService2 {
 
     public List<Issue2> findAll(){
         Log.d(TAG, "findAll" );
-        return issueDao.loadAll();
+        return issueDao.queryBuilder().where(Issue2Dao.Properties.Deleted.eq(false)).list();
     }
 
     public List<Issue2> findAllByTeam(String team){
         Log.d(TAG, "findAllByTeam: team = " + team);
-        QueryBuilder<Issue2> queryBuilder = issueDao.queryBuilder();
+        QueryBuilder<Issue2> queryBuilder = issueDao.queryBuilder().where(Issue2Dao.Properties.Deleted.eq(false));
         queryBuilder.join(Issue2Dao.Properties.BuyerId,Buyer.class)
                 .where(BuyerDao.Properties.Team.eq(team));
         return   queryBuilder.list();
@@ -53,16 +53,15 @@ public class IssueService2 {
     public List<Issue2> findAllByBuyers(List<Buyer> buyers){
         Log.d(TAG, "findAllByBuyers");
         List<Issue2> result = new ArrayList<>();
-        QueryBuilder<Issue2> queryBuilder = issueDao.queryBuilder();
         for(Buyer b: buyers){
-            result.addAll(issueDao.queryBuilder().where(Issue2Dao.Properties.BuyerId.eq(b.getId())).list());
+            result.addAll(issueDao.queryBuilder().where(Issue2Dao.Properties.BuyerId.eq(b.getId()), Issue2Dao.Properties.Deleted.eq(false)).list());
         }
         return result;
     }
 
     public List<Issue2> findAllByUser(User user){
         Log.d(TAG, "findAllByUser: user = " + user.getName());
-        return issueDao.queryBuilder().where(Issue2Dao.Properties.RaisedBy.eq(user.getId())).list();
+        return issueDao.queryBuilder().where(Issue2Dao.Properties.RaisedBy.eq(user.getId()), Issue2Dao.Properties.Deleted.eq(false)).list();
     }
 
     public void deleteAllOlder(){
@@ -72,6 +71,7 @@ public class IssueService2 {
         List<Issue2> issue2s = issueDao.queryBuilder()
                 .where(Issue2Dao.Properties.RaisedAt.lt(midnight))
                 .list();
+        Log.d(TAG,"deleting " + issue2s.size() + " issues");
         issueDao.deleteInTx(issue2s);
     }
 

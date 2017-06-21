@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -48,14 +49,28 @@ public class MiscUtil {
         return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis));
     }
 
+    /**
+     * Find number of minutes passed since today midnight
+     * @return
+     */
+    public static int getMinutesSinceMidnight(Date date){
+        long timeNow = date.getTime();
+        long days = TimeUnit.MILLISECONDS.toDays(timeNow);
+        long millisToday = (timeNow - TimeUnit.DAYS.toMillis(days));  //GMT:This number of milliseconds after 12:00 today
+        int minutesToday = (int )TimeUnit.MILLISECONDS.toMinutes(millisToday);  //GMT
+        minutesToday += (60*5) + 30;  //GMT+05:30 minutesToday
+        minutesToday = minutesToday % (24*60);
+        return minutesToday;
+    }
+
     public static Date getYesterdayMidnight() {
         Long time = new Date().getTime();
         Long oneDayMillis = (long)24*60*60*1000;
         return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
     }
-    public static Boolean sendSMS(String to,String message){return true;}
 
-/*
+    //public static Boolean sendSMS(String to,String message){return true;}
+
     public static Boolean sendSMS(String to,String message){
 
         logger.debug("sendSMS(): to = {}, message = {}", to, message);
@@ -114,7 +129,6 @@ public class MiscUtil {
         }
         return result;
     }
-    */
 
     /**
      * Check If City Office is Open/Close.
@@ -135,6 +149,38 @@ public class MiscUtil {
         int startMinutes = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V2_START_MINUTE,"0"));
         int endHour = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V2_END_HOUR,"18"));
         int endMinutes = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V2_END_MINUTE,"0"));
+
+        int startTime = (60 * startHour) + startMinutes;
+        int endTime = (60 * endHour) + endMinutes;
+
+        if (totalMinutes < startTime) {
+            return -1;
+        }
+        if (totalMinutes > endTime) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Check If Factory is Open/Close.
+     * @return -1:  Not opened yet, 0: open, 1: Colsed
+     */
+    public static int checkApp1Closed(){
+        long timeNow = System.currentTimeMillis();
+
+        DateFormat df = new SimpleDateFormat("HH:mm");
+        df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
+        String time = df.format(new Date(timeNow));
+        int hours = Integer.parseInt(time.split(":")[0]);
+        int minutes = Integer.parseInt(time.split(":")[1]);
+        int totalMinutes = (60 * hours) + minutes;
+
+        ConfigUtility configUtility = ConfigUtility.getInstance();
+        int startHour = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V1_START_HOUR,"8"));
+        int startMinutes = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V1_START_MINUTE,"45"));
+        int endHour = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V1_END_HOUR,"18"));
+        int endMinutes = Integer.parseInt(configUtility.getConfigProperty(Constants.APP_V1_END_MINUTE,"15"));
 
         int startTime = (60 * startHour) + startMinutes;
         int endTime = (60 * endHour) + endMinutes;

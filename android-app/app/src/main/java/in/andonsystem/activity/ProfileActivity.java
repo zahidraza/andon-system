@@ -31,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.R;
 import in.andonsystem.entity.User;
@@ -75,13 +74,12 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_profile);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App)getApplication();
         userService = new UserService(app);
@@ -166,11 +164,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             protected void handleInternetConnRetry() {
                 onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
             }
         };
     }
@@ -391,9 +384,10 @@ public class ProfileActivity extends AppCompatActivity {
     private void showMessage(String message){
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

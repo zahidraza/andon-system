@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -23,7 +24,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -53,6 +53,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private Spinner problems;
     private EditText operatorNo;
     private EditText issueDesc;
+    private Button submit;
     private RadioGroup radioGroup;
     private ProgressBar progress;
 
@@ -65,44 +66,44 @@ public class RaiseIssueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "544df31b");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_raise_issue1);
-        Log.i(TAG,"onCreate()");
+        Log.i(TAG, "onCreate()");
         context = this;
-        AppClose.activity3 = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //View mapping
-        lines = (Spinner)findViewById(R.id.line_dropdown);
-        sections = (Spinner)findViewById(R.id.section_dropdown);
-        depts = (Spinner)findViewById(R.id.dept_dropdown);
-        problems = (Spinner)findViewById(R.id.problem_dropdown);
-        operatorNo = (EditText)findViewById(R.id.operator_no);
-        issueDesc = (EditText)findViewById(R.id.issue_desc);
+        lines = (Spinner) findViewById(R.id.line_dropdown);
+        sections = (Spinner) findViewById(R.id.section_dropdown);
+        depts = (Spinner) findViewById(R.id.dept_dropdown);
+        problems = (Spinner) findViewById(R.id.problem_dropdown);
+        operatorNo = (EditText) findViewById(R.id.operator_no);
+        issueDesc = (EditText) findViewById(R.id.issue_desc);
+        submit = (Button)findViewById(R.id.raise_btn);
         progress = (ProgressBar) findViewById(R.id.loading_progress);
         //Initialization
-        appPref = getSharedPreferences(Constants.APP_PREF,0);
-        userPref = getSharedPreferences(Constants.USER_PREF,0);
+        appPref = getSharedPreferences(Constants.APP_PREF, 0);
+        userPref = getSharedPreferences(Constants.USER_PREF, 0);
 
         //        //Filters
         int noOfLines = Constants.NO_OF_LINES;
-        String[] lineArray = new String[noOfLines+1];
+        String[] lineArray = new String[noOfLines + 1];
         lineArray[0] = "Select Line";
-        for(int i = 1; i < lineArray.length; i++){
+        for (int i = 1; i < lineArray.length; i++) {
             lineArray[i] = "Line " + i;
         }
         /*//// Line Filter //////*/
-        ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this,R.layout.spinner_list_item,R.id.spinner_item,lineArray);
+        ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this, R.layout.spinner_list_item, R.id.spinner_item, lineArray);
         lineAdapter.setDropDownViewResource(R.layout.spinner_list_item);
         lines.setAdapter(lineAdapter);
         /*//// Section Filter //////*/
         String[] section = appPref.getString(Constants.APP_SECTIONS, "").split(";");
         final List<String> sectionList = new ArrayList<>();
         sectionList.add("Select Section");
-        for (String s: section) {
+        for (String s : section) {
             sectionList.add(s);
         }
         ArrayAdapter<String> sectionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sectionList);
@@ -112,8 +113,8 @@ public class RaiseIssueActivity extends AppCompatActivity {
         /*//// Department Filter //////*/
         String[] departments = appPref.getString(Constants.APP_DEPARTMENTS, "").split(";");
         final List<String> deptList = new ArrayList<>();
-deptList.add("Select Department");
-        for (String d: departments) {
+        deptList.add("Select Department");
+        for (String d : departments) {
             deptList.add(d);
         }
         ArrayAdapter<String> deptAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, deptList);
@@ -125,58 +126,62 @@ deptList.add("Select Department");
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateProblem();
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
-        restUtility = new RestUtility(this){
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                raiseIssue();
+            }
+        });
+
+        restUtility = new RestUtility(this) {
             @Override
             protected void handleInternetConnRetry() {
-                onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
+                raiseIssue();
             }
         };
 
     }
 
-    public void raiseIssue(View v){
-        Log.i(TAG,"raiseIssue()");
+    public void raiseIssue() {
+        Log.i(TAG, "raiseIssue()");
 
         String lineStr = lines.getSelectedItem().toString();
         String secStr = sections.getSelectedItem().toString();
         String deptStr = depts.getSelectedItem().toString();
-        String probStr = ((TextView)problems.findViewById(R.id.id)).getText().toString();
+        String probStr = ((TextView) problems.findViewById(R.id.id)).getText().toString();
 
         String opNo = operatorNo.getText().toString();
         String desc = issueDesc.getText().toString();
 
         Long probId = Long.parseLong(probStr);
 
-        if(lineStr.contains("Select")){
+        if (lineStr.contains("Select")) {
             showMessage("Select Line.");
             return;
         }
-        if(secStr.contains("Select")){
+        if (secStr.contains("Select")) {
             showMessage("Select Section.");
             return;
         }
-        if(deptStr.contains("Select")) {
+        if (deptStr.contains("Select")) {
             showMessage("Select Department.");
             return;
         }
-        if(probId == 0){
+        if (probId == 0) {
             showMessage("Select Problem.");
             return;
         }
-        if(TextUtils.isEmpty(opNo)){
+        if (TextUtils.isEmpty(opNo)) {
             showMessage("Enter Operator number.");
             return;
         }
-        if(TextUtils.isEmpty(desc)){
+        if (TextUtils.isEmpty(desc)) {
             showMessage("Enter problem description.");
             return;
         }
@@ -210,13 +215,13 @@ deptList.add("Select Department");
 
     }
 
-    private void raiseIssue(JSONObject issue){
+    private void raiseIssue(JSONObject issue) {
         progress.setVisibility(View.VISIBLE);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.i(TAG,response.toString());
-                if (response.has("status")){
+                Log.i(TAG, response.toString());
+                if (response.has("status")) {
                     try {
                         showMessage(response.getString("message"));
                     } catch (JSONException e) {
@@ -241,31 +246,31 @@ deptList.add("Select Department");
         };
 
         String url = Constants.API1_BASE_URL + "/issues";
-        restUtility.post(url,issue,listener,errorListener);
+        restUtility.post(url, issue, listener, errorListener);
     }
 
-    private void updateProblem(){
-        ProblemService pService = new ProblemService((App)getApplication());
+    private void updateProblem() {
+        ProblemService pService = new ProblemService((App) getApplication());
 
-        TextView dept = (TextView)depts.findViewById(android.R.id.text1);
+        TextView dept = (TextView) depts.findViewById(android.R.id.text1);
 
-        if(dept != null){
+        if (dept != null) {
             String department = dept.getText().toString();
 
             List<Problem> probList;
-            if(! department.contains("Select")){
+            if (!department.contains("Select")) {
                 probList = pService.findByDepartment(department);
-            }else {
+            } else {
                 probList = new ArrayList<>();
-                probList.add(new Problem(0L,"Select Problem",""));
+                probList.add(new Problem(0L, "Select Problem", ""));
             }
 
-            CustomProblemAdapter problemAdapter = new CustomProblemAdapter(this,R.layout.spinner_list_item,probList);
+            CustomProblemAdapter problemAdapter = new CustomProblemAdapter(this, R.layout.spinner_list_item, probList);
             problemAdapter.setDropDownViewResource(R.layout.spinner_list_item);
             problems.setAdapter(problemAdapter);
 
-            RadioGroup rg = (RadioGroup)findViewById(R.id.radio_group);
-            if(department.contains("Maintenance")){
+            RadioGroup rg = (RadioGroup) findViewById(R.id.radio_group);
+            if (department.contains("Maintenance")) {
 
                 RadioButton critical = new RadioButton(this);
                 critical.setId(R.id.radio_critical);
@@ -278,7 +283,7 @@ deptList.add("Select Department");
                 nonCritical.setText("Non Critical");
                 rg.addView(nonCritical);
 
-            }else{
+            } else {
                 rg.removeAllViews();
             }
         }
@@ -290,12 +295,8 @@ deptList.add("Select Department");
     }
 
     @Override
-    public void finish() {
-        super.finish();
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

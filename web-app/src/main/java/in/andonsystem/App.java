@@ -2,11 +2,14 @@
 package in.andonsystem;
 
 import in.andonsystem.util.DbBackupUtility;
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.Scheduler;
+import in.andonsystem.v1.service.IssueService;
 import in.andonsystem.v2.dto.UserDto;
 import in.andonsystem.v2.service.UserService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +17,7 @@ import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,6 +35,8 @@ public class App extends SpringBootServletInitializer{
 
     private final Logger logger = LoggerFactory.getLogger(App.class);
 
+    @Autowired IssueService issueService;
+
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
@@ -44,6 +50,7 @@ public class App extends SpringBootServletInitializer{
     CommandLineRunner init(
             UserService userService) {
         scheduleDbBackup();
+        scheduleApp1AutoFix();
         return (args) -> {
             if(userService.count() == 0){
                 userService.save(new UserDto("Md Jawed Akhtar", "jawed.akhtar1993@gmail.com", Role.ADMIN.name(), "8987525008", UserType.MERCHANDISING.getValue(), Level.LEVEL4.getValue()));
@@ -73,12 +80,22 @@ public class App extends SpringBootServletInitializer{
 
     private void scheduleDbBackup() {
         //Schedule Database backup at 11.00 PM daily
-        long todayMinsAfterMidnight = (System.currentTimeMillis() % (24*60*60*1000)) / (1000*60);
-        long initialDelay = (23*60) > todayMinsAfterMidnight ? (23*60) - todayMinsAfterMidnight : (24*60) - (todayMinsAfterMidnight - 23*60);
-        long oneDayMins = 24*60;
+        int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
+        long scheduleAt = 23*60;  // 11:00 PM
+        long diff = scheduleAt - todayMinsAfterMidnight;
+        long initialDelay = diff > 0? diff : (24*60) - diff;
 
         Scheduler.getInstance().getScheduler()
-                .scheduleAtFixedRate(() -> DbBackupUtility.backup(),initialDelay,oneDayMins, TimeUnit.MINUTES);
+                .scheduleAtFixedRate(() -> DbBackupUtility.backup(),initialDelay,24*60, TimeUnit.MINUTES);
+    }
+
+    private void scheduleApp1AutoFix() {
+        int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
+        long scheduleAt = 18*60 + 15;  // 6:15 PM
+        long diff = scheduleAt - todayMinsAfterMidnight;
+        long initialDelay = diff > 0? diff : (24*60) - diff;
+        Scheduler.getInstance().getScheduler()
+                .scheduleAtFixedRate(() -> issueService.autoFixIssues(),initialDelay,24*60, TimeUnit.MINUTES);
     }
 
 

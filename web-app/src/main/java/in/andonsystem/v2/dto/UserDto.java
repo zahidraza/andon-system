@@ -9,6 +9,7 @@ import in.andonsystem.validation.StringEnum;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 public class UserDto {
@@ -18,9 +19,9 @@ public class UserDto {
     @NotNull
     @Size(min = 5, max = 100)
     private String name;
-
+    //".+@.+\..+"
     @NotNull
-    @Pattern(regexp="^(?=.*[a-z])[a-z0-9_]{4,20}$", message="Username should contain lowercase letter, number and underscore only.")
+    @Pattern(regexp="^(?=.*[a-z])[a-z0-9_@\\.]{4,20}$")
     private String email;
 
     @JsonIgnore
@@ -43,7 +44,7 @@ public class UserDto {
     @StringEnum(enumClass = Level.class)
     private String level;
 
-    private Set<Buyer> buyers;
+    private Set<Buyer> buyers = new HashSet<>();
 
     private Boolean active;
 

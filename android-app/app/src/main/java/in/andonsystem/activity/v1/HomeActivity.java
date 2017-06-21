@@ -33,7 +33,6 @@ import android.widget.TextView;
 import com.android.volley.Response;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.activity.ReportActivity;
@@ -109,12 +108,11 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "544df31b");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         Mint.leaveBreadcrumb("home activity created");
         setContentView(R.layout.activity_home1
         );
         Log.i(TAG,"onCreate()");
-        AppClose.activity2 = this;
         context = this;
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -177,24 +175,23 @@ public class HomeActivity extends AppCompatActivity
             protected void handleInternetConnRetry() {
                 onStart();
             }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
-            }
         };
         userService = new UserService((App)getApplication());
         issueService = new IssueService1((App)getApplication());
+        issueService.deleteAllOlder();
     }
 
     @Override
     public void onBackPressed() {
+        Log.i(TAG,"back pressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            //Quit Application
-            AppClose.close();
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory( Intent.CATEGORY_HOME );
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
         }
     }
 
@@ -302,6 +299,7 @@ public class HomeActivity extends AppCompatActivity
         TreeSet<Problem> issues = getIssue(issueList);
         
         if(!issues.isEmpty()){
+            Log.d(TAG,"No. of ssues found = " + issues.size());
             //Remove both views first if exist
             container.removeView(textView);
             refreshLayout.removeView(recyclerView);
@@ -317,6 +315,7 @@ public class HomeActivity extends AppCompatActivity
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         }else{
+            Log.d(TAG,"No issues found");
             //Remove both views first if exist
             container.removeView(textView);
             refreshLayout.removeView(recyclerView);
@@ -853,30 +852,10 @@ public class HomeActivity extends AppCompatActivity
         return builder.create();
     }
 
-//
-//    public String getAccessToken(String refreshToken) {
-//        Log.d(TAG, "RestUtility: getAccessToken");
-//        String url = Constants.API2_BASE_URL + "/users";
-//        Log.d(TAG,"url = " + url);
-//        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,url,null,future,future);
-//        AppController.getInstance().addToRequestQueue(request);
-//
-//        try {
-//            JSONObject resp =  future.get(15, TimeUnit.SECONDS);
-//            Log.d(TAG, "$$$ refresh token response: " + resp.toString());
-//
-//        } catch (InterruptedException e) {
-//            Log.e(TAG,"Retrieve cards api call interrupted.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        } catch (ExecutionException e) {
-//            Log.e(TAG,"Retrieve cards api call failed.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        } catch (TimeoutException e) {
-//            Log.e(TAG,"Retrieve cards api call timed out.", e);
-////            errorListener.onErrorResponse(new VolleyError(e));
-//        }
-//        return null;
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
+    }
 
 }

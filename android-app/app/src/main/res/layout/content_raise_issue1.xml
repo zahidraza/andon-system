@@ -60,8 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Raise Issue"
-        android:background="@color/tomato"
-        android:onClick="raiseIssue"/>
+        android:background="@color/tomato" />
 
     <TextView
         android:id="@+id/radio_critical"

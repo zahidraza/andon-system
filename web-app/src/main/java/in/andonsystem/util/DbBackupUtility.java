@@ -15,15 +15,16 @@ import java.util.Date;
 public class DbBackupUtility {
 
     private static final Logger logger = LoggerFactory.getLogger(DbBackupUtility.class);
+    private static String dbName = "andonsys";
+    private static String user = ConfigUtility.getInstance().getAppProperty(Constants.DATASOURCE_USERNAME, "root");
+    private static String password = ConfigUtility.getInstance().getAppProperty(Constants.DATASOURCE_PASSWORD, "zahid");
+    private static String path = MiscUtil.getAndonHome() + File.separator + "backup";
 
     public static void backup() {
         logger.info("Backing up database...");
-        String user = ConfigUtility.getInstance().getAppProperty(Constants.DATASOURCE_USERNAME, "root");
-        String password = ConfigUtility.getInstance().getAppProperty(Constants.DATASOURCE_PASSWORD, "zahid");
-        String dbName = "andonsys";
         DateFormat sdf = new SimpleDateFormat("ddMMYYYY");
         String date = sdf.format(new Date());
-        String filename = MiscUtil.getAndonHome() + File.separator + "backup" + File.separator + dbName + "-" + date + ".sql";
+        String filename = path + File.separator + dbName + "-" + date + ".sql";
 
         Process p = null;
         try {
@@ -38,6 +39,32 @@ public class DbBackupUtility {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void restore(String filename) {
+
+        /*
+            mysql --user=root --password=zahid andonsys < /Users/mdzahidraza/Documents/andonsys-20062017.sql
+        */
+
+        logger.info("Restoring database with {} file ...", filename);
+        filename = path + File.separator + filename;
+        String[] restoreCmd = new String[]{"mysql ", "--user=" + user, "--password=" + password, "-e", "source " + filename};
+        String cmd = "mysql --user=" + user+ " --password=" + password +" -e"+ " source " + filename;
+        Process runtimeProcess;
+        try {
+
+            runtimeProcess = Runtime.getRuntime().exec(cmd);
+            int processComplete = runtimeProcess.waitFor();
+
+            if (processComplete == 0) {
+                logger.info("Restored Successfully");
+            } else {
+                logger.info("Could not restore backup");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

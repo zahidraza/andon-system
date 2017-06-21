@@ -100,6 +100,11 @@ public class AdapterHome extends RecyclerView.Adapter<HolderHome> {
         notifyDataSetChanged();
     }
 
+    public void delete(Problem problem) {
+        set.remove(problem);
+        notifyDataSetChanged();
+    }
+
     /**
      * Since Comparison is based on id, fixAt, ackAt and raisedAt fields, and the received object has changed state,
      * So, it is required to try deleting by moving it into previous states

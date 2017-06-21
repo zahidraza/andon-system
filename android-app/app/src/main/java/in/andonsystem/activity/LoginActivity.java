@@ -1,12 +1,8 @@
 package in.andonsystem.activity;
 
-import android.accounts.AccountAuthenticatorActivity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,11 +13,11 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.splunk.mint.Mint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.R;
 import in.andonsystem.activity.v2.HomeActivity;
@@ -45,9 +41,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_login);
         Log.d(TAG,"onCreate()");
-        AppClose.activity1 = this;
 
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         syncPref = getSharedPreferences(Constants.SYNC_PREF,0);
@@ -60,100 +57,12 @@ public class LoginActivity extends AppCompatActivity {
             protected void handleInternetConnRetry() {
                 onStart();
             }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
-            }
         };
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        progress.setVisibility(View.VISIBLE);
-        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG,"config response: " + response.toString());
-                progress.setVisibility(View.INVISIBLE);
-                try {
-                    boolean update = response.getBoolean("update");
-                    long appSync = response.getLong("appSync");
-                    if (update) {
-                        getDialog().show();
-                    }else {
-                        long lastAppSync = syncPref.getLong(Constants.LAST_APP_SYNC,0);
-                        if (lastAppSync < appSync) {
-                            appPref.edit()
-                                        .putBoolean(Constants.APP1_FIRST_LAUNCH,true)
-                                        .putBoolean(Constants.APP2_FIRST_LAUNCH,true)
-                                        .putLong(Constants.LAST_APP_SYNC, appSync)
-                                    .commit();
-                        }
-
-                        login();
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        errorListener = new ErrorListener(this) {
-            @Override
-            protected void handleTokenExpiry() {
-
-            }
-
-            @Override
-            protected void onError(VolleyError error) {
-                progress.setVisibility(View.INVISIBLE);
-            }
-        };
-        String url = Constants.API2_BASE_URL + "/misc/config?version=" + getString(R.string.version2);
-        restUtility.setProtected(false);
-        restUtility.get(url,listener,errorListener);
-
-    }
-
-    private AlertDialog getDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Update Available");
-        builder.setMessage("A new version of application is available.Please update for app to work properly.");
-        builder.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                appPref.edit()
-                        .putBoolean(Constants.APP1_FIRST_LAUNCH,true)
-                        .putBoolean(Constants.APP2_FIRST_LAUNCH,true)
-                        .commit();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://andonsystem.in/download.jsp"));
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton("LATER", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                login();
-            }
-        });
-        return builder.create();
-    }
-
-
-    private void login() {
-        boolean isLoggedIn = userPref.getBoolean(Constants.IS_LOGGED_IN, false);
-        if (isLoggedIn) {
-            String userType = userPref.getString(Constants.USER_TYPE,"");
-            if (userType.equalsIgnoreCase(Constants.USER_FACTORY)) {
-                redirectToHome(1);
-            }else {
-                redirectToHome(2);
-            }
-        }
     }
 
     public void signIn(View v){
@@ -263,7 +172,6 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
         }
-
     }
 
     public void forgotPassword(View view){
@@ -274,6 +182,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        AppClose.close();
+        Log.i(TAG,"Back Pressed");
+        //AppClose.close();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory( Intent.CATEGORY_HOME );
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

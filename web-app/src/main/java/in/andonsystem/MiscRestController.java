@@ -1,7 +1,10 @@
-package in.andonsystem.v2.restcontroller;
+package in.andonsystem;
 
-import in.andonsystem.Constants;
 import in.andonsystem.util.ConfigUtility;
+import in.andonsystem.util.MiscUtil;
+import in.andonsystem.v1.dto.StyleCO;
+import in.andonsystem.v1.entity.Designation;
+import in.andonsystem.v1.service.DesignationService;
 import in.andonsystem.v2.dto.RestError;
 import in.andonsystem.v2.service.UserService;
 import in.andonsystem.v2.ApiUrls;
@@ -16,8 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by razamd on 3/31/2017.
@@ -28,6 +30,8 @@ public class MiscRestController {
     private final Logger logger = LoggerFactory.getLogger(MiscRestController.class);
 
     @Autowired UserService userService;
+
+    @Autowired DesignationService designationService;
 
     @GetMapping(ApiUrls.URL_MISCELLANEOUS_CONFIG)
     public ResponseEntity<?> getAppConfig(@RequestParam(value = "version") String version){
@@ -119,6 +123,42 @@ public class MiscRestController {
             response.put("status", "FAIL");
         }
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(ApiUrls.URL_STYLE_CHANGE_OVER)
+    public ResponseEntity<?> styleChangeOver(@RequestBody StyleCO styleCO) {
+        //First Floor desgnIds : 1,6,7,9,43
+        //Second Floor desgnIds : 2,5,8,10,43,8
+        List<Long> desgnList = new ArrayList<>();
+        desgnList.add(1L);
+        desgnList.add(6L);
+        desgnList.add(7L);
+        desgnList.add(9L);
+        desgnList.add(43L);
+        desgnList.add(2L);
+        desgnList.add(5L);
+        desgnList.add(8L);
+        desgnList.add(10L);
+
+        List<Designation> designations = designationService.findAll(desgnList);
+        StringBuilder builder = new StringBuilder();
+        designations.forEach(designation -> {
+            designation.getUsers().forEach(user -> {
+                builder.append(user.getMobile()).append(",");
+            });
+        });
+        if (builder.length()> 0) builder.setLength(builder.length()-1);
+        if (builder.length() > 0) {
+            String message = "Line: " + styleCO.getLine() + " Changeover from " + styleCO.getFrom() + " to " + styleCO.getTo() + " Remarks: " + styleCO.getRemarks() + " Submitted by: " + styleCO.getSubmitBy();
+
+            logger.info("Sending style change over message to: {},\n message: {}", builder.toString(),message);
+            MiscUtil.sendSMS(builder.toString(), message);
+        }
+        Map<String, String> resp = new HashMap<>();
+        resp.put("status", "SUCCESS");
+        resp.put("message", "Style Change Over message sent successfully");
+
+        return ResponseEntity.ok(resp);
     }
 
 

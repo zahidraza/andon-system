@@ -14,6 +14,7 @@ import Report2 from "./components/city/Report";
 import Section from "./components/factory/Section";
 import Department from "./components/factory/Department";
 import IssueTracking from './components/city/IssueTracking';
+import Download from './components/Download';
 
 import Test from "./components/Test";
 
@@ -36,6 +37,7 @@ export default {
     { path: 'section', component: Section},
     { path: 'department', component: Department},
     { path: 'tracking', component: IssueTracking},
+    { path: 'download', component: Download},
     { path: 'test', component: Test}
   ]
 };

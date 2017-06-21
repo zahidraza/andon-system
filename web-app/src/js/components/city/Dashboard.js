@@ -22,6 +22,7 @@ class Dashboard extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }
+
   }
 
   componentWillReceiveProps (nextProps) {

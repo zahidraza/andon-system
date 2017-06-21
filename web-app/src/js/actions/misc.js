@@ -3,6 +3,15 @@ import axios from "axios";
 import {MISC_CONSTANTS as m, USER_CONSTANTS as u, NAV_ACTIVATE} from  '../utils/constants';
 import {getHeaders} from  '../utils/restUtil';
 
+axios.interceptors.response.use(function (response) {
+  return response;
+}, function (error) {
+  if (error.response.status == 401) {
+    delete sessionStorage.session;
+  }
+  return Promise.reject(error);
+});
+
 export function initialize () {
   console.log("initialize()");
 

@@ -21,4 +21,7 @@ public class ApiUrls {
     public static final String URL_FORGOT_PASSWORD_SEND_OTP = "/forgot_password/send_otp";
     public static final String URL_FORGOT_PASSWORD_VERIFY_OTP = "/forgot_password/verify_otp";
     public static final String URL_FORGOT_PASSWORD_CHANGE_PASSWORD = "/forgot_password/change_password";
+    public static final String URL_STYLE_CHANGE_OVER = "/style_change_over";
+
+    public static final String APK_DOWNLOAD_URL = "/download";
 }

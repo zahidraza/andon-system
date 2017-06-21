@@ -9,7 +9,6 @@ import android.view.View;
 
 import com.splunk.mint.Mint;
 
-import in.andonsystem.AppClose;
 import in.andonsystem.R;
 
 public class AboutActivity extends AppCompatActivity {
@@ -18,11 +17,10 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_about);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AppClose.activity3 = this;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -37,6 +35,5 @@ public class AboutActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppClose.activity3 = null;
     }
 }

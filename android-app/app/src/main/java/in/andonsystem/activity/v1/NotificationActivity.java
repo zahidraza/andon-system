@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.TreeSet;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterNotification;
@@ -64,13 +63,12 @@ public class NotificationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_notification1);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userService = new UserService(app);
@@ -141,12 +139,6 @@ public class NotificationActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        container.removeAllViews();
-    }
-
     private TreeSet<Notification> getNotifications(List<Issue1> issues){
         TreeSet<Notification> list = new TreeSet<>();
         String message;
@@ -198,10 +190,6 @@ public class NotificationActivity extends AppCompatActivity {
             protected void handleInternetConnRetry() {
                 onStart();
             }
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
-            }
         };
         String url = Constants.API2_BASE_URL + "/misc/current_time";
 
@@ -233,8 +221,9 @@ public class NotificationActivity extends AppCompatActivity {
         restUtility.get(url, listener, errorListener);
     }
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        container.removeAllViews();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

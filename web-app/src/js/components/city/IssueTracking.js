@@ -443,16 +443,16 @@ class IssueTracking extends Component {
 
     const busy = this.props.issue.busy ? <Spinning /> : null;
 
-    //red color = #f4708b ,  blue color = #3e95f2, green = #58ba43
+    //red color = #FF6347 ,  blue color = #1E90FF, green = #32CD32
 
     const items = issues.map((issue, index)=>{
       let style;
       if (issue.fixAt != null) {
-        style = {backgroundColor: '#58ba43'};
+        style = {backgroundColor: '#32CD32'};
       }else if (issue.ackAt != null) {
-        style = {backgroundColor: '#3e95f2'};
+        style = {backgroundColor: '#1E90FF'};
       }else {
-        style = {backgroundColor: '#f4708b'};
+        style = {backgroundColor: '#FF6347'};
       }
       return (
         <TableRow key={index} style={style} >

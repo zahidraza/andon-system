@@ -49,8 +49,8 @@ class User extends Component {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
     }else {
-      const {users,filter,sort} = this.props.user;
-      this._loadUser(this._filterUserByUserType(users),filter,sort);
+      const {user: {users,filter,sort}, misc: {desgns}} = this.props;
+      this._loadUser(this._filterUserByUserType(users),desgns,filter,sort);
     }
   }
 
@@ -60,8 +60,8 @@ class User extends Component {
       this.setState({initializing: false});
     }
     if (this.props.user.toggleStatus != nextProps.user.toggleStatus) {
-      const {users,filter,sort} = nextProps.user;
-      this._loadUser(this._filterUserByUserType(users),filter,sort);
+      const {user: {users,filter,sort}, misc: {desgns}} = nextProps;
+      this._loadUser(this._filterUserByUserType(users), desgns, filter,sort);
     }
   }
 
@@ -70,7 +70,16 @@ class User extends Component {
     return users.filter(u => u.userType == userType);
   }
 
-  _loadUser (users,filter,sort) {
+  _loadUser (users, desgns,filter,sort) {
+    users = users.map(u => {
+      if (u.desgnId != null) {
+        u.designation = desgns.find(desgn => desgn.id == u.desgnId).name;
+      }else {
+        u.designation = '-';
+      }
+      return u;
+    });
+
     let unfilteredCount = users.length;
     if ('level' in filter) {
       const levelFilter = filter.level;
@@ -98,16 +107,16 @@ class User extends Component {
   }
 
   _onSearch (event) {
-    const {users,filter,sort} = this.props.user;
+    const {user: {users,filter,sort}, misc: {desgns}}= this.props;
     let value = event.target.value;
     let usrs = this._filterUserByUserType(users);
     usrs = usrs.filter(u => u.name.toLowerCase().includes(value.toLowerCase()) || u.email.toLowerCase().includes(value.toLowerCase()));
 
     this.setState({searchText: value});
     if (value.length == 0) {
-      this._loadUser(usrs,filter,sort);
+      this._loadUser(usrs, desgns, filter,sort);
     }else{
-      this._loadUser(usrs,{},sort);
+      this._loadUser(usrs, desgns,{},sort);
     }
   }
 

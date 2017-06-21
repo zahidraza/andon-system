@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -59,6 +59,7 @@ public class IssueDetailActivity extends AppCompatActivity {
     private TextView processingAt;
     private Button ackButton;
     private Button fixButton;
+    private Button delButton;
     private LinearLayout layout;
     private ProgressBar progress;
 
@@ -75,13 +76,12 @@ public class IssueDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_issue_detail2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App)getApplication();
         issueService2 = new IssueService2(app);
@@ -101,10 +101,14 @@ public class IssueDetailActivity extends AppCompatActivity {
         processingAt = (TextView)findViewById(R.id.detail_processing_at);
         desc = (TextView)findViewById(R.id.detail_desc);
         layout = (LinearLayout)findViewById(R.id.issue_detail_layout);
-        progress = (ProgressBar) findViewById(R.id.detail_loading);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
 
         ackButton = getButton("ACKNOWLEDGE");
         fixButton = getButton("FIX");
+        delButton = getButton("DELETE");
+        ackButton.setBackgroundColor(ContextCompat.getColor(mContext,R.color.blue));
+        fixButton.setBackgroundColor(ContextCompat.getColor(mContext,R.color.limeGreen));
+        delButton.setBackgroundColor(ContextCompat.getColor(mContext,R.color.color10));
 
         ackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +120,12 @@ public class IssueDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fix();
+            }
+        });
+        delButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                delete();
             }
         });
         errorListener = new ErrorListener(mContext) {
@@ -134,11 +144,6 @@ public class IssueDetailActivity extends AppCompatActivity {
             @Override
             protected void handleInternetConnRetry() {
                 onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
             }
         };
     }
@@ -200,14 +205,11 @@ public class IssueDetailActivity extends AppCompatActivity {
                     }
                 }
             }
+        }else if (user.getUserType().equalsIgnoreCase(Constants.USER_SAMPLING)) {
+            if (issue.getRaisedBy().equals(user.getId())) {
+                layout.addView(delButton);
+            }
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        layout.removeView(ackButton);
-        layout.removeView(fixButton);
     }
 
     private void acknowledge(){
@@ -268,6 +270,30 @@ public class IssueDetailActivity extends AppCompatActivity {
         restUtility.patch(url, data, listener, errorListener);
     }
 
+    private void delete(){
+        Log.d(TAG,"delete");
+        progress.setVisibility(View.VISIBLE);
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.has("status")){
+                        showMessage(response.getString("message"));
+                    }else if (response.has("id")){
+                        showMessage("Issue deleted successfully");
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+                progress.setVisibility(View.INVISIBLE);
+                finish();
+            }
+        };
+        String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_DEL";
+
+        restUtility.patch(url, new JSONObject(), listener, errorListener);
+    }
+
     private Button getButton(String name){
         Button btn = new Button(mContext);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
@@ -280,12 +306,13 @@ public class IssueDetailActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        layout.removeAllViews();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

@@ -27,4 +27,8 @@ public class DesignationService {
         list.forEach(designation -> Hibernate.initialize(designation.getProblems()));
         return list;
     }
+
+    public List<Designation> findAll(List<Long> desgnList){
+        return designationRepository.findAll(desgnList);
+    }
 }

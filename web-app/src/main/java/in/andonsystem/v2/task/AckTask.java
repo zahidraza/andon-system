@@ -34,7 +34,7 @@ public class AckTask extends Thread {
 
         Issue2 issue = issueService.findOne(issueId,true);
 
-        if(issue.getAckAt() == null){  //If not acknowldged yet
+        if(!issue.getDeleted() && issue.getAckAt() == null){  //If not acknowldged yet
             //Send message to L2 users
             logger.debug("Sending notification to L2 users");
 

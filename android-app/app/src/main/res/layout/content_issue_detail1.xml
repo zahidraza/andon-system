@@ -14,6 +14,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:visibility="gone"/>
+
         <TextView
             android:id="@+id/detail_prob"
             android:layout_width="match_parent"
@@ -323,12 +330,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </LinearLayout>
-        <ProgressBar
-            android:id="@+id/loading_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:visibility="gone"/>
+
 
     </LinearLayout>
 

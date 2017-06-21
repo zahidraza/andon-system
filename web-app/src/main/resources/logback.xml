@@ -22,7 +22,7 @@
     </encoder>
   </appender>
 
-  <logger name="in.andonsystem" level="DEBUG" additivity="false">
+  <logger name="in.andonsystem" level="INFO" additivity="false">
     <appender-ref ref="AndonDebugAppender" />
     <appender-ref ref="STDOUT" />
   </logger>

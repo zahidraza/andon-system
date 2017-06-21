@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -17,7 +18,6 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -40,6 +40,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
     private EditText from;
     private EditText to;
     private EditText remarks;
+    private Button submit;
 
     private String fromStr,toStr,remarksStr,lineStr;
 
@@ -51,11 +52,10 @@ public class StyleChangeOverActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "544df31b");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_style_change_over);
         Log.i(TAG,"onCreate()");
         context = this;
-        AppClose.activity3 = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,6 +67,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         to = (EditText)findViewById(R.id.style_to);
         remarks = (EditText)findViewById(R.id.style_remarks);
         progress = (ProgressBar) findViewById(R.id.loading_progress);
+        submit = (Button) findViewById(R.id.style_submit);
 
         userPref = getSharedPreferences(Constants.USER_PREF,0);
         username = userPref.getString(Constants.USER_NAME,"");
@@ -80,20 +81,22 @@ public class StyleChangeOverActivity extends AppCompatActivity {
         ArrayAdapter<String> lineAdapter = new ArrayAdapter<>(this,R.layout.spinner_list_item,R.id.spinner_item,lineArray);
         lineAdapter.setDropDownViewResource(R.layout.spinner_list_item);
         line.setAdapter(lineAdapter);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submit();
+            }
+        });
+
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
-                onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
+                submit();
             }
         };
     }
 
-    public void submit(View view){
+    public void submit(){
 
         lineStr = ((TextView)line.findViewById(R.id.spinner_item)).getText().toString();
         toStr = to.getText().toString();
@@ -108,8 +111,15 @@ public class StyleChangeOverActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONObject response) {
                     Log.i(TAG, "style changeover Response : " + response);
-                    //TODO: modify processing of response
+                    try {
+                        if (response.has("message")){
+                            Toast.makeText(context, response.getString("message"),Toast.LENGTH_LONG).show();
+                        }
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
                     progress.setVisibility(View.INVISIBLE);
+                    finish();
                 }
             };
 
@@ -125,7 +135,7 @@ public class StyleChangeOverActivity extends AppCompatActivity {
                     progress.setVisibility(View.INVISIBLE);
                 }
             };
-            String url = "http://andonsystem.in/restapi/style_changeover"; //TODO: change url
+            String url = Constants.API2_BASE_URL +  "/misc/style_change_over"; //TODO: change url
             JSONObject data = new JSONObject();
             try {
                 data.put("line", lineStr.split(" ")[1]);
@@ -141,8 +151,8 @@ public class StyleChangeOverActivity extends AppCompatActivity {
 
     }
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

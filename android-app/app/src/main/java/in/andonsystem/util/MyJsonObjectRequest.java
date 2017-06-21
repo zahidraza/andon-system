@@ -20,10 +20,12 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
 
     private String accessToken;
     private Boolean isloginRequest = false;
+    private Boolean isProtected = true;
 
-    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, boolean isloginRequest) {
+    public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, boolean isloginRequest, boolean isProtected) {
         super(method, url, jsonRequest, listener, errorListener);
         this.isloginRequest = isloginRequest;
+        this.isProtected = isProtected;
     }
 
     public MyJsonObjectRequest(int method, String url, JSONObject jsonRequest, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener, String accessToken) {
@@ -36,7 +38,7 @@ public class MyJsonObjectRequest extends JsonObjectRequest {
         Map<String, String> headers = new HashMap<>();
         if (isloginRequest) {
             headers.put("Authorization", "Basic " + Base64.encodeToString("client-android:super-secret".getBytes(),0));
-        }else {
+        }else if (isProtected){
             headers.put("Authorization", "Bearer " + accessToken);
         }
         headers.put("Accept", "application/json; charset=utf-8");

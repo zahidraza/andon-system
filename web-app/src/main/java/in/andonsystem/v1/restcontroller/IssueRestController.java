@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -73,15 +74,15 @@ public class IssueRestController {
     @PostMapping
     public ResponseEntity<?> saveIssue(@Valid @RequestBody IssueDto issueDto){
         logger.debug("saveIssue()");
-        int value = MiscUtil.checkApp2Closed();
+        int value = MiscUtil.checkApp1Closed();
         Map<String,Object> resp = new HashedMap();
         if (value == -1){
             resp.put("status","OFFICE_NOT_OPENED");
-            resp.put("message","City Office not opened yet.");
+            resp.put("message","Factory not opened yet.");
             return ResponseEntity.ok(resp);
         }else if (value == 1){
             resp.put("status","OFFICE_CLOSED");
-            resp.put("message","City Office closed.");
+            resp.put("message","Factory closed.");
             return ResponseEntity.ok(resp);
         }
         ////////////////////////////////////////////////////
@@ -106,15 +107,15 @@ public class IssueRestController {
     public ResponseEntity<?> updateIssue(@PathVariable("issueId") Long issueId, @RequestParam("operation") String operation, @Valid @RequestBody
             IssuePatchDto issueDto){
         logger.debug("updateIssue(): id = {}, operation = {}", issueId,operation);
-        int value = MiscUtil.checkApp2Closed();
+        int value = MiscUtil.checkApp1Closed();
         Map<String,Object> resp = new HashedMap();
         if (value == -1){
             resp.put("status","210");
-            resp.put("message","City Office not opened yet.");
+            resp.put("message","Factory not opened yet.");
             return ResponseEntity.ok(resp);
         }else if (value == 1){
             resp.put("status","211");
-            resp.put("message","City Office closed.");
+            resp.put("message","Factory closed.");
             return ResponseEntity.ok(resp);
         }
         /////////////////////////////////////////
@@ -148,4 +149,6 @@ public class IssueRestController {
         issueDto = issueService.update(issueDto, operation);
         return ResponseEntity.ok(issueDto);
     }
+
+
 }

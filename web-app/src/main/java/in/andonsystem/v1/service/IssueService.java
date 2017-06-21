@@ -91,7 +91,7 @@ public class IssueService {
         issue.setRaisedAt(new Date());
         issue.setRaisedBy(userRespository.findOne(issueDto.getRaisedBy()));
         issue.setProcessingAt(1);
-        issue.setSeekHelp(0);
+        issue.setSeekHelp(0) ;
         if (issue.getDeleted() == null) issue.setDeleted(false);
         issue = issueRepository.save(issue);
 
@@ -208,6 +208,22 @@ public class IssueService {
         }else {
             logger.info("No mobile numbers found");
         }
+    }
+
+    @Transactional
+    public void autoFixIssues() {
+        logger.info("Auto Fixing non fixed Issues");
+        User user = userRespository.findOne(55554L);
+        List<Issue1> list = issueRepository.findByProcessingAtLessThanAndRaisedAtGreaterThan(4,MiscUtil.getTodayMidnight());
+        list.forEach(issue1 -> {
+            if (issue1.getAckAt() == null) {
+                issue1.setAckAt(new Date());
+                issue1.setAckBy(user);
+            }
+            issue1.setFixAt(new Date());
+            issue1.setFixBy(user);
+            issue1.setProcessingAt(4);
+        });
     }
 }
 

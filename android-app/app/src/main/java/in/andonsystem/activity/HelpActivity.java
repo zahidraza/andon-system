@@ -1,15 +1,11 @@
 package in.andonsystem.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.splunk.mint.Mint;
 
-import in.andonsystem.AppClose;
 import in.andonsystem.R;
 
 public class HelpActivity extends AppCompatActivity {
@@ -18,16 +14,14 @@ public class HelpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_help);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        AppClose.activity3 = this;
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppClose.activity3 = null;
     }
 }

@@ -8,7 +8,8 @@ const initialState = {
     { path: '/user', label: 'User'},
     { path: '/mapping2', label: 'Mapping'},
     { path: '/tracking', label: 'Issue Tracking'},
-    { path: '/problem', label: 'Problem'}
+    { path: '/problem', label: 'Problem'},
+    { path: '/download', label: 'Download'}
   ],
   itemsFactory: [
     { path: '/dashboard1', label: 'Home'},
@@ -16,7 +17,8 @@ const initialState = {
     { path: '/user', label: 'User'},
     { path: '/mapping1', label: 'Mapping'},
     { path: '/section', label: 'Section'},
-    { path: '/department', label: 'Department'}
+    { path: '/department', label: 'Department'},
+    { path: '/download', label: 'Download'}
   ]
 };
 

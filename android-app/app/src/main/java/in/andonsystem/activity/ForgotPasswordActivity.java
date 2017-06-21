@@ -1,10 +1,8 @@
 package in.andonsystem.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
@@ -19,20 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import in.andonsystem.App;
-import in.andonsystem.AppClose;
-import in.andonsystem.AppController;
 import in.andonsystem.R;
 import in.andonsystem.Constants;
 import in.andonsystem.util.ErrorListener;
@@ -68,9 +59,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate()");
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_forgot_password);
-        AppClose.activity2 = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,12 +80,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         otp.setInputType(InputType.TYPE_CLASS_NUMBER);
         otp.setFilters(new InputFilter[]{new InputFilter.LengthFilter(6)});
+        emailId.setInputType(InputType.TYPE_CLASS_TEXT);
         newPasswd.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         newPasswd2.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         container.removeAllViews();
         container.addView(emailId);
         container.addView(submit);
+        container.addView(progress);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,11 +140,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             protected void handleInternetConnRetry() {
                 onStart();
             }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
-            }
         };
         restUtility.setProtected(false);
 
@@ -175,6 +162,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         container.addView(title2);
                         container.addView(otp);
                         container.addView(submit);
+                        container.addView(progress);
                         action =2;
                     }
                 } catch (JSONException e) {
@@ -204,6 +192,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         container.addView(newPasswd);
                         container.addView(newPasswd2);
                         container.addView(submit);
+                        container.addView(progress);
                         action = 3;
                     }else{
                         Toast.makeText(context,"Entered Incorrect OTP",Toast.LENGTH_SHORT).show();
@@ -275,5 +264,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         return button;
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
+    }
 
 }

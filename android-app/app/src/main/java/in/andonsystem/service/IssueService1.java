@@ -109,28 +109,10 @@ public class IssueService1 {
         return qb.list();
     }
 
-//    public List<Issue1> findAllByTeam(String team){
-//        Log.d(TAG, "findAllByTeam: team = " + team);
-//        QueryBuilder<Issue1> queryBuilder = issueDao.queryBuilder();
-//        queryBuilder.join(Issue1Dao.Properties.BuyerId,Buyer.class)
-//                .where(BuyerDao.Properties.Team.eq(team));
-//        return   queryBuilder.list();
-//    }
-
-//    public List<Issue1> findAllByBuyers(List<Buyer> buyers){
-//        Log.d(TAG, "findAllByBuyers");
-//        List<Issue1> result = new ArrayList<>();
-//        QueryBuilder<Issue1> queryBuilder = issueDao.queryBuilder();
-//        for(Buyer b: buyers){
-//            result.addAll(issueDao.queryBuilder().where(Issue1Dao.Properties.BuyerId.eq(b.getId())).list());
-//        }
-//        return result;
-//    }
-
     public List<Issue1> getAllIssueForDesignation(Designation designation) {
         Set<Integer> lines = MiscUtil.getLines(designation.getLines());
-        QueryBuilder<Issue1> qb = issueDao.queryBuilder();
-        Join<Issue1,Problem> problem = qb.join(Issue1Dao.Properties.ProblemId, Problem.class);
+        QueryBuilder<Issue1> qb = issueDao.queryBuilder().where(Issue1Dao.Properties.Deleted.eq(false));
+        //Join<Issue1,Problem> problem = qb.join(Issue1Dao.Properties.ProblemId, Problem.class);
         List<Issue1> list = qb.list();
         List<Issue1> result = new ArrayList<>();
         for (Issue1 issue: list){
@@ -145,11 +127,11 @@ public class IssueService1 {
 
     public List<Issue1> findAllByUser(User user){
         Log.d(TAG, "findAllByUser: user = " + user.getName());
-        return issueDao.queryBuilder().where(Issue1Dao.Properties.RaisedBy.eq(user.getId())).list();
+        return issueDao.queryBuilder().where(Issue1Dao.Properties.RaisedBy.eq(user.getId()), Issue1Dao.Properties.Deleted.eq(false)).list();
     }
 
     public void deleteAllOlder(){
-        Log.d(TAG, "deleteOlder than 2 days.");
+        Log.d(TAG, "deleteOlder than 1 days.");
         Long time = new Date().getTime();
         Date midnight = new Date(time -(time % (24 * 60 * 60 * 1000)));
         List<Issue1> issues = issueDao.queryBuilder()

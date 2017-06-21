@@ -5,9 +5,9 @@ package in.andonsystem;
  */
 
 public class Constants {
-    public static final String API1_BASE_URL = "http://andonsystem.in/andon-system/api/v1";
-    public static final String API2_BASE_URL = "http://andonsystem.in/andon-system/api/v2";
-    public static final String AUTH_BASE_URL = "http://andonsystem.in/andon-system/oauth/token";
+    public static final String API1_BASE_URL = "http://andonsystem.in/api/v1";
+    public static final String API2_BASE_URL = "http://andonsystem.in/api/v2";
+    public static final String AUTH_BASE_URL = "http://andonsystem.in/oauth/token";
 
     /*Sync Preference file*/
     public static final String SYNC_PREF = "sync.pref";

@@ -34,6 +34,7 @@ public abstract class ErrorListener implements Response.ErrorListener {
             NetworkResponse resp = error.networkResponse;
             if (resp != null) {
                 if (resp.statusCode == 401) {
+                    Log.d(TAG,"resp: " + new String(resp.data));
                     SharedPreferences userPref = mContext.getSharedPreferences(Constants.USER_PREF,0);
                     userPref.edit().putString(Constants.USER_ACCESS_TOKEN,null).commit();
                     handleTokenExpiry();
@@ -43,8 +44,8 @@ public abstract class ErrorListener implements Response.ErrorListener {
                     showMessage("Resource not found.Contact developer.");
                 }
             }
-            onError(error);
         }
+        onError(error);
     }
 
     /**

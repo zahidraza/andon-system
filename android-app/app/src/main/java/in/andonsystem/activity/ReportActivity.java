@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -36,7 +37,6 @@ import java.util.Date;
 import java.util.List;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterReport;
@@ -58,7 +58,8 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
     private ProblemService problemService;
 
     private ProgressBar progress;
-    private LinearLayout container;
+    private RelativeLayout container;
+    private LinearLayout dataLayout;
     private TextView dateView;
     private RecyclerView recyclerView;
     private TextView message;
@@ -70,13 +71,12 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_report);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userPref = getSharedPreferences(Constants.USER_PREF,0);
@@ -85,39 +85,36 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         userType = userPref.getString(Constants.USER_TYPE,"");
 
         progress = (ProgressBar)findViewById(R.id.loading_progress);
-        container = (LinearLayout)findViewById(R.id.report_container);
-
-
+        container = (RelativeLayout) findViewById(R.id.report_container);
+        dataLayout = (LinearLayout) findViewById(R.id.date_layout);
 
         dateView = (TextView)findViewById(R.id.date_view);
         dateView.setText(getTodayDate());
 
         recyclerView = new RecyclerView(this);
-        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT
         );
+        params.addRule(RelativeLayout.BELOW, R.id.date_layout);
         recyclerView.setLayoutParams(params);
         recyclerView.addItemDecoration(new DividerItemDecoration(this,R.drawable.divider));
 
         message = new TextView(this);
-        LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
         );
-        params2.gravity = Gravity.CENTER_HORIZONTAL;
-        params2.weight = 1.0f;
-        message.setText("No Report for selected day found");
+        params2.addRule(RelativeLayout.BELOW, R.id.date_layout);
+        params2.topMargin = 20;
+        message.setLayoutParams(params2);
+        message.setText("No Reports found for selected date.");
+        message.setGravity(Gravity.CENTER_HORIZONTAL);
         message.setTextColor(ContextCompat.getColor(this,R.color.tomato));
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
                 onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
             }
         };
     }
@@ -175,9 +172,9 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                     Log.i(TAG, "Issue1 Response :" + response.toString());
                     try {
                         JSONArray issues = response.getJSONArray("issues");
-
+                        List<Problem> problems = new ArrayList<>();
                         if (issues.length() > 0){
-                            List<Problem> problems = new ArrayList<>();
+
                             JSONObject issue;
                             in.andonsystem.entity.Problem problem;
                             long raisedAt,fixAt,downtime;
@@ -192,8 +189,12 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                                     downtime = fixAt - raisedAt;
                                 }
                                 Log.d(TAG,"downtime="+ downtime);
-                                problems.add(new Problem(issue.getLong("id"),"Line " + issue.getInt("line"),problem.getDepartment(),problem.getName(),downtime));
+                                if (!issue.getBoolean("deleted")){
+                                    problems.add(new Problem(issue.getLong("id"),"Line " + issue.getInt("line"),problem.getDepartment(),problem.getName(),downtime));
+                                }
                             }
+                        }
+                        if (problems.size() > 0) {
                             container.removeView(recyclerView);
                             container.removeView(message);
                             container.addView(recyclerView);
@@ -219,8 +220,9 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                     Log.i(TAG, "Issue2 Response :" + response.toString());
                     try {
                         JSONArray issues = response.getJSONArray("issues");
+                        List<Problem> problems = new ArrayList<>();
                         if (issues.length() > 0){
-                            List<Problem> problems = new ArrayList<>();
+
                             JSONObject issue;
                             Buyer buyer;
                             long raisedAt,fixAt,downtime;
@@ -234,9 +236,13 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                                     fixAt = issue.getLong("fixAt");
                                     downtime = fixAt - raisedAt;
                                 }
-                                Log.d(TAG,"downtime="+ downtime);
-                                problems.add(new Problem(issue.getLong("id"),buyer.getTeam(),buyer.getName(),issue.getString("problem"),downtime));
+                                Log.d(TAG,"downtime="+ downtime);  //TODO: calculate downtime ignoring night hours
+                                if (!issue.getBoolean("deleted")){
+                                    problems.add(new Problem(issue.getLong("id"),buyer.getTeam(),buyer.getName(),issue.getString("problem"),downtime));
+                                }
                             }
+                        }
+                        if (!problems.isEmpty()){
                             container.removeView(recyclerView);
                             container.removeView(message);
                             container.addView(recyclerView);
@@ -287,6 +293,10 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AppClose.activity3 = null;
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

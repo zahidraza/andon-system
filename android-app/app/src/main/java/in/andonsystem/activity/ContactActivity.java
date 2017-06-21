@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.R;
 import in.andonsystem.adapter.AdapterContact;
 import in.andonsystem.dto.Contact;
@@ -63,13 +62,12 @@ public class ContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App) getApplication();
         userService = new UserService(app);
@@ -87,11 +85,6 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             protected void handleInternetConnRetry() {
                 syncUsers();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
             }
         };
         prepareScreen();
@@ -213,10 +206,9 @@ public class ContactActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        progress.setVisibility(View.INVISIBLE);
     }
-
 
 }

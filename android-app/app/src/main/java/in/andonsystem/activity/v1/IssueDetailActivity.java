@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import in.andonsystem.App;
-import in.andonsystem.AppClose;
 import in.andonsystem.Constants;
 import in.andonsystem.activity.LoginActivity;
 import in.andonsystem.R;
@@ -84,13 +83,12 @@ public class IssueDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.setApplicationEnvironment(Mint.appEnvironmentStaging);
-        Mint.initAndStartSession(getApplication(), "39a8187d");
+        Mint.initAndStartSession(getApplication(), "056dd13f");
         setContentView(R.layout.activity_issue_detail1);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppClose.activity3 = this;
         mContext = this;
         app = (App)getApplication();
         issueService1 = new IssueService1(app);
@@ -115,7 +113,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         processingAt = (TextView)findViewById(R.id.detail_processing_at);
         desc = (TextView)findViewById(R.id.detail_desc);
         layout = (LinearLayout)findViewById(R.id.issue_detail_layout);
-        progress = (ProgressBar) findViewById(R.id.detail_loading);
+        progress = (ProgressBar) findViewById(R.id.loading_progress);
 
         ackButton = getButton("ACKNOWLEDGE");
         fixButton = getButton("FIX");
@@ -159,11 +157,6 @@ public class IssueDetailActivity extends AppCompatActivity {
             @Override
             protected void handleInternetConnRetry() {
                 onStart();
-            }
-
-            @Override
-            protected void handleInternetConnExit() {
-                AppClose.close();
             }
         };
     }
@@ -260,12 +253,6 @@ public class IssueDetailActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        layout.removeAllViews();
     }
 
     private void acknowledge() {
@@ -366,12 +353,13 @@ public class IssueDetailActivity extends AppCompatActivity {
     }
     
     private void showMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        AppClose.activity3 = null;
+    protected void onStop() {
+        super.onStop();
+        layout.removeAllViews();
+        progress.setVisibility(View.INVISIBLE);
     }
 }

@@ -17,7 +17,7 @@ public class UserDtoPatch {
     @Size(min = 5, max = 100)
     private String name;
 
-    @Pattern(regexp=".+@.+\\..+", message="Incorrect email!")
+    @Pattern(regexp="^(?=.*[a-z])[a-z0-9_@\\.]{4,20}$", message="Username should contain lowercase letter, number and [_@.] only.")
     private String email;
 
     private String password;

@@ -165,6 +165,7 @@ public class IssueService {
         builder.append("\nTeam: " + buyer.getTeam());
         builder.append("\nBuyer: " + buyer.getName());
         builder.append("\nProblem: " + issue.getProblem());
+        builder.append("\nRaised By: " + issue.getRaisedBy().getName());
         builder.append("\nRemarks: " + issue.getDescription());
         return builder.toString();
     }

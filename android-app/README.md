@@ -6,7 +6,7 @@ MERCHANDISING:
     if ackAt == null : problem is not acknowledged yet
         if(user.buyers.contains(issue2.dField2)) : If user is concerned to this issue2
             if processingAt > 1 : Both level1 and level2 user can acknowledge
-                if user.level == LEVEL1 || user.level == LEVEL2
+                if  user.level == LEVEL2
                     add ackButton
             else : Only level 1 user can acknowledge
                 if user.level == LEVEL1
