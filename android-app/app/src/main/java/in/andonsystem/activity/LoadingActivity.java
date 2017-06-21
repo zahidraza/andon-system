@@ -156,7 +156,7 @@ public class LoadingActivity extends AppCompatActivity {
                         .putBoolean(Constants.APP1_FIRST_LAUNCH,true)
                         .putBoolean(Constants.APP2_FIRST_LAUNCH,true)
                         .commit();
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://andonsystem.in/#/download"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://andonsystem.in/download"));
                 startActivity(intent);
             }
         });
