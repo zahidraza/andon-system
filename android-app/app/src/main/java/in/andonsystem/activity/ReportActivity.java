@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import in.andonsystem.App;
@@ -145,8 +146,8 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
         long start=0L,end=0L;
         try {
             Date d = sdf.parse(date);
-            start = d.getTime();
-            end = new Date(d.getTime() + (1000*60*60*24)).getTime();
+            start = d.getTime() + (330*60*1000);
+            end =  start +  (1000*60*60*24);
         } catch (ParseException e) {
             e.printStackTrace();
         }

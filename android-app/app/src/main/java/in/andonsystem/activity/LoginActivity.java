@@ -125,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                     String role = response.getString("role");
                     String userType = response.getString("userType");
                     String level = response.getString("level");
+                    String mobile = response.getString("mobile");
                     userPref.edit()
                             .putLong(Constants.USER_ID,id)
                             .putString(Constants.USER_EMAIL, email)
@@ -132,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                             .putString(Constants.USER_ROLE, role)
                             .putString(Constants.USER_TYPE, userType)
                             .putString(Constants.USER_LEVEL, level)
+                            .putString(Constants.USER_MOBILE, mobile)
                             .commit();
                     if (userType.equalsIgnoreCase(Constants.USER_FACTORY)) {
                         redirectToHome(1);

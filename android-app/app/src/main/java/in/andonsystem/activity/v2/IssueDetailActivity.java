@@ -154,7 +154,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         issueId = getIntent().getLongExtra("issueId",0L);
         Log.d(TAG, "issueId = " + issueId);
 
-        DateFormat df = new SimpleDateFormat("hh:mm aa");
+        DateFormat df = new SimpleDateFormat("dd MMM, hh:mm a");
         df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
 
         issue = issueService2.findOne(issueId);

@@ -21,7 +21,7 @@ public class UserDto {
     private String name;
     //".+@.+\..+"
     @NotNull
-    @Pattern(regexp="^(?=.*[a-z])[a-z0-9_@\\.]{4,20}$")
+    @Pattern(regexp="^(?=.*[a-zA-Z])[a-zA-Z0-9_\\-@\\.]{4,40}$")
     private String email;
 
     @JsonIgnore

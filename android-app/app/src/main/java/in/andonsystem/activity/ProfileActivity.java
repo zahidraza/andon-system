@@ -65,10 +65,13 @@ public class ProfileActivity extends AppCompatActivity {
     private Context mContext;
     private App app;
     private UserService userService;
-    private User user;
     private RestUtility restUtility;
     private ErrorListener errorListener;
-
+    private String emailId;
+    private String name;
+    private String lvl;
+    private String mobile;
+    private Long userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +138,11 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        String emailId = userPref.getString(Constants.USER_EMAIL,null);
-        Log.i(TAG, "email: " + emailId);
-        if (emailId != null) {
-            user = userService.findByEmail(emailId);
-        }
+        emailId = userPref.getString(Constants.USER_EMAIL,"");
+        lvl = userPref.getString(Constants.USER_LEVEL,"");
+        name = userPref.getString(Constants.USER_NAME,"");
+        userId = userPref.getLong(Constants.USER_ID,0);
+        mobile = userPref.getString(Constants.USER_MOBILE,"");
 
         errorListener = new ErrorListener(mContext) {
             @Override
@@ -171,12 +174,12 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        String uName = user.getName();
+
         pImage.setOval(true);
-        pImage.setLetter(uName.charAt(0));
-        username.setText(uName);
-        level.setText(user.getLevel());
-        email.setText(user.getEmail());
+        pImage.setLetter(name.charAt(0));
+        username.setText(name);
+        level.setText(lvl);
+        email.setText(emailId);
 
         showMobileEdit();
         showPasswordBtn();
@@ -184,24 +187,26 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void changeMobile(){
-        String mobile = mobileEditText.getText().toString();
-        if (TextUtils.isEmpty(mobile)) {
+        String mobileNo = mobileEditText.getText().toString();
+        if (TextUtils.isEmpty(mobileNo)) {
             showMessage("Enter new mobile number.");
             return;
-        }else if (mobile.trim().length() != 10) {
+        }else if (mobileNo.trim().length() != 10) {
             showMessage("Incorrect mobile number");
             return;
         }
         progress.setVisibility(View.VISIBLE);
-        final String url = Constants.API2_BASE_URL + "/users/" + user.getId();
+        final String url = Constants.API2_BASE_URL + "/users/" + userId;
         Log.i(TAG, "url = " + url);
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, "mobile change Response :" + response.toString());
                 try {
-                    String mobile = response.getString("mobile");
-                    user.setMobile(mobile);
+                    String mobileNo = response.getString("mobile");
+                    User user = userService.findOne(userId);
+                    user.setMobile(mobileNo);
+                    mobile = mobileNo;
                     userService.saveOrUpdate(user);
                     showMessage("mobile number updated successfully.");
                 } catch (JSONException e) {
@@ -214,11 +219,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         JSONObject reqData = new JSONObject();
         try {
-            reqData.put("mobile",mobile);
+            reqData.put("mobile",mobileNo);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         restUtility.patch(url,reqData,listener,errorListener);
     }
 
@@ -239,8 +243,7 @@ public class ProfileActivity extends AppCompatActivity {
             showMessage("Passwords do not match.");
         }else {
             progress.setVisibility(View.VISIBLE);
-            final String url = Constants.API2_BASE_URL + "/misc/change_password?email=" + user.getEmail() + "&oldPassword=" + currPass + "&newPassword=" + newPass;
-            Log.i(TAG, "url = " + url);
+            final String url = Constants.API2_BASE_URL + "/misc/change_password?email=" + emailId + "&oldPassword=" + currPass + "&newPassword=" + newPass;
             Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -269,7 +272,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void showMobileEdit(){
         layoutMobile.removeAllViews();
 
-        mobileTextView.setText(user.getMobile());
+        mobileTextView.setText(mobile);
         layoutMobile.addView(mobileIcon);
         layoutMobile.addView(mobileTextView);
         layoutMobile.addView(mobileEdit);
@@ -278,7 +281,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void showMobileSave(){
         layoutMobile.removeAllViews();;
 
-        mobileEditText.setText(user.getMobile());
+        mobileEditText.setText(mobile);
         mobileEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         mobileEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
 

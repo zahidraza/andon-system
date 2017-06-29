@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import in.andonsystem.App;
 import in.andonsystem.Constants;
@@ -83,7 +84,7 @@ public class HomeActivity extends AppCompatActivity
     private ProgressBar progress;
     private Toolbar toolbar;
 
-    private Boolean rvViewAdded;
+    private Boolean rvViewAdded = false;
     private SQLiteDatabase db;
     private DateFormat df;
     private SharedPreferences sharedPref;
@@ -337,7 +338,12 @@ public class HomeActivity extends AppCompatActivity
 
     private Problem getProblem(Issue2 issue){
         String raiseTime = df.format(issue.getRaisedAt());
-        long downtime = (issue.getFixAt() != null) ? (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() ): -1L;
+        long downtime = -1L;
+        if (issue.getFixAt() != null) {
+            long fDays = TimeUnit.MILLISECONDS.toDays(issue.getFixAt().getTime());
+            long rDays = TimeUnit.MILLISECONDS.toDays(issue.getRaisedAt().getTime());
+            downtime = (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() - (fDays-rDays)*(1000*60*60*15)); //no of days multiplied with 15 hours
+        }
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
         return new Problem(issue.getId(), issue.getBuyer().getTeam(), issue.getBuyer().getName(), issue.getProblem(),raiseTime,downtime,flag,2);
     }

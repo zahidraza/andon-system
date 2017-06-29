@@ -82,6 +82,9 @@ export function addUser (user) {
       console.log(err);
       if (err.response.status == 400) {
         dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }else if (err.response.status == 409) {
+        alert(err.response.data.message);
+        dispatch({type: c.USER_ADD_FAIL});
       }else {
         dispatch({type: c.USER_ADD_FAIL});
       }
@@ -100,9 +103,12 @@ export function updateUser (user) {
         dispatch({type: c.USER_EDIT_SUCCESS, payload: {user: response.data}});
       }
     }).catch( (err) => {
-      console.log(err);
+      console.log(err.response);
       if (err.response.status == 400) {
         dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
+      }else if (err.response.status == 409) {
+        alert(err.response.data.message);
+        dispatch({type: c.USER_EDIT_FAIL});
       }else {
         dispatch({type: c.USER_EDIT_FAIL});
       }
@@ -143,7 +149,12 @@ export function removeUser (user) {
       dispatch({type: c.USER_REMOVE_SUCCESS, payload: {user: user}});
     }).catch( (err) => {
       console.log(err);
-      dispatch({type: c.USER_REMOVE_FAIL});
+      if (err.response.status == 409) {
+        alert(err.response.data.message);
+        dispatch({type: c.USER_REMOVE_FAIL});
+      }else {
+        dispatch({type: c.USER_REMOVE_FAIL});
+      }
     });
   };
 }

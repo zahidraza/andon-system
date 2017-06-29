@@ -25,6 +25,7 @@ public class Constants {
     public static final String USER_ROLE = "user.role";
     public static final String USER_TYPE = "user.type";
     public static final String USER_LEVEL = "user.level";
+    public static final String USER_MOBILE = "user.mobile";
 
     public static final String USER_ACCESS_TOKEN = "user.access.token";
     public static final String USER_REFRESH_TOKEN = "user.refresh.token";

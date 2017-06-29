@@ -48,7 +48,7 @@ public class ContactActivity extends AppCompatActivity {
     private UserService userService;
     private SharedPreferences userPref;
     private SharedPreferences syncPref;
-    private User user;
+    private String userType;
     private AdapterContact adapterContact;
     private boolean rvAdded = false;
 
@@ -76,11 +76,7 @@ public class ContactActivity extends AppCompatActivity {
         container = (RelativeLayout) findViewById(R.id.content_contact_layout);
         progress = (ProgressBar) findViewById(R.id.loading_progress);
 
-        String email = userPref.getString(Constants.USER_EMAIL,"");
-        if (email == "") {
-            Log.d(TAG, "User email  not found in userPref file. handle inconsistency");
-        }
-        user = userService.findByEmail(email);
+        userType = userPref.getString(Constants.USER_TYPE,"");
         restUtility = new RestUtility(this){
             @Override
             protected void handleInternetConnRetry() {
@@ -119,7 +115,7 @@ public class ContactActivity extends AppCompatActivity {
 
     private void showContacts(){
         List<Contact> contacts = new ArrayList<>();
-        if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)){
+        if (userType.equalsIgnoreCase(Constants.USER_FACTORY)){
             List<User> users = userService.findAllFactory(Constants.USER_FACTORY);
             for (User user: users){
                 contacts.add(new Contact(user.getName(), "+91 " + user.getMobile()));
@@ -186,6 +182,7 @@ public class ContactActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 progress.setVisibility(View.INVISIBLE);
+                showContacts();
             }
         };
         ErrorListener errorListener = new ErrorListener(mContext) {

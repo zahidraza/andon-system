@@ -191,9 +191,6 @@ public class IssueDetailActivity extends AppCompatActivity {
         }
         desc.setText(issue.getDescription());
 
-        Log.d(TAG, "issueId = " + issue.getId() + ", problem = " + issue.getProblem().getName() + ", for line = " + issue.getLine());
-        Log.d(TAG, "user desgn = " + user.getDesignation().getName());
-
         List<Designation> designations = issue.getProblem().getDesignations();
 
         Log.d(TAG, "designation concerned are:" + designations.size());
@@ -232,7 +229,7 @@ public class IssueDetailActivity extends AppCompatActivity {
                             //add ack button
                             Log.d(TAG, "ADD ACK BUTTON");
                             layout.addView(ackButton);
-                        }else if (issue.getFixAt() == null && issue.getSeekHelp() == 0) {
+                        }else if (issue.getFixAt() == null && issue.getSeekHelp() != null && issue.getSeekHelp() == 0) {
                             //add seek help button
                             layout.addView(seekHelpBtn);
                             Log.d(TAG, "ADD SEEKHELP BUTTON");
@@ -243,7 +240,7 @@ public class IssueDetailActivity extends AppCompatActivity {
                                 //add ack button
                                 Log.d(TAG, "ADD ACK BUTTON");
                                 layout.addView(ackButton);
-                            }else if (issue.getSeekHelp() < 2) {
+                            }else if (issue.getSeekHelp() != null && issue.getSeekHelp() < 2) {
                                 // add seekhelp button
                                 Log.d(TAG, "ADD SEEKHELP BUTTON");
                                 layout.addView(seekHelpBtn);

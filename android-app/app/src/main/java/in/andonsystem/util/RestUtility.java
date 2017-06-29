@@ -109,7 +109,6 @@ public abstract class RestUtility {
             request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             request.setTag("");  //TODO:
             if (isProtected) {
-                Log.d(TAG, "protected");
                 if (!isloginRequest && accessToken == null) {
                     redirectToLogin();
                 } else {
@@ -117,7 +116,6 @@ public abstract class RestUtility {
                     appController.addToRequestQueue(request);
                 }
             }else {
-                Log.d(TAG,"unprotected");
                 appController.addToRequestQueue(request);
             }
 
