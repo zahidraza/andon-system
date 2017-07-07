@@ -23,9 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +40,10 @@ public class IssueService {
     private final UserRespository userRespository;
 
     private final ProblemRepository problemRepository;
+
+    @Autowired private SectionService sectionService;
+
+    @Autowired private DepartmentService departmentService;
 
     private final Mapper mapper;
 
@@ -225,5 +228,119 @@ public class IssueService {
             issue1.setProcessingAt(4);
         });
     }
+
+    public Map<String, Long> getDowntimeLineWise(Long after) {
+        Map<String, Long> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue1> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+
+        for (int i = 1; i <= 8; i++) {
+            final int j = i;
+            List<Long> downtimes =
+                    issues.stream()
+                            .filter(issue -> issue.getLine().equals(j))
+                            .map(issue2 -> getDowntime(issue2.getFixAt(),issue2.getRaisedAt()))
+                            .collect(Collectors.toList());
+            downtime.put("Line " + i,getSum(downtimes));
+        }
+        return downtime;
+    }
+
+    public Map<String, Map<String, Long>> getDowntimeDepartmentWiseWithinLine(Long after) {
+        Map<String, Map<String, Long>> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue1> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] departments = departmentService.getDepartments();
+
+        for (int i = 1; i <= 8; i++) {
+            final int j = i;
+            List<Issue1> lineIssues =
+                    issues.stream()
+                            .filter(issue -> issue.getLine().equals(j))
+                            .collect(Collectors.toList());
+            downtime.put("Line " + i ,getSumDepartmentWise(lineIssues, departments));
+        }
+        return downtime;
+    }
+
+    public Map<String, Long> getDowntimeDepartmentWise(Long after) {
+        Map<String, Long> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue1> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] departments = departmentService.getDepartments();
+
+        for (String department: departments) {
+            List<Long> downtimes =
+                    issues.stream()
+                            .filter(issue -> issue.getProblem().getDepartment().equalsIgnoreCase(department))
+                            .map(issue -> getDowntime(issue.getFixAt(),issue.getRaisedAt()))
+                            .collect(Collectors.toList());
+            downtime.put(department,getSum(downtimes));
+        }
+        return downtime;
+    }
+
+    public Map<String, Map<String, Long>> getDowntimeProblemWiseWithinDepartment(Long after) {
+        Map<String, Map<String, Long>> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue1> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] departments = departmentService.getDepartments();
+
+        for (String department: departments) {
+            List<Issue1> deptIssues =
+                    issues.stream()
+                            .filter(issue -> issue.getProblem().getDepartment().equalsIgnoreCase(department))
+                            .collect(Collectors.toList());
+            List<Problem> problems = problemRepository.findByDepartment(department);
+            downtime.put(department,getSumProblemWise(deptIssues,problems));
+        }
+        return downtime;
+    }
+
+    private long getDowntime(Date fixAt, Date raisedAt) {
+        if (fixAt == null) return 0L;
+        long diff = fixAt.getTime() - raisedAt.getTime();
+        return TimeUnit.MILLISECONDS.toMinutes(diff);
+    }
+
+    private Map<String, Long> getSumDepartmentWise(List<Issue1> issues, String[] departments) {
+        Map<String, Long> map = new HashMap<>();
+
+        for (String department: departments) {
+            map.put(department,
+                    getSum(issues.stream()
+                            .filter(issue -> issue.getProblem().getDepartment().equalsIgnoreCase(department))
+                            .map(issue -> getDowntime(issue.getFixAt(),issue.getRaisedAt()))
+                            .collect(Collectors.toList())
+                    )
+            );
+        }
+        return map;
+    }
+
+    private Map<String, Long> getSumProblemWise(List<Issue1> issues, List<Problem> problems) {
+        Map<String, Long> map = new HashMap<>();
+
+        problems.forEach(problem -> {
+            map.put(problem.getName(),
+                    getSum(issues.stream()
+                            .filter(issue -> issue.getProblem().getName().equalsIgnoreCase(problem.getName()))
+                            .map(issue -> getDowntime(issue.getFixAt(),issue.getRaisedAt()))
+                            .collect(Collectors.toList())
+                    )
+            );
+        });
+
+        return map;
+    }
+
+    private Long getSum(List<Long> downtimes) {
+        Long sum = 0L;
+        for (Long d: downtimes) {
+            sum += d;
+        }
+        return sum;
+    }
+    
 }
 

@@ -22,24 +22,28 @@ class Dashboard extends Component {
       initializing: false,
       busy: true,
       team: {
+        title: 'Team Wise',
         loaded: false,
         elements: {},
         type: 'minute',
         weeks: 1
       },
       problem: {
+        title: 'Problem Wise',
         loaded: false,
         elements: {},
         type: 'minute',
         weeks: 1
       },
       buyer: {
+        title: 'Buyer Wise (Within Team)',
         loaded: false,
         elements: {},
         type: 'minute',
         weeks: 1
       },
       buyerTop5: {
+        title: 'Top 5 Buyer',
         loaded: false,
         elements: {},
         type: 'minute',
@@ -345,10 +349,10 @@ class Dashboard extends Component {
     if (buyerTop5.loaded) {
       buyersTop5.push({"label":'Others', "value": buyerTop5.elements.Others,"colorIndex": 'light-2'});
     } 
-    let teamTile = this._renderTile("Downtime (Team wise)", team.type, team.weeks, teams,'team', max1, null);
-    let problemTile = this._renderTile("Downtime (Problem wise)", problem.type, problem.weeks, problems, 'problem', max2, null);
-    let buyerTile = this._renderTile("Downtime (Buyer wise)", buyer.type, buyer.weeks, buyers, 'buyer', max3, filter);
-    let buyerTop5Tile = this._renderTile("Downtime (Top 5 Buyer)", buyerTop5.type, buyerTop5.weeks, buyersTop5, 'buyerTop5', max4,null);
+    let teamTile = this._renderTile(team.title, team.type, team.weeks, teams,'team', max1, null);
+    let problemTile = this._renderTile(problem.title, problem.type, problem.weeks, problems, 'problem', max2, null);
+    let buyerTile = this._renderTile(buyer.title, buyer.type, buyer.weeks, buyers, 'buyer', max3, filter);
+    let buyerTop5Tile = this._renderTile(buyerTop5.title, buyerTop5.type, buyerTop5.weeks, buyersTop5, 'buyerTop5', max4,null);
     const teamFilterLayer = this._renderFilterLayer();
     return (
       <Box >

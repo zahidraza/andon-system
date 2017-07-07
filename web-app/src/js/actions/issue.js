@@ -19,12 +19,10 @@ export function syncIssue (sync) {
     const issueSync = sync == undefined ? 0 : sync;
     axios.get(window.serviceHost + '/v2/issues?start=' + issueSync, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 200) {
         dispatch({type: c.ISSUE_SYNC_SUCCESS, payload: {issue: response.data}});
       }
     }).catch( (err) => {
-      console.log(err);
       dispatch({type: c.ISSUE_SYNC_FAIL});
     });
   };
@@ -32,13 +30,10 @@ export function syncIssue (sync) {
 
 
 export function addIssue (issue) {
-  console.log('addIssue');
-
   return function (dispatch) {
     dispatch({type: c.ISSUE_BUSY, payload: {busy: true}});
     axios.post(window.serviceHost + '/v2/issues', JSON.stringify(issue), {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 201) {
         dispatch({type: c.ISSUE_ADD_SUCCESS, payload: {issue: response.data}});
       } else if (response.status == 200) {
@@ -46,7 +41,6 @@ export function addIssue (issue) {
         dispatch({type: c.ISSUE_ADD_FAIL});
       }
     }).catch( (err) => {
-      console.log(err);
       if (err.response.status == 400) {
         dispatch({type: c.ISSUE_BAD_REQUEST, payload: {errors: err.response.data}});
       }else {

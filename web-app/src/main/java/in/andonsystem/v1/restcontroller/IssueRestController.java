@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -150,5 +151,23 @@ public class IssueRestController {
         return ResponseEntity.ok(issueDto);
     }
 
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_LINE)
+    public ResponseEntity<?> getDowntimeLineWise(@RequestParam(value = "expand", defaultValue = "false") Boolean expand, @RequestParam("after") Long after) {
+        logger.debug("getDowntimeTeamwise: after = " + new Date(after));
+        if (expand) {
+            return ResponseEntity.ok(issueService.getDowntimeDepartmentWiseWithinLine(after));
+        }else {
+            return ResponseEntity.ok(issueService.getDowntimeLineWise(after));
+        }
+    }
 
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_DEPARTMENT)
+    public ResponseEntity<?> getDowntimeDepartmentWise(@RequestParam(value = "expand", defaultValue = "false") Boolean expand, @RequestParam("after") Long after) {
+        logger.debug("getDowntimeBuyerwise: after = {}", new Date(after));
+        if (expand) {
+            return ResponseEntity.ok(issueService.getDowntimeProblemWiseWithinDepartment(after));
+        }else {
+            return ResponseEntity.ok(issueService.getDowntimeDepartmentWise(after));
+        }
+    }
 }

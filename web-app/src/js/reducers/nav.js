@@ -3,7 +3,7 @@ import { NAV_ACTIVATE } from "../actions";
 const initialState = {
   active: false,
   items:[
-    { path: '/dashboard2', label: 'Home'},
+    { path: '/dashboard2', label: 'Dashboard'},
     { path: '/report2', label: 'Report'},
     { path: '/user', label: 'User'},
     { path: '/mapping2', label: 'Mapping'},
@@ -12,7 +12,7 @@ const initialState = {
     { path: '/download', label: 'Download'}
   ],
   itemsFactory: [
-    { path: '/dashboard1', label: 'Home'},
+    { path: '/dashboard1', label: 'Dashboard'},
     { path: '/report1', label: 'Report'},
     { path: '/user', label: 'User'},
     { path: '/mapping1', label: 'Mapping'},

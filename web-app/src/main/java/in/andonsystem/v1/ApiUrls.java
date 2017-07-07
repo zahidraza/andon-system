@@ -11,4 +11,6 @@ public class ApiUrls {
     public static final String Root_URLS_DESIGNATIONS = "api/v1/designations";
     public static final String ROOT_URL_ISSUES = "/api/v1/issues";
     public static final String URL_ISSUES_ISSUE = "/{issueId}";
+    public static final String URL_ISSUES_DOWNTIME_BY_LINE = "/downtime/byLine";
+    public static final String URL_ISSUES_DOWNTIME_BY_DEPARTMENT = "/downtime/byDepartment";
 }

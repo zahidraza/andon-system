@@ -18,4 +18,6 @@ public interface IssueRepository extends JpaRepository<Issue1, Long> {
     List<Issue1> findByLastModifiedBetweenOrderByRaisedAtDesc(Date start, Date end);
 
     List<Issue1> findByProcessingAtLessThanAndRaisedAtGreaterThan(Integer processingAt, Date date);
+
+    List<Issue1> findByRaisedAtGreaterThanAndDeleted(Date raisedAt, Boolean deleted);
 }

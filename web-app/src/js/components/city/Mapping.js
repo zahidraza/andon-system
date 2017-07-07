@@ -92,12 +92,12 @@ class Mapping extends Component {
           <Header><Heading tag="h3" strong={true} >Mapping Details</Heading></Header>
           <List>
             <ListItem justify="between" pad={{vertical:'small',horizontal:'small'}} >
-              <span> Department: </span>
-              <span className="secondary">{item.dept}</span>
+              <span> Team: </span>
+              <span className="secondary">{item.team}</span>
             </ListItem>
             <ListItem justify="between" pad={{vertical:'small',horizontal:'small'}} >
-              <span> Problem: </span>
-              <span className="secondary">{item.problem}</span>
+              <span> Buyer: </span>
+              <span className="secondary">{item.name}</span>
             </ListItem>
             <ListItem justify="between" pad={{vertical:'small',horizontal:'small'}} >
               <span> Level1 Users:</span>

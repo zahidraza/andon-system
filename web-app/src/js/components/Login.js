@@ -55,7 +55,7 @@ class Login extends Component {
     }
     if (this.props.user.authenticated && sessionStorage.session != null) {
       if (window.sessionStorage.userType == u.FACTORY) {
-        this.context.router.push('/dashboard2');
+        this.context.router.push('/dashboard1');
       } else {
         this.context.router.push('/dashboard2');
       }
