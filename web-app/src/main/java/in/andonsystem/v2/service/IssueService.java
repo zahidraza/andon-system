@@ -24,7 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +43,10 @@ public class IssueService {
     private final UserRespository userRespository;
 
     private final BuyerRepository buyerRepository;
+
+    @Autowired TeamService teamService;
+
+    @Autowired ProblemService problemService;
 
     private final Mapper mapper;
 
@@ -159,6 +166,96 @@ public class IssueService {
         return issueRepository.exists(id);
     }
 
+    @Transactional
+    public void autoFixIssues() {
+        logger.info("Auto Fixing non fixed Issues");
+        User user = userRespository.findOne(55554L);
+        List<Issue2> list = issueRepository.findByProcessingAtLessThanAndRaisedAtLessThanAndDeleted(4,MiscUtil.getTodayMidnight(),false);
+        list.forEach(issue -> {
+            if (issue.getAckAt() == null) {
+                issue.setAckAt(new Date());
+                issue.setAckBy(user);
+            }
+            issue.setFixAt(new Date());
+            issue.setFixBy(user);
+            issue.setProcessingAt(4);
+        });
+    }
+
+    public Map<String, Long> getDowntimeProblemwise(Long after) {
+        Map<String, Long> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue2> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] problems = problemService.getProblems();
+
+        for (String problem: problems) {
+            List<Long> downtimes =
+                    issues.stream()
+                            .filter(issue2 -> issue2.getProblem().equalsIgnoreCase(problem))
+                            .map(issue2 -> getDowntime(issue2.getFixAt(),issue2.getRaisedAt()))
+                            .collect(Collectors.toList());
+            downtime.put(problem,getSum(downtimes));
+        }
+        return downtime;
+    }
+
+    public Map<String, Long> getDowntimeTeamwise(Long after) {
+        Map<String, Long> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue2> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] teams = teamService.getTeams();
+
+        for (String team: teams) {
+            List<Long> downtimes =
+                    issues.stream()
+                        .filter(issue2 -> issue2.getBuyer().getTeam().equalsIgnoreCase(team))
+                        .map(issue2 -> getDowntime(issue2.getFixAt(),issue2.getRaisedAt()))
+                        .collect(Collectors.toList());
+            downtime.put(team,getSum(downtimes));
+        }
+        return downtime;
+    }
+
+    public Map<String, Map<String, Long>> getDowntimeBuyerwise(Long after) {
+        Map<String, Map<String, Long>> downtime = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue2> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+        String[] teams = teamService.getTeams();
+
+        for (String team: teams) {
+            List<Issue2> teamIssues =
+                    issues.stream()
+                            .filter(issue2 -> issue2.getBuyer().getTeam().equalsIgnoreCase(team))
+                            .collect(Collectors.toList());
+            List<Buyer> buyers = buyerRepository.findByTeam(team);
+            downtime.put(team,getSumBuyerwise(teamIssues, buyers));
+        }
+        return downtime;
+    }
+
+    public Map<String, Long> getDowntimeTop5Buyers(Long after) {
+        Map<String, Long> downtime, result = new HashMap<>();
+        Date date = new Date(after);
+        List<Issue2> issues = issueRepository.findByRaisedAtGreaterThanAndDeleted(date,false);
+
+        List<Buyer> buyers = buyerRepository.findAll();
+        downtime = getSumBuyerwise(issues, buyers);
+        downtime = MiscUtil.sortByValueDesc(downtime);
+        int i = 0;
+        long sum = 0;
+        for (Map.Entry<String,Long> entry: downtime.entrySet()) {
+            if (i < 5) {
+                result.put(entry.getKey(), entry.getValue());
+            }else {
+                sum += entry.getValue();
+            }
+            i++;
+        }
+        result.put("Others",sum);
+        return result;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     private String generateMessage(Issue2 issue, Buyer buyer){
         StringBuilder builder = new StringBuilder();
         builder.append("Problem raised with details-");
@@ -180,5 +277,37 @@ public class IssueService {
         }else {
             logger.info("No Users found for sending sms");
         }
+    }
+
+    private long getDowntime(Date fixAt, Date raisedAt) {
+        if (fixAt == null) return 0L;
+        long rDays = TimeUnit.MILLISECONDS.toDays(raisedAt.getTime());
+        long fDays = TimeUnit.MILLISECONDS.toDays(fixAt.getTime());
+        long diff = fixAt.getTime() - raisedAt.getTime() - (fDays-rDays)*((14*60 + 30)*60*1000); //14 hours 30 minutes
+        return TimeUnit.MILLISECONDS.toMinutes(diff);
+    }
+
+    private Map<String, Long> getSumBuyerwise(List<Issue2> issues, List<Buyer> buyers) {
+        Map<String, Long> map = new HashMap<>();
+
+        buyers.forEach(buyer -> {
+            map.put(buyer.getName(),
+                        getSum(issues.stream()
+                            .filter(issue -> issue.getBuyer().getName().equalsIgnoreCase(buyer.getName()))
+                            .map(issue -> getDowntime(issue.getFixAt(),issue.getRaisedAt()))
+                            .collect(Collectors.toList())
+                        )
+            );
+        });
+
+        return map;
+    }
+
+    private Long getSum(List<Long> downtimes) {
+        Long sum = 0L;
+        for (Long d: downtimes) {
+            sum += d;
+        }
+        return sum;
     }
 }

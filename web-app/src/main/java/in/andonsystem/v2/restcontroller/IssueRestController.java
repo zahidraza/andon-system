@@ -30,6 +30,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -136,5 +137,26 @@ public class IssueRestController {
         return ResponseEntity.ok(issueDto);
     }
 
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_PROBLEM)
+    public ResponseEntity<?> getDowntimeProblemwise(@RequestParam("after") Long after) {
+        logger.debug("getDowntimeTeamwise: after = " + new Date(after));
+        return ResponseEntity.ok(issueService.getDowntimeProblemwise(after));
+    }
+
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_TEAM)
+    public ResponseEntity<?> getDowntimeTeamwise(@RequestParam("after") Long after) {
+        logger.debug("getDowntimeTeamwise: after = " + new Date(after));
+        return ResponseEntity.ok(issueService.getDowntimeTeamwise(after));
+    }
+
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_BUYER)
+    public ResponseEntity<?> getDowntimeBuyerwise(@RequestParam("after") Long after, @RequestParam(value = "top5",defaultValue = "false") boolean top5) {
+        logger.debug("getDowntimeBuyerwise: after = {}, top5 = {}", new Date(after), top5);
+        if (top5) {
+            return ResponseEntity.ok(issueService.getDowntimeTop5Buyers(after));
+        }else {
+            return ResponseEntity.ok(issueService.getDowntimeBuyerwise(after));
+        }
+    }
 
 }

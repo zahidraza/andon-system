@@ -14,6 +14,10 @@ public class ApiUrls {
     public static final String URL_BUYERS_BUYER = "/{buyerId}";
     public static final String ROOT_URL_ISSUES = "/api/v2/issues";
     public static final String URL_ISSUES_ISSUE = "/{issueId}";
+    public static final String URL_ISSUES_DOWNTIME_BY_TEAM = "/downtime/byTeam";
+    public static final String URL_ISSUES_DOWNTIME_BY_BUYER = "/downtime/byBuyer";
+    public static final String URL_ISSUES_DOWNTIME_BY_PROBLEM = "/downtime/byProblem";
+
     public static final String ROOT_URL_MISCELLANEOUS = "/api/v2/misc";
     public static final String URL_MISCELLANEOUS_CONFIG = "/config";
     public static final String URL_CURRENT_TIME = "/current_time";

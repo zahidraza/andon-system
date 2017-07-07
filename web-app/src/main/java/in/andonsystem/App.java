@@ -37,6 +37,8 @@ public class App extends SpringBootServletInitializer{
 
     @Autowired IssueService issueService;
 
+    @Autowired in.andonsystem.v2.service.IssueService issueService2;
+
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
@@ -51,6 +53,7 @@ public class App extends SpringBootServletInitializer{
             UserService userService) {
         scheduleDbBackup();
         scheduleApp1AutoFix();
+        scheduleApp2AutoFix();
         return (args) -> {
             if(userService.count() == 0){
                 userService.save(new UserDto("Md Jawed Akhtar", "jawed.akhtar1993@gmail.com", Role.ADMIN.name(), "8987525008", UserType.MERCHANDISING.getValue(), Level.LEVEL4.getValue()));
@@ -96,6 +99,15 @@ public class App extends SpringBootServletInitializer{
         long initialDelay = diff > 0? diff : (24*60) - diff;
         Scheduler.getInstance().getScheduler()
                 .scheduleAtFixedRate(() -> issueService.autoFixIssues(),initialDelay,24*60, TimeUnit.MINUTES);
+    }
+
+    private void scheduleApp2AutoFix() {
+        int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
+        long scheduleAt = 18*60 + 30;  // 6:30 PM
+        long diff = scheduleAt - todayMinsAfterMidnight;
+        long initialDelay = diff > 0? diff : (24*60) - diff;
+        Scheduler.getInstance().getScheduler()
+                .scheduleAtFixedRate(() -> issueService2.autoFixIssues(),initialDelay,24*60, TimeUnit.MINUTES);
     }
 
 
