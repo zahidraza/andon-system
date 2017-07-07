@@ -35,7 +35,6 @@ class Mapping extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -57,10 +56,8 @@ class Mapping extends Component {
   }
 
   _loadMapping (departments, problms, users) {
-    console.log('before filter: users = ' + users.length);
     //Filter users of factory
     users = users.filter(u => u.desgnId != null);
-    console.log('after filter: users = ' + users.length);
 
     let mapping = [];
     departments.forEach((dept) => {

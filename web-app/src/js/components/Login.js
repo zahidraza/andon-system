@@ -39,14 +39,12 @@ class Login extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     this.props.dispatch(navActivate(false));
     //this.props.dispatch(initialize());
     
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log('componentWillReceiveProps');
     if (this.props.user.authProgress && !nextProps.user.authProgress && !nextProps.user.authenticated) {
       this.setState({errorMsg: "Incorrect email or password, try again!"});
     }
@@ -93,7 +91,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);
@@ -116,7 +113,6 @@ class Login extends Component {
       this.setState({busy: true});
       axios.put(window.serviceHost + '/v2/misc/forgot_password/verify_otp?email=' + credential.email + '&otp=' + credential.otp)
       .then((response) => {
-        console.log(response);
         this.setState({busy: false});
         if (response.status == 200) {
           if (response.data.status == "SUCCESS") {
@@ -126,7 +122,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);
@@ -149,7 +144,6 @@ class Login extends Component {
       this.setState({busy: true});
       axios.put(window.serviceHost + '/v2/misc/forgot_password/change_password?email=' + credential.email + '&otp=' + credential.otp + '&newPassword=' + credential.newPassword)
       .then((response) => {
-        console.log(response);
         this.setState({busy: false});
         if (response.status == 200) {
           if (response.data.status == "SUCCESS") {
@@ -160,7 +154,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);

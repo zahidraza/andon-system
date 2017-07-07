@@ -55,7 +55,6 @@ class UserAdd extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -122,7 +121,6 @@ class UserAdd extends Component {
         delete user.level;
       }
     }
-    console.log(user);
     this.props.dispatch(addUser(user));
   }
 
@@ -202,7 +200,6 @@ class UserAdd extends Component {
   }
 
   _onAdd (event) {   // On Section/Supplier Add Click. Show corresponding layer for adding.
-    console.log('_onAdd');
     let {layer, team} = this.state;
     if (team.includes('Select')) {
       alert('First Select Team');

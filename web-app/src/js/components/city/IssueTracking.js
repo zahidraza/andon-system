@@ -149,9 +149,7 @@ class IssueTracking extends Component {
   }
 
   _updateIssue(operation, event) {
-    console.log("operation = " + operation);
     const {issue} = this.state;
-    console.log(issue);
     if (operation == 'ack') {
       this.props.dispatch(updateIssue({id: issue.id, ackBy: sessionStorage.userId}, 'OP_ACK'));
     } else if (operation == 'fix') {

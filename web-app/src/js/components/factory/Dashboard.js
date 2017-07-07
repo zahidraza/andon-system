@@ -72,7 +72,7 @@ class Dashboard extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
+    //console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -96,7 +96,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v1/issues/downtime/byLine?after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         line.elements = response.data;
         line.loaded = true;
@@ -105,7 +105,7 @@ class Dashboard extends Component {
         this.setState({line, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -115,7 +115,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v1/issues/downtime/byLine?expand=true&after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         lineDept.elements = response.data;
         lineDept.loaded = true;
@@ -124,7 +124,7 @@ class Dashboard extends Component {
         this.setState({lineDept, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -134,7 +134,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v1/issues/downtime/byDepartment?after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         department.elements = response.data;
         department.loaded = true;
@@ -143,7 +143,7 @@ class Dashboard extends Component {
         this.setState({department, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -153,7 +153,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v1/issues/downtime/byDepartment?expand=true&after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         deptProblem.elements = response.data;
         deptProblem.loaded = true;
@@ -165,7 +165,7 @@ class Dashboard extends Component {
         this.setState({deptProblem,deptFilter, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -358,8 +358,6 @@ class Dashboard extends Component {
         lineDepts.push({"label": key, "value": minute, "colorIndex": color});
       });
     }
-    console.log(lineDepts);
-    console.log(max2);
 
     let departments = [];
     let max3 = 0;

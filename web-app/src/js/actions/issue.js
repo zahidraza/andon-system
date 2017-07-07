@@ -51,12 +51,10 @@ export function addIssue (issue) {
 }
 
 export function updateIssue (issue, operation) {
-  console.log('updateIssue');
   return function (dispatch) {
     dispatch({type: c.ISSUE_BUSY, payload: {busy: true}});
     axios.patch(window.serviceHost + '/v2/issues/' + issue.id + '?operation=' + operation, JSON.stringify(issue), {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 200) {
         if ( 'message' in response.data) {
           alert(response.data.message);
@@ -66,7 +64,6 @@ export function updateIssue (issue, operation) {
         }
       }
     }).catch( (err) => {
-      console.log(err);
       if (err.response.status == 400) {
         dispatch({type: c.ISSUE_BAD_REQUEST, payload: {errors: err.response.data}});
       }else {
@@ -77,16 +74,11 @@ export function updateIssue (issue, operation) {
 }
 
 export function removeIssue (issue) {
-  console.log('removeIssue');
   return function (dispatch) {
-    console.log(issue);
-
     axios.delete(window.serviceHost + '/v2/issues/' + issue.id, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       dispatch({type: c.ISSUE_REMOVE_SUCCESS, payload: {issue: issue}});
     }).catch( (err) => {
-      console.log(err);
       dispatch({type: c.ISSUE_REMOVE_FAIL});
     });
   };

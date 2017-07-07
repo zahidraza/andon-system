@@ -50,9 +50,7 @@ class UserFilter extends Component {
   }
 
   _onChange (name,event) {
-    console.log('_onChange');
     let filter = this.props.user.filter;
-    console.log("filter: " + name);
 
     if (!event.option.value) {
       // user selected the 'All' option, which has no value, clear filter
@@ -63,7 +61,6 @@ class UserFilter extends Component {
       let selectedFilter = event.value.map(value => (
         typeof value === 'object' ? value.value : value)
       );
-      console.log(selectedFilter);
       filter[name] = selectedFilter;
       if (filter[name].length === 0) {
         delete filter[name];

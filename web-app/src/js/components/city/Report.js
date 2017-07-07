@@ -61,7 +61,6 @@ class Report extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -89,7 +88,6 @@ class Report extends Component {
     const start = getMidnightMillis(date.start);
     axios.get(window.serviceHost + '/v2/issues?start=' + start + '&end=' + date.end.getTime(), {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 200) {
         const issues = response.data.issues.map(issue => {
           const buyer = buyers.find(b => b.id == issue.buyerId);
@@ -110,7 +108,6 @@ class Report extends Component {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
             let fDays = Math.floor(moment.duration(issue.fixAt).asDays());
             let aDays = Math.floor(moment.duration(issue.raisedAt).asDays());
-            console.log("fDays = " + fDays + ", aDays = " + aDays);
             let dTime = (issue.fixAt - issue.raisedAt - (fDays-aDays)*(15*60*60*1000));
             downtime = Math.floor(moment.duration(dTime).asMinutes());
             if(downtime> 60) {
@@ -126,7 +123,6 @@ class Report extends Component {
         this._loadIssues(issues, this.state.filter, this.state.page);
       }
     }).catch( (err) => {
-      console.log(err);
       if (err.response.status == 400) {
         //dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
       }
@@ -163,7 +159,6 @@ class Report extends Component {
   }
 
   _onFilterActivate () {
-    console.log('_onFilterActivate');
     this.setState({showFilter: true});
   }
 
@@ -199,7 +194,6 @@ class Report extends Component {
       let selectedFilter = event.value.map(value => (
         typeof value === 'object' ? value.value : value)
       );
-      console.log(selectedFilter);
       filter[name] = selectedFilter;
       if (filter[name].length === 0) {
         delete filter[name];
@@ -213,8 +207,6 @@ class Report extends Component {
 
   _renderFilterLayer () {
     const {showFilter,filter,date,teams,buyers} = this.state;
-    console.log(this.state);
-
     if (showFilter) {
       return (
         <Layer align='right' flush={true} closer={false}

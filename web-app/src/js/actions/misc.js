@@ -13,8 +13,6 @@ axios.interceptors.response.use(function (response) {
 });
 
 export function initialize () {
-  console.log("initialize()");
-
   return function (dispatch) {
 
     axios.all([
@@ -40,7 +38,6 @@ export function initialize () {
 
     }))
     .catch( (err) => {
-      console.log(err); 
     });
 
   };

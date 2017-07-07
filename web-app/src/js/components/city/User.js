@@ -44,7 +44,6 @@ class User extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -55,7 +54,6 @@ class User extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log('componentWillReceiveProps');
     if (!this.props.misc.initialized && nextProps.misc.initialized) {
       this.setState({initializing: false});
     }
@@ -135,12 +133,10 @@ class User extends Component {
   }
 
   _onAddClick () {
-    console.log('_onAddClick');
     this.props.dispatch({type: c.USER_ADD_FORM_TOGGLE,payload: {adding: true}});
   }
 
   _onRemoveClick (index) {
-    console.log('_onRemoveClick');
     let value = confirm('Are you sure to delete this User?');
     if (!value) {
       return;
@@ -150,7 +146,6 @@ class User extends Component {
   }
 
   _onEditClick (index) {
-    console.log('_onEditClick');
     const {users} = this.state;
     this.props.dispatch({type: c.USER_EDIT_FORM_TOGGLE, payload:{editing: true,user: {...users[index]}}});
     this.context.router.push('/user/edit');

@@ -62,7 +62,6 @@ class Report extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -95,7 +94,6 @@ class Report extends Component {
     const start = getMidnightMillis(date.start);
     axios.get(window.serviceHost + '/v1/issues?start=' + start + '&end=' + date.end.getTime(), {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 200) {
         const issues = response.data.issues.map(issue => {
           const p = problms.find(p => p.id == issue.problemId);
@@ -129,7 +127,7 @@ class Report extends Component {
         this._loadIssues(issues, this.state.filter, this.state.page);
       }
     }).catch( (err) => {
-      console.log(err);
+
       if (err.response.status == 400) {
         //dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
       }
@@ -170,7 +168,6 @@ class Report extends Component {
   }
 
   _onFilterActivate () {
-    console.log('_onFilterActivate');
     this.setState({showFilter: true});
   }
 
@@ -206,7 +203,6 @@ class Report extends Component {
       let selectedFilter = event.value.map(value => (
         typeof value === 'object' ? value.value : value)
       );
-      console.log(selectedFilter);
       filter[name] = selectedFilter;
       if (filter[name].length === 0) {
         delete filter[name];
@@ -220,8 +216,6 @@ class Report extends Component {
 
   _renderFilterLayer () {
     const {showFilter,filter,date,lines, sections, departments} = this.state;
-    console.log(this.state);
-
     if (showFilter) {
       return (
         <Layer align='right' flush={true} closer={false}

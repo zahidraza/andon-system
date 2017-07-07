@@ -65,7 +65,7 @@ class Dashboard extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
+    //console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -89,7 +89,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v2/issues/downtime/byTeam?after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         team.elements = response.data;
         team.loaded = true;
@@ -98,7 +98,7 @@ class Dashboard extends Component {
         this.setState({team, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -108,7 +108,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v2/issues/downtime/byProblem?after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         problem.elements = response.data;
         problem.loaded = true;
@@ -117,7 +117,7 @@ class Dashboard extends Component {
         this.setState({problem, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -127,7 +127,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v2/issues/downtime/byBuyer?after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         buyer.elements = response.data;
         buyer.loaded = true;
@@ -139,7 +139,7 @@ class Dashboard extends Component {
         this.setState({buyer,filter, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -149,7 +149,7 @@ class Dashboard extends Component {
     after = after - (weeks*7*24*60*60*1000);
     axios.get(window.serviceHost + '/v2/issues/downtime/byBuyer?top5=true&after=' + after, {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
+      //console.log(response);
       if (response.status == 200) {
         buyerTop5.elements = response.data;
         buyerTop5.loaded = true;
@@ -158,7 +158,7 @@ class Dashboard extends Component {
         this.setState({buyerTop5, busy});
       }
     }).catch( (err) => {
-      console.log(err);
+      //console.log(err);
     });
   }
 
@@ -212,7 +212,7 @@ class Dashboard extends Component {
     let value = event.value;
     filter.selected = value;
     this.setState({filter});
-    console.log(event);
+    //console.log(event);
   }
 
   _renderFilterLayer () {

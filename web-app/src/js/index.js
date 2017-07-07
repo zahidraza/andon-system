@@ -9,15 +9,15 @@ import routes from "./routes";
 import store from "./store";
 
 (function () {
-  const baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-  window.serviceHost = baseUrl + "/api";
-  window.baseUrl = baseUrl;
+  // const baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+  // window.serviceHost = baseUrl + "/api";
+  // window.baseUrl = baseUrl;
 
   // window.baseUrl = "http://andonsystem.in/andon-system";
   // window.serviceHost = "http://andonsystem.in/andon-system/api";
   
-  // window.baseUrl = "http://localhost:8001";
-  // window.serviceHost = "http://localhost:8001/api";
+  window.baseUrl = "http://localhost:8001";
+  window.serviceHost = "http://localhost:8001/api";
 })();
 
 let element = document.getElementById('content');

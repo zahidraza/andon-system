@@ -21,7 +21,6 @@ const handlers = {
   [c.INITIALIZE_USER]: (_, action) => ({users: action.payload.users, loaded: true, toggleStatus: !_.toggleStatus}),
   [c.USER_AUTH_PROGRESS]: (_, action) => ({authProgress: true, authenticated: false}),
   [c.USER_AUTH_SUCCESS]: (_, action) => {
-    console.log("$$$$ Success $$$$$");
     sessionStorage.email = action.payload.username;
     window.sessionStorage.access_token = action.payload.data.access_token;
     window.sessionStorage.refresh_token = action.payload.data.refresh_token;

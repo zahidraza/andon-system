@@ -35,7 +35,6 @@ class Profile extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -62,7 +61,6 @@ class Profile extends Component {
   }
 
   _changePassword () {
-    console.log("_changePassword");
     let {credential, user} = this.state;
     let errors = [];
     if (credential.oldPassword == undefined || credential.oldPassword == '') {
