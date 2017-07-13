@@ -72,11 +72,10 @@ public class MiscUtil {
 
         logger.debug("sendSMS(): to = {}, message = {}", to, message);
         Boolean result = false;
-
-        String apiKey = "Ac6e03dbeee67eae9e178f428f3371b3a";
+        String apiKey = "A69ada3af0ac7634d81104ec97669b4f5";
         String sender = "AndSys";
-        String urlString = "http://sms.variforrmsolution.com/apiv2/?";
-        String body = "api=http&workingkey="+apiKey+"&type=JSON&to="+to+"&sender="+sender+"&message=" + message;
+        String urlString = "http://alerts.variforrmsolution.com/api/v4/?";
+        String body = "api_key="+apiKey+"&method=sms&to="+to+"&sender="+sender+"&message=" + message;
 
         try{
             URL url = new URL(urlString);
@@ -108,13 +107,23 @@ public class MiscUtil {
 
             JSONObject jsonResponse = new JSONObject(response);
 
+//            "status": "OK",
+//                    "data": [
+//            {
+//                "id": "bc430a8d-3a35-44b4-ae43-81b6f1227c70:1",
+//                    "customid": "",
+//                    "customid1": "",
+//                    "customid2": "",
+//                    "mobile": "8904360418",
+//                    "status": "AWAITED-DLR"
+//            }
+//    ],
+//            "message": "Campaign of 1 numbers Submitted successfully."
+
             try{
-                int responsecode = jsonResponse.getInt("responsecode");
-                if(responsecode == 200){
+                String status = jsonResponse.getString("status");
+                if (status.equalsIgnoreCase("OK")){
                     result = true;
-                }
-                if(responsecode == 400){
-                    result = false;
                 }
             }catch(Exception e){
                 e.printStackTrace();

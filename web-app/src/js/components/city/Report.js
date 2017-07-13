@@ -108,13 +108,8 @@ class Report extends Component {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
             let fDays = Math.floor(moment.duration(issue.fixAt).asDays());
             let aDays = Math.floor(moment.duration(issue.raisedAt).asDays());
-            let dTime = (issue.fixAt - issue.raisedAt - (fDays-aDays)*(15*60*60*1000));
+            let dTime = (issue.fixAt - issue.raisedAt - (fDays-aDays)*((14*60 + 30)*60*1000));
             downtime = Math.floor(moment.duration(dTime).asMinutes());
-            if(downtime> 60) {
-              downtime = ''+ Math.floor((downtime/60))+ ' hour ' + (downtime%60) + ' mins';
-            }else{
-              downtime = '' + downtime + ' mins';
-            }
           }
           return {Team: buyer.team, Buyer: buyer.name,Problem: issue.problem, Description: issue.description,  raisedBy, ackBy,fixBy,raisedAt,ackAt,fixAt,downtime};
         });

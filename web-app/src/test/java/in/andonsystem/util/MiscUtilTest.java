@@ -34,4 +34,11 @@ public class MiscUtilTest {
         String mobileNumbers = MiscUtil.getUserMobileNumbers(problem, Level.LEVEL1);
         Assert.assertEquals(mobileNumbers, "8987525008,8904360418,9852704092");
     }
+
+    //@Test
+    public void testSendSms() {
+        String to = "8904360418";
+        String message = "Testing. Hello Md Zahid Raza";
+        Assert.assertTrue(MiscUtil.sendSMS(to,message));
+    }
 }

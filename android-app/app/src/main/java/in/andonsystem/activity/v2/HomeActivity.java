@@ -338,12 +338,7 @@ public class HomeActivity extends AppCompatActivity
 
     private Problem getProblem(Issue2 issue){
         String raiseTime = df.format(issue.getRaisedAt());
-        long downtime = -1L;
-        if (issue.getFixAt() != null) {
-            long fDays = TimeUnit.MILLISECONDS.toDays(issue.getFixAt().getTime());
-            long rDays = TimeUnit.MILLISECONDS.toDays(issue.getRaisedAt().getTime());
-            downtime = (issue.getFixAt().getTime() - issue.getRaisedAt().getTime() - (fDays-rDays)*(1000*60*60*15)); //no of days multiplied with 15 hours
-        }
+        long downtime = MiscUtil.getDowntime(issue.getFixAt(), issue.getRaisedAt());
         int flag = (issue.getFixAt() != null) ? 2 : ( (issue.getAckAt() != null) ? 1: 0);
         return new Problem(issue.getId(), issue.getBuyer().getTeam(), issue.getBuyer().getName(), issue.getProblem(),raiseTime,downtime,flag,2);
     }

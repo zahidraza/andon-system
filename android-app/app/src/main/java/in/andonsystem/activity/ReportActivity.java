@@ -47,6 +47,7 @@ import in.andonsystem.entity.Buyer;
 import in.andonsystem.service.BuyerService;
 import in.andonsystem.service.ProblemService;
 import in.andonsystem.util.ErrorListener;
+import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.RestUtility;
 import in.andonsystem.view.DividerItemDecoration;
 
@@ -236,9 +237,7 @@ public class ReportActivity extends AppCompatActivity implements DatePickerDialo
                                     downtime = -1L;
                                 }else {
                                     fixAt = issue.getLong("fixAt");
-                                    long fDays = TimeUnit.MILLISECONDS.toDays(fixAt);
-                                    long rDays = TimeUnit.MILLISECONDS.toDays(raisedAt);
-                                    downtime = (fixAt - raisedAt - (fDays-rDays)*(1000*60*60*15)); //no of days multiplied with 15 hours
+                                    downtime = MiscUtil.getDowntime(fixAt,raisedAt);
                                 }
                                 if (!issue.getBoolean("deleted")){
                                     problems.add(new Problem(issue.getLong("id"),buyer.getTeam(),buyer.getName(),issue.getString("problem"),downtime));

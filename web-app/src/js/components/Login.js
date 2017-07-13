@@ -254,7 +254,7 @@ class Login extends Component {
     const logging = authProgress ? <Spinning /> : null;
     return (
       
-      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" texture="url(/andon-system/static/img/cover.jpg)" >
+      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" texture="url(/static/img/cover.jpg)" >
         <Box align="end" justify="end" pad={{"horizontal": "large", vertical:"large", between:"large"}}>
           <Box size="auto"  align="center" separator="all" justify="center" colorIndex="light-1" pad={{"horizontal": "medium", vertical:"medium", between:"medium"}} >
             <Heading >{this.localeData.APP_NAME_FULL}</Heading>

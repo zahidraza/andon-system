@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by razamd on 3/31/2017.
@@ -31,5 +33,25 @@ public class MiscUtil {
             }
         }
         return result;
+    }
+
+    public static long getDowntime(Date fixAt, Date raisedAt) {
+        long downtime = -1L;
+        if (fixAt != null) {
+            long fDays = TimeUnit.MILLISECONDS.toDays(fixAt.getTime());
+            long rDays = TimeUnit.MILLISECONDS.toDays(raisedAt.getTime());
+            downtime = (fixAt.getTime() - raisedAt.getTime() - (fDays-rDays)*(1000*60*(60*14 + 30))); //no of days multiplied with 14 hours 30 minute
+        }
+        return downtime;
+    }
+
+    public static long getDowntime(Long fixAt, Long raisedAt) {
+        long downtime = -1L;
+        if (fixAt != null) {
+            long fDays = TimeUnit.MILLISECONDS.toDays(fixAt);
+            long rDays = TimeUnit.MILLISECONDS.toDays(raisedAt);
+            downtime = (fixAt - raisedAt - (fDays-rDays)*(1000*60*(60*14 + 30))); //no of days multiplied with 14 hours 30 minute
+        }
+        return downtime;
     }
 }
