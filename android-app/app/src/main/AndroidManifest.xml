@@ -16,22 +16,12 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".v2.authenticator.AuthenticatorActivity" />
+        <activity android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
-        <service
-            android:name=".v2.authenticator.AuthenticatorService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-        </service>
 
         <activity
-            android:name=".LoadingActivity"
+            android:name=".activity.LoadingActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,83 +30,83 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".v2.activity.ProfileActivity"
+            android:name=".activity.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.ContactActivity"
+            android:name=".activity.ContactActivity"
             android:label="@string/title_activity_contact"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.HelpActivity"
+            android:name=".activity.HelpActivity"
             android:label="@string/title_activity_help"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.NotificationActivity2"
+            android:name=".activity.v2.NotificationActivity"
             android:label="@string/title_activity_notification2"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.IssueDetailActivity2"
+            android:name=".activity.v2.IssueDetailActivity"
             android:label="@string/title_activity_issue_detail2"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.RaiseIssueActivity2"
+            android:name=".activity.v2.RaiseIssueActivity"
             android:label="@string/title_activity_raise_issue"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.HomeActivity"
+            android:name=".activity.v2.HomeActivityBak"
             android:label="@string/title_activity_home1"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".v2.activity.ReportActivity"
+            android:name=".activity.ReportActivity"
             android:label="@string/title_activity_report"
-            android:parentActivityName=".v2.activity.HomeActivity"
+            android:parentActivityName=".activity.v2.HomeActivityBak"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="in.andonsystem.v2.activity.HomeActivity" />
+                android:value="in.andonsystem.activity.v2.HomeActivityBak" />
         </activity>
         <activity
-            android:name=".v2.activity.ForgotPasswordActivity"
+            android:name=".activity.ForgotPasswordActivity"
             android:label="@string/title_activity_forgot_password"
             android:parentActivityName=".v2.authenticator.AuthenticatorActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -124,6 +114,59 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.andonsystem.v2.authenticator.AuthenticatorActivity" />
         </activity>
+        <activity
+            android:name=".v2.authenticator.AuthenticatorActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.v1.HomeActivity"
+            android:label="@string/title_activity_home"
+            android:parentActivityName=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.LoginActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v1.StyleChangeOverActivity"
+            android:label="@string/title_activity_style_change_over"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v1.RaiseIssueActivity"
+            android:label="@string/title_activity_raise_issue"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v1.IssueDetailActivity"
+            android:label="@string/title_activity_issue_detail"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v1.NotificationActivity"
+            android:label="@string/title_activity_notification"
+            android:parentActivityName=".activity.v1.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.andonsystem.activity.v1.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".activity.v2.HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

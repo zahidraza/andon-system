@@ -11,7 +11,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="in.andonsystem.v2.activity.RaiseIssueActivity2"
+    tools:context="in.andonsystem.activity.v2.RaiseIssueActivity"
     tools:showIn="@layout/activity_raise_issue2">
 
     <Spinner
@@ -47,7 +47,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Raise Issue"
-        android:background="@color/tomato"
-        android:onClick="raiseIssue"/>
+        android:background="@color/tomato" />
+    <ProgressBar
+        android:id="@+id/loading_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:visibility="gone"/>
 
 </LinearLayout>

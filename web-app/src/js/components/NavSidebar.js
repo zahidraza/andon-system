@@ -25,7 +25,6 @@ class NavSidebar extends Component {
   }
 
   _onClose () {
-    console.log('Close Button clicked');
     this.props.dispatch(navActivate(false));
   }
 

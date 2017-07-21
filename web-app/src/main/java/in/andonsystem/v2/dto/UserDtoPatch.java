@@ -1,9 +1,9 @@
 package in.andonsystem.v2.dto;
 
-import in.andonsystem.v2.enums.Level;
-import in.andonsystem.v2.enums.Role;
-import in.andonsystem.v2.enums.UserType;
-import in.andonsystem.v2.validation.StringEnum;
+import in.andonsystem.Level;
+import in.andonsystem.Role;
+import in.andonsystem.UserType;
+import in.andonsystem.validation.StringEnum;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -17,7 +17,7 @@ public class UserDtoPatch {
     @Size(min = 5, max = 100)
     private String name;
 
-    @Pattern(regexp=".+@.+\\..+", message="Incorrect email!")
+    @Pattern(regexp="^(?=.*[a-zA-Z])[a-zA-Z0-9_\\-@\\.]{4,40}$")
     private String email;
 
     private String password;

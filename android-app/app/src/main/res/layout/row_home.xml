@@ -8,7 +8,7 @@
     android:padding="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <in.andonsystem.v2.view.LetterImageView
+    <in.andonsystem.view.LetterImageView
         android:id="@+id/issue_letter_image"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -79,6 +79,11 @@
 
     <TextView
         android:id="@+id/issue_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/appNo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

@@ -2,14 +2,14 @@ package in.andonsystem.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.andonsystem.v2.entity.Buyer;
-import in.andonsystem.v2.enums.Level;
-import in.andonsystem.v2.enums.Role;
-import in.andonsystem.v2.enums.UserType;
-import in.andonsystem.v2.validation.StringEnum;
+import in.andonsystem.Level;
+import in.andonsystem.Role;
+import in.andonsystem.UserType;
+import in.andonsystem.validation.StringEnum;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 public class UserDto {
@@ -19,9 +19,9 @@ public class UserDto {
     @NotNull
     @Size(min = 5, max = 100)
     private String name;
-
+    //".+@.+\..+"
     @NotNull
-    @Pattern(regexp=".+@.+\\..+", message="Incorrect email!")
+    @Pattern(regexp="^(?=.*[a-zA-Z])[a-zA-Z0-9_\\-@\\.]{4,40}$")
     private String email;
 
     @JsonIgnore
@@ -35,19 +35,32 @@ public class UserDto {
     @StringEnum(enumClass = Role.class)
     private String role;
 
+    private Long desgnId;
+
     @NotNull
     @StringEnum(enumClass = UserType.class)
     private String userType;
 
-    @NotNull
     @StringEnum(enumClass = Level.class)
     private String level;
 
-    private Set<Buyer> buyers;
+    private Set<Buyer> buyers = new HashSet<>();
+
+    private Boolean active;
 
     private Long lastModified;
 
     public UserDto() {
+    }
+
+    public UserDto(String name, String email, String role, String mobile,  String userType, String level, boolean active) {
+        this.name = name;
+        this.email = email;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+        this.active = active;
     }
 
     public UserDto(String name, String email, String role, String mobile, String userType, String level) {
@@ -57,6 +70,23 @@ public class UserDto {
         this.mobile = mobile;
         this.userType = userType;
         this.level = level;
+        this.active = true;
+    }
+
+    public Long getDesgnId() {
+        return desgnId;
+    }
+
+    public void setDesgnId(Long desgnId) {
+        this.desgnId = desgnId;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Long getId() {

@@ -1,8 +1,7 @@
 package in.andonsystem.v2.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import in.andonsystem.v2.validation.Fixed;
-import in.andonsystem.v2.validation.TeamFixedValue;
+import in.andonsystem.validation.Fixed;
+import in.andonsystem.validation.TeamFixedValue;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

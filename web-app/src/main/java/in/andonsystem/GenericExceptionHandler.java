@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -50,16 +51,16 @@ public class GenericExceptionHandler {
         return response(HttpStatus.BAD_REQUEST, 400, "request body is empty.", e.getMessage(), "");
     }
 
-//    @ExceptionHandler
-//    ResponseEntity<?> handleConflict(DataIntegrityViolationException e) {
-//    	String cause = e.getRootCause().getMessage();
-//    	if(cause.toLowerCase().contains("duplicate")){
-//    		return response(HttpStatus.CONFLICT, 40901, "Duplicate Entry. Data with same name already exist in database.", e.getRootCause().getMessage(), "");
-//    	}else if(cause.toLowerCase().contains("cannot delete")){
-//    		return response(HttpStatus.CONFLICT, 40903, "Deletion restricted to prevent data inconsistency.", e.getRootCause().getMessage(), "");
-//    	}
-//        return response(HttpStatus.CONFLICT, 40900, "Operation cannot be performed. Integrity Constraint violated.", e.getRootCause().getMessage(), "");
-//    }
+    @ExceptionHandler
+    ResponseEntity<?> handleConflict(DataIntegrityViolationException e) {
+    	String cause = e.getRootCause().getMessage();
+    	if(cause.toLowerCase().contains("duplicate")){
+    		return response(HttpStatus.CONFLICT, 40901, "Duplicate Entry. Data with same name already exist in database.", e.getRootCause().getMessage(), "");
+    	}else if(cause.toLowerCase().contains("cannot delete")){
+    		return response(HttpStatus.CONFLICT, 40903, "Deletion restricted to prevent data inconsistency.", e.getRootCause().getMessage(), "");
+    	}
+        return response(HttpStatus.CONFLICT, 40900, "Operation cannot be performed. Integrity Constraint violated.", e.getRootCause().getMessage(), "");
+    }
     @ExceptionHandler
     ResponseEntity<?> handleException(Exception e) {
         logger.debug("handleException: {}",e.getMessage());

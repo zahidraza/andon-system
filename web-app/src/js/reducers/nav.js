@@ -3,19 +3,22 @@ import { NAV_ACTIVATE } from "../actions";
 const initialState = {
   active: false,
   items:[
-    { path: '/dashboard2', label: 'Home'},
+    { path: '/dashboard2', label: 'Dashboard'},
     { path: '/report2', label: 'Report'},
-    { path: '/user2', label: 'User'},
-    { path: '/buyer', label: 'Mapping'},
-    { path: '/problem2', label: 'Problem'}
+    { path: '/user', label: 'User'},
+    { path: '/mapping2', label: 'Mapping'},
+    { path: '/tracking', label: 'Issue Tracking'},
+    { path: '/problem', label: 'Problem'},
+    { path: '/download', label: 'Download'}
   ],
   itemsFactory: [
-    { path: '/dashboard1', label: 'Home'},
+    { path: '/dashboard1', label: 'Dashboard'},
+    { path: '/report1', label: 'Report'},
+    { path: '/user', label: 'User'},
+    { path: '/mapping1', label: 'Mapping'},
     { path: '/section', label: 'Section'},
     { path: '/department', label: 'Department'},
-    { path: '/problem1', label: 'Problem'},
-    { path: '/user1', label: 'User'},
-    { path: '/test', label: 'Test Page'}
+    { path: '/download', label: 'Download'}
   ]
 };
 

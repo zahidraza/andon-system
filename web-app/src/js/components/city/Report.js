@@ -5,9 +5,9 @@ import moment from 'moment';
 import axios from "axios";
 import {initialize} from '../../actions/misc';
 import {getHeaders} from  '../../utils/restUtil';
+import {getMidnightMillis} from  '../../utils/miscUtil';
 import {CSVLink} from 'react-csv';
 
-import AppHeader from '../AppHeader';
 import Box from 'grommet/components/Box';
 import Section from 'grommet/components/Section';
 import Spinning from 'grommet/components/icons/Spinning';
@@ -48,6 +48,7 @@ class Report extends Component {
       },
       issues: [],
       filteredIssues: [],
+      issuesDownload: [],
       teams:[],
       buyers: [],
       page: 1
@@ -56,10 +57,10 @@ class Report extends Component {
     this._renderFilterLayer = this._renderFilterLayer.bind(this);
     this._getReport = this._getReport.bind(this);
     this._loadIssues = this._loadIssues.bind(this);
+    this._onMoreIssues = this._onMoreIssues.bind(this);
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -84,10 +85,9 @@ class Report extends Component {
 
   _getReport (date) {
     const {user: {users},misc: {buyers}} = this.props;
-
-    axios.get(window.serviceHost + '/v2/issues?start=' + date.start.getTime() + '&end=' + (date.end.getTime() + (1000*60*60*24)), {headers: getHeaders()})
+    const start = getMidnightMillis(date.start);
+    axios.get(window.serviceHost + '/v2/issues?start=' + start + '&end=' + date.end.getTime(), {headers: getHeaders()})
     .then((response) => {
-      console.log(response);
       if (response.status == 200) {
         const issues = response.data.issues.map(issue => {
           const buyer = buyers.find(b => b.id == issue.buyerId);
@@ -106,16 +106,18 @@ class Report extends Component {
           }
           if (!(issue.fixAt == null || issue.fixAt == 'null')) {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
-            downtime = Math.trunc((issue.fixAt - issue.raisedAt)/(1000*60));
+            let fDays = Math.floor(moment.duration(issue.fixAt).asDays());
+            let aDays = Math.floor(moment.duration(issue.raisedAt).asDays());
+            let dTime = (issue.fixAt - issue.raisedAt - (fDays-aDays)*((14*60 + 30)*60*1000));
+            downtime = Math.floor(moment.duration(dTime).asMinutes());
           }
           return {Team: buyer.team, Buyer: buyer.name,Problem: issue.problem, Description: issue.description,  raisedBy, ackBy,fixBy,raisedAt,ackAt,fixAt,downtime};
         });
 
         this.setState({issues});
-        this._loadIssues(this.state.page);
+        this._loadIssues(issues, this.state.filter, this.state.page);
       }
     }).catch( (err) => {
-      console.log(err);
       if (err.response.status == 400) {
         //dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
       }
@@ -126,9 +128,9 @@ class Report extends Component {
     });
   }
 
-  _loadIssues (page) {
-    let {filter,issues} = this.state;
-    let filteredCount, unfilteredCount = issues.length, issuesNotAvailable = false;
+  _loadIssues (issues,filter,page) {
+    let unfilteredCount = issues.length;
+    let issuesNotAvailable = false;
     if ('team' in filter) {
       const teamFilter = filter.team;
       issues = issues.filter(issue => teamFilter.includes(issue.Team));   
@@ -137,22 +139,21 @@ class Report extends Component {
       const buyerFilter = filter.buyer;
       issues = issues.filter(issue => buyerFilter.includes(issue.Buyer));   
     } 
-    filteredCount = issues.length;
+    let filteredCount = issues.length;
+    let issuesDownload = issues;
     if (filteredCount == 0) {
       issuesNotAvailable = true;
     }
     issues = issues.slice(0,20*page);
-    this.setState({filteredIssues: issues, filteredCount, unfilteredCount, issuesNotAvailable, page}); 
+    this.setState({filteredIssues: issues, issuesDownload, filteredCount, unfilteredCount, issuesNotAvailable, page}); 
   }
 
   _onMoreIssues () {
-    let page = this.state.page;
-    page = page+1;
-    this._loadIssues(page);
+    const {issues, filter, page} = this.state;
+    this._loadIssues(issues, filter, page+1);
   }
 
   _onFilterActivate () {
-    console.log('_onFilterActivate');
     this.setState({showFilter: true});
   }
 
@@ -188,22 +189,19 @@ class Report extends Component {
       let selectedFilter = event.value.map(value => (
         typeof value === 'object' ? value.value : value)
       );
-      console.log(selectedFilter);
       filter[name] = selectedFilter;
       if (filter[name].length === 0) {
         delete filter[name];
       }
     }
     this.setState({filter});
-    this._loadIssues(this.state.page);
+    this._loadIssues(this.state.issues,filter,this.state.page);
   }
 
 
 
   _renderFilterLayer () {
     const {showFilter,filter,date,teams,buyers} = this.state;
-    console.log(this.state);
-
     if (showFilter) {
       return (
         <Layer align='right' flush={true} closer={false}
@@ -250,7 +248,7 @@ class Report extends Component {
   }
 
   render() {
-    const {initializing,filteredCount,unfilteredCount,searchText,filteredIssues,issuesNotAvailable,date} = this.state;
+    const {initializing,filteredCount,unfilteredCount,searchText,filteredIssues,issuesDownload ,issuesNotAvailable,date} = this.state;
 
     const start = moment(new Date(date.start)).format('DDMMYYYY');
     const end = moment(new Date(date.end)).format('DDMMYYYY');
@@ -284,9 +282,13 @@ class Report extends Component {
         </TableRow>
       );
     });
+    let onMore;
+    if (filteredIssues.length > 0 && filteredIssues.length < filteredCount) {
+      onMore = this._onMoreIssues;
+    }
 
     let issueItems = issuesNotAvailable ? <Box size="medium" alignSelf="center" pad={{horizontal:'medium'}}><h3>No Issues available</h3></Box>: (
-      <Table scrollable={true} onMore={this._onMoreIssues.bind(this)}>
+      <Table scrollable={true} onMore={onMore}>
         <TableHeader labels={['Team','Buyer','Problem','Description','Raised By','Ack By','Fix By', 'Raised At', 'Ack At', 'Fix At', 'Downtime (minutes)']} />
         
         <tbody>{items}</tbody>
@@ -295,15 +297,13 @@ class Report extends Component {
 
     return (
       <Box full='horizontal'>
-        <AppHeader/>
-
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
             <span>{this.localeData.label_report}</span>
           </Title>
           <Search inline={true} fill={true} size='medium' placeHolder='Search'
             value={searchText} onDOMChange={this._onSearch.bind(this)} />
-          <CSVLink data={filteredIssues} filename={'Report_' + start + '_' + end + '.csv'}  ><DownloadIcon /></CSVLink>
+          <CSVLink data={issuesDownload} filename={'Report_' + start + '_' + end + '.csv'}  ><DownloadIcon /></CSVLink>
           <FilterControl filteredTotal={filteredCount}
             unfilteredTotal={unfilteredCount}
             onClick={this._onFilterActivate.bind(this)} />         

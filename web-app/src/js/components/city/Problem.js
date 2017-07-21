@@ -3,7 +3,6 @@ import { localeData } from '../../reducers/localization';
 import { connect } from 'react-redux';
 import {initialize} from '../../actions/misc';
 
-import AppHeader from '../AppHeader';
 import Box from 'grommet/components/Box';
 import Header from 'grommet/components/Header';
 import Section from 'grommet/components/Section';
@@ -23,7 +22,6 @@ class Problem extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -60,7 +58,6 @@ class Problem extends Component {
 
     return (
       <Box>
-        <AppHeader page={this.localeData.label_test}/>
         <Header size='large' pad={{ horizontal: 'medium' }}>
           <Title responsive={false}>
             <span>{this.localeData.label_problem}</span>

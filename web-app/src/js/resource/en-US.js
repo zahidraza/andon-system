@@ -10,7 +10,9 @@ module.exports = {
   "label_buyer": "Mapping",
   "label_report": "Report",
   "label_test": "Test Page",
-
+  "label_department": "Departments",
+  "label_section": "Sections",
+  "label_issue_tracking": "Issue Tracking",
 
   /*////////////////// Login //////////////////////////*/
   "login_email": "Email",

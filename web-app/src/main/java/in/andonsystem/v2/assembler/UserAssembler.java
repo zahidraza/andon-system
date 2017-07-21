@@ -5,6 +5,7 @@ import in.andonsystem.v2.restcontroller.UserRestController;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -20,14 +21,18 @@ public class UserAssembler extends ResourceAssemblerSupport<UserDto, Resource>{
 
     @Override
     public Resource toResource(UserDto userDto) {
-        return new Resource<>(userDto, linkTo(methodOn(UserRestController.class).getUser(userDto.getId())).withSelfRel());
+        List<Link> links = new ArrayList<>();
+        links.add(linkTo(methodOn(UserRestController.class).getUser(userDto.getId())).withSelfRel());
+        links.add(linkTo(methodOn(UserRestController.class).searchByName(null)).withRel("user.search.name"));
+        links.add(linkTo(methodOn(UserRestController.class).searchByEmail(null)).withRel("user.search.email"));
+        return new Resource<>(userDto, links);
     }
 
     @Override
     public List<Resource> toResources(Iterable<? extends UserDto> users) {
         List<Resource> resources = new ArrayList<>();
         for(UserDto user : users) {
-            resources.add(new Resource<>(user, linkTo(methodOn(UserRestController.class).getUser(user.getId())).withSelfRel()));
+            resources.add(toResource(user));
         }
         return resources;
     }

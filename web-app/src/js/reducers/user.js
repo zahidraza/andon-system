@@ -2,6 +2,7 @@ import { USER_CONSTANTS as c} from "../utils/constants";
 
 const initialState = {
   authProgress: false,
+  authenticated: false,
   loaded: false,
   busy: false,
   fetching: false,
@@ -18,25 +19,25 @@ const initialState = {
 
 const handlers = { 
   [c.INITIALIZE_USER]: (_, action) => ({users: action.payload.users, loaded: true, toggleStatus: !_.toggleStatus}),
-  [c.USER_AUTH_PROGRESS]: (_, action) => ({authProgress: true}),
+  [c.USER_AUTH_PROGRESS]: (_, action) => ({authProgress: true, authenticated: false}),
   [c.USER_AUTH_SUCCESS]: (_, action) => {
-    let users = _.users;
-    if (users.length == 0) {
-      console.log('users not loaded');
-      return ({});
-    }
-    let i = users.findIndex(u => u.email == action.payload.username);
-    const user = users[i];
-    window.sessionStorage.username = user.name;
-    window.sessionStorage.email = user.email;
+    sessionStorage.email = action.payload.username;
     window.sessionStorage.access_token = action.payload.data.access_token;
     window.sessionStorage.refresh_token = action.payload.data.refresh_token;
-    window.sessionStorage.role = user.role;
-    window.sessionStorage.userType = user.userType;
-    window.sessionStorage.session = true;
-    return ({authProgress: false});
+    //window.sessionStorage.session = true;
+    return ({authProgress: false, authenticated: true});
   },
   [c.USER_AUTH_FAIL]: (_, action) => ({authProgress: false}),
+  [c.USER_SEARCH_SUCCESS]: (_, action) => {
+    let user = action.payload.user;
+    sessionStorage.userId = user.id;
+    sessionStorage.username = user.name;
+    sessionStorage.role = user.role;
+    sessionStorage.userType = user.userType;
+    sessionStorage.level = user.level;
+    sessionStorage.session = true;
+    return ({busy: false});
+  },
   [c.USER_ADD_FORM_TOGGLE]: (_, action) => ({adding: action.payload.adding, error:{}}),
   [c.USER_ADD_SUCCESS]: (_, action) => {
     let users = _.users;

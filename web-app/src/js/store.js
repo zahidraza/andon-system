@@ -7,8 +7,9 @@ import promise from "redux-promise-middleware";
 import nav from "./reducers/nav";
 import misc from "./reducers/misc";
 import user from "./reducers/user";
+import issue from './reducers/issue';
 
-const reducer = combineReducers({nav, misc, user});
+const reducer = combineReducers({nav, misc, user, issue});
 
 const middleware = applyMiddleware(promise(), thunk, logger());
 

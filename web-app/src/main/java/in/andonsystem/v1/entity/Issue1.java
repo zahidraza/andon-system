@@ -19,6 +19,7 @@ import java.util.Date;
  * Created by razamd on 4/5/2017.
  */
 @Entity
+@Table(name = "issue1")
 public class Issue1 {
 
     @Id
@@ -29,7 +30,10 @@ public class Issue1 {
     @Column(name = "LINE", nullable = false)
     private Integer line;
 
-    @ManyToOne(optional = false)
+    @Column(name = "SECTION", nullable = false)
+    private String section;
+
+    @ManyToOne(optional = true)
     @JoinColumn(name = "PROB_ID")
     private Problem problem;
 
@@ -72,12 +76,23 @@ public class Issue1 {
     @Column(name = "SEEK_HELP")
     private Integer seekHelp;
 
+    @Column(name = "deleted",nullable = false)
+    private Boolean deleted;
+
     @Version
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_MODIFIED")
     private Date lastModified;
 
     public Issue1() {
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Long getId() {
@@ -94,6 +109,14 @@ public class Issue1 {
 
     public void setLine(Integer line) {
         this.line = line;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
     public Problem getProblem() {
@@ -203,21 +226,23 @@ public class Issue1 {
     @Override
     public String toString() {
         return "Issue1{" +
-               "id=" + id +
-               ", line=" + line +
-               ", problem=" + problem +
-               ", critical='" + critical + '\'' +
-               ", operatorNo='" + operatorNo + '\'' +
-               ", description='" + description + '\'' +
-               ", raisedBy=" + raisedBy +
-               ", ackBy=" + ackBy +
-               ", fixBy=" + fixBy +
-               ", raisedAt=" + raisedAt +
-               ", ackAt=" + ackAt +
-               ", fixAt=" + fixAt +
-               ", processingAt=" + processingAt +
-               ", seekHelp=" + seekHelp +
-               ", lastModified=" + lastModified +
-               '}';
+                "id=" + id +
+                ", line=" + line +
+                ", section='" + section + '\'' +
+                ", problem=" + problem +
+                ", critical='" + critical + '\'' +
+                ", operatorNo='" + operatorNo + '\'' +
+                ", description='" + description + '\'' +
+                ", raisedBy=" + raisedBy +
+                ", ackBy=" + ackBy +
+                ", fixBy=" + fixBy +
+                ", raisedAt=" + raisedAt +
+                ", ackAt=" + ackAt +
+                ", fixAt=" + fixAt +
+                ", processingAt=" + processingAt +
+                ", seekHelp=" + seekHelp +
+                ", deleted=" + deleted +
+                ", lastModified=" + lastModified +
+                '}';
     }
 }

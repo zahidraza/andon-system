@@ -28,6 +28,12 @@ class AppHeader extends Component {
 
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (sessionStorage.session == undefined) {
+      this.context.router.push("/");
+    }
+  }
+  
   _openMenu () {
     this.props.dispatch(navActivate(true));
   }
@@ -84,7 +90,7 @@ AppHeader.contextTypes = {
 };
 
 let select = (store) => {
-  return { nav: store.nav};
+  return { nav: store.nav, user: store.user, issue: store.issue};
 };
 
 export default connect(select)(AppHeader);

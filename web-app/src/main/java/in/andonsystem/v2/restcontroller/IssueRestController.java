@@ -1,6 +1,6 @@
 package in.andonsystem.v2.restcontroller;
 
-import in.andonsystem.v1.util.Constants;
+import in.andonsystem.Constants;
 import in.andonsystem.v2.dto.FieldError;
 import in.andonsystem.v2.dto.IssueDto;
 import in.andonsystem.v2.dto.IssuePatchDto;
@@ -8,8 +8,8 @@ import in.andonsystem.v2.dto.RestError;
 import in.andonsystem.v2.service.BuyerService;
 import in.andonsystem.v2.service.IssueService;
 import in.andonsystem.v2.service.UserService;
-import in.andonsystem.v2.util.ApiV2Urls;
-import in.andonsystem.v2.util.MiscUtil;
+import in.andonsystem.v2.ApiUrls;
+import in.andonsystem.util.MiscUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,8 @@ import java.util.Map;
  * Created by razamd on 3/30/2017.
  */
 @RestController
-@RequestMapping(ApiV2Urls.ROOT_URL_ISSUES)
+@RequestMapping(ApiUrls.ROOT_URL_ISSUES)
 public class IssueRestController {
-
     private final Logger logger = LoggerFactory.getLogger(IssueRestController.class);
 
     @Autowired
@@ -52,8 +52,8 @@ public class IssueRestController {
     UserService userService;
 
     /**
-     * case 1: (start = 0 &  end = 0), Return todays issues
-     * case 2: (start != 0 &  end = 0), Return todays issues after start
+     * case 1: (start = 0 &  end = 0), Return last two day issues
+     * case 2: (start != 0 &  end = 0), Return issues after start if start is greater than last two day
      * case 3: (start != 0 &  end != 0), Return issues in between start and end
      * case 4: (start = 0 &  end != 0), not supported
      * @param start
@@ -62,6 +62,7 @@ public class IssueRestController {
      */
     @GetMapping
     public ResponseEntity<?> getAllIssueAfter(@RequestParam(value = "start", defaultValue = "0") Long start, @RequestParam(value = "end", defaultValue = "0") Long end){
+        logger.debug("getAllIssuesAfter: start = {}, end = {}", start, end);
         List<IssueDto > issues = null;
         if((start == 0L && end == 0L) || (start != 0L && end == 0L)){
             issues = issueService.findAllAfter(start);
@@ -102,7 +103,7 @@ public class IssueRestController {
         return ResponseEntity.created(URI.create(selfLink.getHref())).body(issueDto);
     }
 
-    @PatchMapping(ApiV2Urls.URL_ISSUES_ISSUE)
+    @PatchMapping(ApiUrls.URL_ISSUES_ISSUE)
     public ResponseEntity<?> updateIssue(@PathVariable("issueId") Long issueId, @RequestParam("operation") String operation, @Valid @RequestBody
             IssuePatchDto issueDto){
         logger.info("updateIssue(): id = {}, operation = {}", issueId,operation);
@@ -133,9 +134,29 @@ public class IssueRestController {
         }
         issueDto.setId(issueId);
         issueDto = issueService.update(issueDto, operation);
-        Link selfLink = linkTo(IssueRestController.class).slash(issueDto.getId()).withSelfRel();
-        return ResponseEntity.created(URI.create(selfLink.getHref())).body(issueDto);
+        return ResponseEntity.ok(issueDto);
     }
 
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_PROBLEM)
+    public ResponseEntity<?> getDowntimeProblemwise(@RequestParam("after") Long after) {
+        logger.debug("getDowntimeTeamwise: after = " + new Date(after));
+        return ResponseEntity.ok(issueService.getDowntimeProblemwise(after));
+    }
+
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_TEAM)
+    public ResponseEntity<?> getDowntimeTeamwise(@RequestParam("after") Long after) {
+        logger.debug("getDowntimeTeamwise: after = " + new Date(after));
+        return ResponseEntity.ok(issueService.getDowntimeTeamwise(after));
+    }
+
+    @GetMapping(ApiUrls.URL_ISSUES_DOWNTIME_BY_BUYER)
+    public ResponseEntity<?> getDowntimeBuyerwise(@RequestParam("after") Long after, @RequestParam(value = "top5",defaultValue = "false") boolean top5) {
+        logger.debug("getDowntimeBuyerwise: after = {}, top5 = {}", new Date(after), top5);
+        if (top5) {
+            return ResponseEntity.ok(issueService.getDowntimeTop5Buyers(after));
+        }else {
+            return ResponseEntity.ok(issueService.getDowntimeBuyerwise(after));
+        }
+    }
 
 }

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import axios from "axios";
 
 import { localeData } from '../reducers/localization';
-import {initialize,navActivate} from '../actions/misc';
-import {authenticate} from '../actions/user';
+import {navActivate} from '../actions/misc';
+import {authenticate, searchUser} from '../actions/user';
 import {USER_TYPE as u} from  '../utils/constants';
 
 //Components
@@ -23,7 +23,7 @@ class Login extends Component {
   constructor () {
     super();
     this.state = {
-      initializing: true,
+      initializing: false,
       credential: {},
       error: {},
       email: '',
@@ -39,30 +39,25 @@ class Login extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     this.props.dispatch(navActivate(false));
-    this.props.dispatch(initialize());
+    //this.props.dispatch(initialize());
     
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log('componentWillReceiveProps');
-    if (nextProps.misc.initialized) {
-      this.setState({initializing: false});
-    }
-
-    if (this.props.user.authProgress && !nextProps.user.authProgress && sessionStorage.session == undefined) {
+    if (this.props.user.authProgress && !nextProps.user.authProgress && !nextProps.user.authenticated) {
       this.setState({errorMsg: "Incorrect email or password, try again!"});
     }
-
-    if (sessionStorage.session == 'true') {
+    if (!this.props.user.authenticated && nextProps.user.authenticated) {
+      this.props.dispatch(searchUser(sessionStorage.email));
+    }
+    if (this.props.user.authenticated && sessionStorage.session != null) {
       if (window.sessionStorage.userType == u.FACTORY) {
         this.context.router.push('/dashboard1');
       } else {
         this.context.router.push('/dashboard2');
       }
     }
-
   }
 
   _login () {
@@ -96,7 +91,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);
@@ -119,7 +113,6 @@ class Login extends Component {
       this.setState({busy: true});
       axios.put(window.serviceHost + '/v2/misc/forgot_password/verify_otp?email=' + credential.email + '&otp=' + credential.otp)
       .then((response) => {
-        console.log(response);
         this.setState({busy: false});
         if (response.status == 200) {
           if (response.data.status == "SUCCESS") {
@@ -129,7 +122,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);
@@ -152,7 +144,6 @@ class Login extends Component {
       this.setState({busy: true});
       axios.put(window.serviceHost + '/v2/misc/forgot_password/change_password?email=' + credential.email + '&otp=' + credential.otp + '&newPassword=' + credential.newPassword)
       .then((response) => {
-        console.log(response);
         this.setState({busy: false});
         if (response.status == 200) {
           if (response.data.status == "SUCCESS") {
@@ -163,7 +154,6 @@ class Login extends Component {
           }
         }
       }).catch( (err) => {
-        console.log(err);
         this.setState({busy: false});
         if (err.response.status == 404) {
           alert("No user found for email Id : " + credential.email);
@@ -264,7 +254,7 @@ class Login extends Component {
     const logging = authProgress ? <Spinning /> : null;
     return (
       
-      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" texture="url(/andon-system/static/img/cover.jpg)" >
+      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" texture="url(/static/img/cover.jpg)" >
         <Box align="end" justify="end" pad={{"horizontal": "large", vertical:"large", between:"large"}}>
           <Box size="auto"  align="center" separator="all" justify="center" colorIndex="light-1" pad={{"horizontal": "medium", vertical:"medium", between:"medium"}} >
             <Heading >{this.localeData.APP_NAME_FULL}</Heading>

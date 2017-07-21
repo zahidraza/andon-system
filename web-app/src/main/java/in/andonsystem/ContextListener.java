@@ -1,8 +1,7 @@
 package in.andonsystem;
 
-import in.andonsystem.v1.scheduler.FutureTaskManager;
-import in.andonsystem.v1.services.IssueService;
-import in.andonsystem.v1.util.ConnectionPool;
+//import in.andonsystem.v1.scheduler.FutureTaskManager;
+//import in.andonsystem.v1.services.IssueService;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,8 +20,8 @@ import javax.servlet.annotation.WebListener;
 public class ContextListener implements ServletContextListener{
 
     //private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> fixIssueScheduler;
-    FutureTaskManager taskManager;
+//    ScheduledFuture<?> fixIssueScheduler;
+//    FutureTaskManager taskManager;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -53,7 +52,7 @@ public class ContextListener implements ServletContextListener{
 //            dbService.addDepartments();
 //
 //            //Instantiate Services
-//            MiscUtil miscUtil = MiscUtil.getInstance();
+//            ConfigUtility miscUtil = ConfigUtility.getInstance();
 //            MiscService mService = new MiscService();
 //            ProblemService pService = new ProblemService(conn);
 //            DeptService dService = new DeptService(conn);
@@ -147,47 +146,47 @@ public class ContextListener implements ServletContextListener{
      * This is Thread used to Schedule Automatic Fix of Issues
      */
 
-    class FixIssuesThread implements Runnable{
-        private int endHour;
-        private int endMinute;
-
-        public FixIssuesThread(int endHour,int endMinute){
-            this.endHour = endHour;
-            this.endMinute = endMinute;
-        }
-
-        @Override
-        public void run() {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
-            df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
-            long timeNow = System.currentTimeMillis();
-            String date = df.format(new Date(timeNow));
-
-            System.out.println(new Date(timeNow) + ", FixIssuesThread.run()");
-
-            String time = String.format("%02d:%02d:00", endHour,endMinute);
-            String datetime = date + time;
-            System.out.println("all unfixed issues being fixed with fixAt time = "+datetime);
-            Connection conn = null;
-            try {
-                conn = ConnectionPool.getConnection();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            IssueService iService = new IssueService(conn);
-            try{
-                int count = iService.fixIssueAutomatic(datetime);
-                System.out.println("" + count + " issues Fixed automatically");
-            }catch(Exception e){
-                e.printStackTrace();
-            }finally{
-                try{
-                    conn.close();
-                }catch(Exception ex){
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
+//    class FixIssuesThread implements Runnable{
+//        private int endHour;
+//        private int endMinute;
+//
+//        public FixIssuesThread(int endHour,int endMinute){
+//            this.endHour = endHour;
+//            this.endMinute = endMinute;
+//        }
+//
+//        @Override
+//        public void run() {
+//            DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
+//            df.setTimeZone(TimeZone.getTimeZone("GMT+05:30"));
+//            long timeNow = System.currentTimeMillis();
+//            String date = df.format(new Date(timeNow));
+//
+//            System.out.println(new Date(timeNow) + ", FixIssuesThread.run()");
+//
+//            String time = String.format("%02d:%02d:00", endHour,endMinute);
+//            String datetime = date + time;
+//            System.out.println("all unfixed issues being fixed with fixAt time = "+datetime);
+//            Connection conn = null;
+//            try {
+//                conn = ConnectionPool.getConnection();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            IssueService iService = new IssueService(conn);
+//            try{
+//                int count = iService.fixIssueAutomatic(datetime);
+//                System.out.println("" + count + " issues Fixed automatically");
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }finally{
+//                try{
+//                    conn.close();
+//                }catch(Exception ex){
+//                    ex.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
 }

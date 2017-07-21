@@ -1,5 +1,6 @@
 package in.andonsystem.v1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.andonsystem.v2.entity.User;
 
 import javax.persistence.Column;
@@ -36,6 +37,10 @@ public class Designation implements Serializable{
     @Column(name = "LINE", nullable = false)
     private String lines;
 
+    @Column(name = "level")
+    private Integer level;
+
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "DESIGNATION_PROBLEM",
             joinColumns = @JoinColumn(name = "DESGN_ID"),
@@ -43,10 +48,26 @@ public class Designation implements Serializable{
     )
     private Set<Problem> problems = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "designation")
     private Set<User> users = new HashSet<>();
 
     public Designation() {
+    }
+
+    public Designation(Long id, String name, String lines, Integer level) {
+        this.id = id;
+        this.name = name;
+        this.lines = lines;
+        this.level = level;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public Long getId() {
@@ -64,10 +85,6 @@ public class Designation implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
-
-//    public String getLines() {
-//        return lines;
-//    }
 
     public List<Integer> getLines() {
         List<Integer> result = new ArrayList<>();

@@ -1,7 +1,9 @@
 package in.andonsystem.v2.service;
 
+import in.andonsystem.UserType;
+import in.andonsystem.v1.entity.Designation;
+import in.andonsystem.v1.repository.DesignationRepository;
 import in.andonsystem.v2.dto.UserDto;
-import in.andonsystem.v2.entity.Buyer;
 import in.andonsystem.v2.entity.User;
 import in.andonsystem.v2.page.converter.UserConverter;
 import in.andonsystem.v2.respository.UserRespository;
@@ -10,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import in.andonsystem.v2.util.MiscUtil;
+import in.andonsystem.util.MiscUtil;
 import org.dozer.Mapper;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -26,11 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class UserService {
-    
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    UserRespository userRepository;
+    @Autowired UserRespository userRepository;
+
+    @Autowired DesignationRepository designationRepository;
     
     @Autowired Mapper mapper;
     
@@ -44,7 +46,7 @@ public class UserService {
     }
 
     public List<UserDto> findAllAfter(Long after) {
-        logger.debug("findAll()");
+        logger.debug("findAllAfter: after = {}", after);
         List<User> users = null;
         if(after > 0L){
             users = userRepository.findByLastModifiedGreaterThan(new Date(after));
@@ -57,11 +59,6 @@ public class UserService {
         return users.stream()
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
-    }
-    
-    public Page<UserDto> findAllByPage(Pageable pageable){
-        logger.debug("findAllByPage()");
-        return userRepository.findAll(pageable).map(converter);
     }
 
     public UserDto findByEmail(String email) {
@@ -93,6 +90,14 @@ public class UserService {
         logger.debug("save()");
         User user = mapper.map(userDto, User.class);
         user.setPassword(userDto.getMobile());
+        if (user.getActive() == null) {
+            user.setActive(true);
+        }
+        if (userDto.getDesgnId() != null) {
+            Designation designation = designationRepository.findOne(userDto.getDesgnId());
+            user.setDesignation(designation);
+            user.setLevel( "LEVEL" + designation.getLevel());
+        }
         user = userRepository.save(user);
         return mapper.map(user, UserDto.class);
     }
@@ -108,9 +113,15 @@ public class UserService {
         if (userDto.getRole() != null) user.setRole(userDto.getRole());
         if (userDto.getUserType() != null) user.setUserType(userDto.getUserType());
         if (userDto.getPassword() != null) user.setPassword(userDto.getPassword());
+        if (userDto.getActive() != null) user.setActive(userDto.getActive());
         if (userDto.getBuyers() != null){
             user.getBuyers().clear();
             userDto.getBuyers().forEach(buyer -> user.getBuyers().add(buyer));
+        }
+        if (userDto.getDesgnId() != null) {
+            Designation designation = designationRepository.findOne(userDto.getDesgnId());
+            user.setDesignation(designation);
+            user.setLevel( "LEVEL" + designation.getLevel());
         }
         return mapper.map(user, UserDto.class);
     }
@@ -159,5 +170,23 @@ public class UserService {
         logger.debug("delete(): id = {}",id);
         userRepository.delete(id);
     }
+
+    public List<Long> getUserIds(){
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserType().equalsIgnoreCase(UserType.FACTORY.getValue()))
+                .map(user -> user.getId())
+                .collect(Collectors.toList());
+    }
+
+
+//    @Transactional
+//    public void resetPassword(){
+//        List<User> users = userRepository.findAll();
+//        for (User user : users){
+//            if (user.getUserType().equalsIgnoreCase(UserType.FACTORY.getValue())) {
+//                user.setPassword(user.getMobile());
+//            }
+//        }
+//    }
     
 }

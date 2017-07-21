@@ -18,6 +18,7 @@ import java.util.Date;
  * Created by razamd on 3/30/2017.
  */
 @Entity
+@Table(name = "issue2")
 public class Issue2 implements Serializable{
 
     @Id
@@ -62,12 +63,23 @@ public class Issue2 implements Serializable{
     @Column(name = "processing_at")
     private Integer processingAt;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
+
     @Version
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified")
     private Date lastModified;
 
     public Issue2() {
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Long getId() {

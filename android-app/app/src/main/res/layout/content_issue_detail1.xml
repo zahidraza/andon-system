@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="in.andonsystem.activity.v1.IssueDetailActivity"
+    tools:showIn="@layout/activity_issue_detail1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/detail_prob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:text="Problem xyz"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_title"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Department"/>
+
+            <TextView
+                android:id="@+id/detail_dept"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_title" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_title2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Section"/>
+
+            <TextView
+                android:id="@+id/detail_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_title2"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_title3"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Line"/>
+
+            <TextView
+                android:id="@+id/detail_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_title3"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_title4"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Operator No."/>
+
+            <TextView
+                android:id="@+id/detail_op_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_title4"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text5"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Raised at"/>
+
+            <TextView
+                android:id="@+id/detail_raised_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text5"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text8"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Raised by"/>
+
+            <TextView
+                android:id="@+id/detail_raised_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text8"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text6"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Ack at"/>
+
+            <TextView
+                android:id="@+id/detail_ack_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text6"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text9"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Ack by"/>
+
+            <TextView
+                android:id="@+id/detail_ack_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text9"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text7"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Fixed at"/>
+
+            <TextView
+                android:id="@+id/detail_solved_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text7"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text11"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Fixed by"/>
+
+            <TextView
+                android:id="@+id/detail_fix_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text11"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/issue_datail_text12"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Status"/>
+
+            <TextView
+                android:id="@+id/detail_processing_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:layout_toRightOf="@+id/issue_datail_text12"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/issue_datail_text10"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:text="Description:"/>
+
+            <TextView
+                android:id="@+id/detail_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="3"
+                android:textSize="14sp"
+                android:padding="5dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/black"
+                android:background="@color/whiteSmoke"
+                android:layout_below="@+id/issue_datail_text10"/>
+
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/issue_detail_layout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>

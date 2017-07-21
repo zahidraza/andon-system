@@ -5,7 +5,6 @@ import {initialize} from '../actions/misc';
 import {changePassword} from '../actions/user';
 import {USER_CONSTANTS as c,USER_TYPE as ut}  from '../utils/constants';
 
-import AppHeader from './AppHeader';
 import Box from 'grommet/components/Box';
 import Button from 'grommet/components/Button';
 import Footer from 'grommet/components/Footer';
@@ -36,7 +35,6 @@ class Profile extends Component {
   }
 
   componentWillMount () {
-    console.log('componentWillMount');
     if (!this.props.misc.initialized) {
       this.setState({initializing: true});
       this.props.dispatch(initialize());
@@ -63,7 +61,6 @@ class Profile extends Component {
   }
 
   _changePassword () {
-    console.log("_changePassword");
     let {credential, user} = this.state;
     let errors = [];
     if (credential.oldPassword == undefined || credential.oldPassword == '') {
@@ -167,7 +164,6 @@ class Profile extends Component {
 
     return (
       <Box>
-        <AppHeader/>
         <Section>
           <Box size="large" alignSelf="center">
             <Box pad={{vertical: 'medium'}}>
