@@ -30,4 +30,3 @@ ReactDOM.render((
 ), element);
 
 document.body.classList.remove('loading');
-
