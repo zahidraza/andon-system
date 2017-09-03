@@ -17,9 +17,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="copyright">&#169; Md Zahid Raza</string>
-    <string name="version1">ver 2.1.0</string>
-    <string name="version2">2-1-0</string>
+    <string name="copyright">&#169; Jaza Software (OPC) Pvt. Ltd.</string>
+    <string name="version1">ver 2.1.1</string>
+    <string name="version2">2-1-1</string>
 
     <string name="login_btn_text">LOG IN</string>
     <string name="forgot_passwd_btn_text">Forgot Password?</string>

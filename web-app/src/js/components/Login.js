@@ -317,7 +317,7 @@ class Login extends Component {
                 <Button label="Login" fill={true} primary={true}  onClick={this._login.bind(this)} />
               </Footer>
               <Box alignSelf='center' margin='none'>
-                <Heading tag='h5' align='center'> Copyright © 2017 Jaza Software (OPC) Private Limited</Heading>
+                <Heading tag='h5' align='center'> Copyright (c) 2017 Jaza Software (OPC) Private Limited</Heading>
               </Box>
             </Form>
           </Box>

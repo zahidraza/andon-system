@@ -10,8 +10,12 @@ import store from "./store";
 
 (function () {
   const baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-  window.serviceHost = baseUrl + "/andonsystem/api";
-  window.baseUrl = baseUrl + "/andonsystem";
+  window.serviceHost = baseUrl + "/api";
+  window.baseUrl = baseUrl;
+
+//  const baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+//  window.serviceHost = baseUrl + "/andonsystem/api";
+//  window.baseUrl = baseUrl + "/andonsystem";
 
 //   window.baseUrl = "http://andonsystem.in/andonsystem";
 //   window.serviceHost = "http://andonsystem.in/andonsystem/api";
