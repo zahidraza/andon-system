@@ -24,7 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User implements Serializable {
     @Id
     @Column(name = "USER_ID", nullable = false, unique = true)

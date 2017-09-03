@@ -19,6 +19,42 @@ import Heading from 'grommet/components/Heading';
 import Layer from 'grommet/components/Layer';
 import Spinning from 'grommet/components/icons/Spinning';
 
+const draw = () => {
+  const htmlCanvas = document.getElementById('c');
+  const  context = htmlCanvas.getContext('2d');
+  
+ // Start listening to resize events and draw canvas.
+  initialize();
+
+  function initialize() {
+    window.addEventListener('resize', resizeCanvas, false);
+    resizeCanvas();
+  }
+
+  function redraw() {
+    context.globalAlpha = 0.9;
+    var lingrad = context.createLinearGradient(0, 0, window.innerWidth, window.innerHeight);
+    lingrad.addColorStop(0, '#FF7F50');
+    //lingrad.addColorStop(0.5, '#26C000');
+    lingrad.addColorStop(1, '#135058');
+    context.fillStyle = lingrad;
+    context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+    const rect = document.getElementById('loginBox').getBoundingClientRect();
+    const x = rect.left, y = rect.top;
+    const width = rect.right - rect.left;
+    const height = rect.bottom - rect.top;
+
+    context.clearRect(x, y,width,height);
+  }
+
+  function resizeCanvas() {
+    htmlCanvas.width = window.innerWidth;
+    htmlCanvas.height = window.innerHeight;
+    redraw();
+  }
+};
+
 class Login extends Component {
   constructor () {
     super();
@@ -43,6 +79,11 @@ class Login extends Component {
     //this.props.dispatch(initialize());
     
   }
+
+  componentDidMount() {
+    draw();
+  }
+  
 
   componentWillReceiveProps (nextProps) {
     if (this.props.user.authProgress && !nextProps.user.authProgress && !nextProps.user.authenticated) {
@@ -254,9 +295,11 @@ class Login extends Component {
     const logging = authProgress ? <Spinning /> : null;
     return (
       
-      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" texture="url(/static/img/cover.jpg)" >
+      <Box pad={{horizontal: 'large', vertical: "large"}} wrap={true}  full="vertical" >
+        <canvas id='c' style={{position: 'absolute', left: 0, top: 0}} >
+        </canvas>
         <Box align="end" justify="end" pad={{"horizontal": "large", vertical:"large", between:"large"}}>
-          <Box size="auto"  align="center" separator="all" justify="center" colorIndex="light-1" pad={{"horizontal": "medium", vertical:"medium", between:"medium"}} >
+          <Box id='loginBox' size="auto"  align="center" separator="all" justify="center" colorIndex="light-1" pad={{"horizontal": "medium", vertical:"medium", between:"small"}} >
             <Heading >{this.localeData.APP_NAME_FULL}</Heading>
             {logging}
             <Form>
@@ -273,6 +316,9 @@ class Login extends Component {
               <Footer pad={{"vertical": "small"}}>
                 <Button label="Login" fill={true} primary={true}  onClick={this._login.bind(this)} />
               </Footer>
+              <Box alignSelf='center' margin='none'>
+                <Heading tag='h5' align='center'> Copyright © 2017 Jaza Software (OPC) Private Limited</Heading>
+              </Box>
             </Form>
           </Box>
         </Box>

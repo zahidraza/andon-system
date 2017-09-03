@@ -66,75 +66,75 @@ public class MiscUtil {
         return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
     }
 
-    //public static Boolean sendSMS(String to,String message){return true;}
+    public static Boolean sendSMS(String to,String message){return true;}
 
-    public static Boolean sendSMS(String to,String message){
-
-        logger.debug("sendSMS(): to = {}, message = {}", to, message);
-        Boolean result = false;
-        String apiKey = "A69ada3af0ac7634d81104ec97669b4f5";
-        String sender = "AndSys";
-        String urlString = "http://alerts.variforrmsolution.com/api/v4/?";
-        String body = "api_key="+apiKey+"&method=sms&to="+to+"&sender="+sender+"&message=" + message;
-
-        try{
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            DataOutputStream writer = new DataOutputStream(conn.getOutputStream());
-            writer.writeBytes(body);
-            writer.flush();
-            writer.close();
-
-            conn.connect();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-            StringBuffer buffer = new StringBuffer();
-            String line;
-            while ((line = br.readLine()) != null) {
-                buffer.append(line);
-            }
-            br.close();
-
-            String response = buffer.toString();
-
-            logger.debug("sms send response: {}",response);
-
-            JSONObject jsonResponse = new JSONObject(response);
-
-//            "status": "OK",
-//                    "data": [
-//            {
-//                "id": "bc430a8d-3a35-44b4-ae43-81b6f1227c70:1",
-//                    "customid": "",
-//                    "customid1": "",
-//                    "customid2": "",
-//                    "mobile": "8904360418",
-//                    "status": "AWAITED-DLR"
+//    public static Boolean sendSMS(String to,String message){
+//
+//        logger.debug("sendSMS(): to = {}, message = {}", to, message);
+//        Boolean result = false;
+//        String apiKey = "A69ada3af0ac7634d81104ec97669b4f5";
+//        String sender = "AndSys";
+//        String urlString = "http://alerts.variforrmsolution.com/api/v4/?";
+//        String body = "api_key="+apiKey+"&method=sms&to="+to+"&sender="+sender+"&message=" + message;
+//
+//        try{
+//            URL url = new URL(urlString);
+//            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+//
+//            conn.setRequestMethod("POST");
+//            conn.setDoInput(true);
+//            conn.setDoOutput(true);
+//
+//            DataOutputStream writer = new DataOutputStream(conn.getOutputStream());
+//            writer.writeBytes(body);
+//            writer.flush();
+//            writer.close();
+//
+//            conn.connect();
+//
+//            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//
+//            StringBuffer buffer = new StringBuffer();
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                buffer.append(line);
 //            }
-//    ],
-//            "message": "Campaign of 1 numbers Submitted successfully."
-
-            try{
-                String status = jsonResponse.getString("status");
-                if (status.equalsIgnoreCase("OK")){
-                    result = true;
-                }
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return result;
-    }
+//            br.close();
+//
+//            String response = buffer.toString();
+//
+//            logger.debug("sms send response: {}",response);
+//
+//            JSONObject jsonResponse = new JSONObject(response);
+//
+////            "status": "OK",
+////                    "data": [
+////            {
+////                "id": "bc430a8d-3a35-44b4-ae43-81b6f1227c70:1",
+////                    "customid": "",
+////                    "customid1": "",
+////                    "customid2": "",
+////                    "mobile": "8904360418",
+////                    "status": "AWAITED-DLR"
+////            }
+////    ],
+////            "message": "Campaign of 1 numbers Submitted successfully."
+//
+//            try{
+//                String status = jsonResponse.getString("status");
+//                if (status.equalsIgnoreCase("OK")){
+//                    result = true;
+//                }
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }
+//
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     /**
      * Check If City Office is Open/Close.
