@@ -57,6 +57,7 @@ public class UserService {
             Hibernate.initialize(user.getBuyers());
         });
         return users.stream()
+                .filter(User::getActive)
                 .map(user -> mapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }

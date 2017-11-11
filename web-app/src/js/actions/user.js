@@ -36,6 +36,9 @@ export function authenticate (username, password) {
       }
 
     }).catch( (err) => {
+      if (err.response && err.response.status == 400 && err.response.data && err.response.data.error_description == 'User is disabled') {
+        alert('Your account has been deactivated.');
+      }
       dispatch({type: c.USER_AUTH_FAIL});
     });
   };
@@ -80,13 +83,13 @@ export function addUser (user) {
   };
 }
 
-export function updateUser (user) {
+export function updateUser (user, deactivate) {
   return function (dispatch) {
     dispatch({type: c.USER_BUSY});
     axios.put(window.serviceHost + '/v2/users/' + user.id, JSON.stringify(user), {headers: getHeaders()})
     .then((response) => {
       if (response.status == 200) {
-        dispatch({type: c.USER_EDIT_SUCCESS, payload: {user: response.data}});
+        dispatch({type: c.USER_EDIT_SUCCESS, payload: {user: response.data, deactivate}});
       }
     }).catch( (err) => {
       if (err.response.status == 400) {

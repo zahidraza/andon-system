@@ -209,7 +209,7 @@ public class MiscUtil {
 
         List<User> users = designations.stream()
                 .flatMap(designation -> designation.getUsers().stream())
-                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .filter(user -> user.getActive() && user.getLevel().equalsIgnoreCase(level.getValue()))
                 .collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         if (users.size() > 0) {
@@ -229,7 +229,7 @@ public class MiscUtil {
     public static String getUserMobileNumbers(Buyer buyer, Level level){
         logger.debug("getUserMobileNumbers-2: level = {}", level.getValue());
         List<User> users = buyer.getUsers().stream()
-                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .filter(user -> user.getActive() && user.getLevel().equalsIgnoreCase(level.getValue()))
                 .collect(Collectors.toList());
 
         StringBuilder builder = new StringBuilder();

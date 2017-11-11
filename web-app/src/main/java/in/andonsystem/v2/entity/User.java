@@ -92,6 +92,16 @@ public class User implements Serializable {
         this.level = level;
     }
 
+    public User(Long id, String name, String mobile, String role, String userType, String level, Boolean active) {
+        this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+        this.active = active;
+    }
+
     public Integer getRetryCount() {
         return retryCount;
     }

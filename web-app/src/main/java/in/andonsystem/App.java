@@ -107,7 +107,7 @@ public class App extends SpringBootServletInitializer{
     private void scheduleApp2AutoFix() {
         int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
         int hour = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v2.end.hour", "18"));
-        int min = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v2.end.minute", "15"));
+        int min = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v2.end.minute", "30"));
         long scheduleAt = hour*60 + min;  // 6:30 PM
         long diff = scheduleAt - todayMinsAfterMidnight;
         long initialDelay = diff > 0? diff : (24*60) - diff;
