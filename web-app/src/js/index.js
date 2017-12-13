@@ -22,6 +22,10 @@ import store from "./store";
   
 //  window.baseUrl = "http://localhost:8001";
 //  window.serviceHost = "http://localhost:8001/api";
+
+//  window.baseUrl = "http://andonsystem.in";
+//  window.serviceHost = "http://andonsystem.in/api";
+
 })();
 
 let element = document.getElementById('content');
