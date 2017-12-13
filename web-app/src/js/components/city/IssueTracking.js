@@ -140,11 +140,9 @@ class IssueTracking extends Component {
   }
 
   _raiseIssue () {
-    const {buyer, issue} = this.state;
-
-    issue.buyerId = this.props.misc.buyers.find(b => b.name == buyer).id;
+    const {buyer, issue, team} = this.state;
+    issue.buyerId = this.props.misc.buyers.find(b => b.name == buyer && b.team == team).id;
     issue.raisedBy = sessionStorage.userId;
-
     this.props.dispatch(addIssue(issue));
   }
 
