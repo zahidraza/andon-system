@@ -18,9 +18,9 @@ public class MiscUtilTest {
     @Test
     public void getUsersMobilev1(){
         Problem problem = new Problem(1L,"Test Problem","Test Department");
-        User user1 = new User(1L,"Test User1","8987525008","USER","FACTORY","LEVEL1");
-        User user2 = new User(2L,"Test User2","8904360418","USER","FACTORY","LEVEL1");
-        User user3 = new User(3L,"Test User3","9852704092","USER","FACTORY","LEVEL1");
+        User user1 = new User(1L,"Test User1","8987525008","USER","FACTORY","LEVEL1",true);
+        User user2 = new User(2L,"Test User2","8904360418","USER","FACTORY","LEVEL1",true);
+        User user3 = new User(3L,"Test User3","9852704092","USER","FACTORY","LEVEL1",false);
         Designation designation = new Designation(1L,"Test Designation","1,2,3,4,5,6,7,8",1);
         Set<User> users = new HashSet<>();
         users.add(user1);
@@ -32,7 +32,9 @@ public class MiscUtilTest {
         problem.setDesignations(designations);
 
         String mobileNumbers = MiscUtil.getUserMobileNumbers(problem, Level.LEVEL1);
-        Assert.assertEquals(mobileNumbers, "8987525008,8904360418,9852704092");
+        Assert.assertTrue(mobileNumbers.contains("8987525008"));
+        Assert.assertTrue(mobileNumbers.contains("8904360418"));
+        Assert.assertFalse(mobileNumbers.contains("9852704092"));
     }
 
     //@Test

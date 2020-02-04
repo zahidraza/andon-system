@@ -33,7 +33,7 @@ public class WebSecurityGlobalConfig extends GlobalAuthenticationConfigurerAdapt
                 user = userService.findByUsername(email);
             }
             if (user != null) {
-                return new User(user.getName(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getRole()));
+                return new User(user.getName(), user.getPassword(), user.getActive(), true,true,true, AuthorityUtils.createAuthorityList(user.getRole()));
             } else {
                 throw new UsernameNotFoundException("Could not find the user '" + email + "'");
             }

@@ -9,6 +9,10 @@ public class Constants {
     public static final String API2_BASE_URL = "http://andonsystem.in/api/v2";
     public static final String AUTH_BASE_URL = "http://andonsystem.in/oauth/token";
 
+//    public static final String API1_BASE_URL = "https://www.jaza-soft.com/andonsystem/api/v1";
+//    public static final String API2_BASE_URL = "https://www.jaza-soft.com/andonsystem/api/v2";
+//    public static final String AUTH_BASE_URL = "https://www.jaza-soft.com/andonsystem/oauth/token";
+
     /*Sync Preference file*/
     public static final String SYNC_PREF = "sync.pref";
     public static final String LAST_APP_SYNC = "last.app.sync";

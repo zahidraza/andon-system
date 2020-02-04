@@ -1,6 +1,7 @@
 
 package in.andonsystem;
 
+import in.andonsystem.util.ConfigUtility;
 import in.andonsystem.util.DbBackupUtility;
 import in.andonsystem.util.MiscUtil;
 import in.andonsystem.util.Scheduler;
@@ -94,7 +95,9 @@ public class App extends SpringBootServletInitializer{
 
     private void scheduleApp1AutoFix() {
         int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
-        long scheduleAt = 18*60 + 15;  // 6:15 PM
+        int hour = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v1.end.hour", "18"));
+        int min = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v1.end.minute", "15"));
+        long scheduleAt = hour*60 + min;  // 6:15 PM
         long diff = scheduleAt - todayMinsAfterMidnight;
         long initialDelay = diff > 0? diff : (24*60) - diff;
         Scheduler.getInstance().getScheduler()
@@ -103,7 +106,9 @@ public class App extends SpringBootServletInitializer{
 
     private void scheduleApp2AutoFix() {
         int todayMinsAfterMidnight = MiscUtil.getMinutesSinceMidnight(new Date());
-        long scheduleAt = 18*60 + 30;  // 6:30 PM
+        int hour = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v2.end.hour", "18"));
+        int min = Integer.parseInt(ConfigUtility.getInstance().getConfigProperty("app.v2.end.minute", "30"));
+        long scheduleAt = hour*60 + min;  // 6:30 PM
         long diff = scheduleAt - todayMinsAfterMidnight;
         long initialDelay = diff > 0? diff : (24*60) - diff;
         Scheduler.getInstance().getScheduler()
