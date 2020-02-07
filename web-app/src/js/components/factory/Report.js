@@ -97,20 +97,29 @@ class Report extends Component {
       if (response.status == 200) {
         const issues = response.data.issues.map(issue => {
           const p = problms.find(p => p.id == issue.problemId);
-          const raisedBy = users.find(u => u.id == issue.raisedBy).name;
-          let ackBy = '-',fixBy = '-';
-          if (!(issue.ackBy == null || issue.ackBy == 'null')) {
-            ackBy = users.find(u => u.id == issue.ackBy).name;
+          let raisedBy = '-', ackBy = '-', fixBy = '-';
+          if (issue.raisedBy) {
+            const user = users.find(u => u.id == issue.raisedBy);
+            if (user) raisedBy = user.name;
           }
-          if (!(issue.fixBy == null || issue.fixBy == 'null')) {
-            fixBy = users.find(u => u.id == issue.fixBy).name;
+          if (issue.ackBy) {
+            const user = users.find(u => u.id == issue.ackBy);
+            if (user) ackBy = user.name;
           }
-          const raisedAt = moment(new Date(issue.raisedAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
-          let ackAt = '-',fixAt = '-',downtime = '-';
-          if (!(issue.ackAt == null || issue.ackAt == 'null')) {
+          if (issue.fixBy) {
+            const user = users.find(u => u.id == issue.fixBy);
+            if (user) fixBy = user.name;
+          }
+
+          
+          let raisedAt = '-', ackAt = '-',fixAt = '-',downtime = '-';
+          if (issue.raisedAt) {
+            raisedAt = moment(new Date(issue.raisedAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
+          }
+          if (issue.ackAt) {
             ackAt = moment(new Date(issue.ackAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
           }
-          if (!(issue.fixAt == null || issue.fixAt == 'null')) {
+          if (issue.fixAt) {
             fixAt = moment(new Date(issue.fixAt)).utcOffset('+05:30').format('DD/MM/YYYY, hh:mm A');
             downtime = Math.floor(moment.duration(issue.fixAt - issue.raisedAt).asMinutes());
           }
@@ -122,11 +131,11 @@ class Report extends Component {
         this._loadIssues(issues, this.state.filter, this.state.page);
       }
     }).catch( (err) => {
-
-      if (err.response.status == 400) {
+      console.log(err);
+      if (err.response && err.response.status == 400) {
         //dispatch({type: c.USER_BAD_REQUEST, payload: {errors: err.response.data}});
       }
-      if (err.response.status == 401) {
+      if (err.response &&err.response.status == 401) {
         delete sessionStorage.session;
         this.context.router.push('/');
       }

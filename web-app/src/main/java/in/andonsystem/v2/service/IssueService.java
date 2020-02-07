@@ -78,6 +78,7 @@ public class IssueService {
             date = new Date(after);
         }
         return issueRepository.findByLastModifiedGreaterThan(date).stream()
+                .filter(issue2 -> !issue2.getDeleted())
                 .map(issue -> mapper.map(issue, IssueDto.class))
                 .collect(Collectors.toList());
     }
@@ -87,6 +88,7 @@ public class IssueService {
         Date date1 = new Date(start);
         Date date2 = new Date(end);
         return issueRepository.findByLastModifiedBetweenOrderByRaisedAtDesc(date1,date2).stream()
+                              .filter(issue2 -> !issue2.getDeleted())
                               .map(issue -> mapper.map(issue, IssueDto.class))
                               .collect(Collectors.toList());
     }

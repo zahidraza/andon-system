@@ -58,6 +58,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private EditText description;
     private Button submit;
     private ProgressBar progress;
+    private boolean busy = false;
 
     private String selectedTeam = "Select Team";
 
@@ -116,7 +117,10 @@ public class RaiseIssueActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                raiseIssue();
+                if (!busy) {
+                    raiseIssue();
+                }
+
             }
         });
 
@@ -188,6 +192,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
 
     private void raiseIssue(JSONObject issue){
         progress.setVisibility(View.VISIBLE);
+        busy = true;
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -200,6 +205,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
                     }
                 }
                 progress.setVisibility(View.INVISIBLE);
+                busy = false;
                 finish();
             }
         };
@@ -213,6 +219,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
             @Override
             protected void onError(VolleyError error) {
                 progress.setVisibility(View.INVISIBLE);
+                busy = false;
             }
         };
 

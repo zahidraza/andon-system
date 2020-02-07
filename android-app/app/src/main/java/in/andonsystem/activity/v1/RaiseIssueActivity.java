@@ -61,6 +61,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
     private SharedPreferences userPref;
     private Context context;
     private RestUtility restUtility;
+    private boolean busy = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +136,9 @@ public class RaiseIssueActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                raiseIssue();
+                if (!busy) {
+                    raiseIssue();
+                }
             }
         });
 
@@ -148,7 +151,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
 
     }
 
-    public void raiseIssue() {
+    private void raiseIssue() {
         Log.i(TAG, "raiseIssue()");
 
         String lineStr = lines.getSelectedItem().toString();
@@ -217,10 +220,12 @@ public class RaiseIssueActivity extends AppCompatActivity {
 
     private void raiseIssue(JSONObject issue) {
         progress.setVisibility(View.VISIBLE);
+        busy = true;
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.i(TAG, response.toString());
+
                 if (response.has("status")) {
                     try {
                         showMessage(response.getString("message"));
@@ -229,6 +234,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
                     }
                 }
                 progress.setVisibility(View.INVISIBLE);
+                busy = false;
                 finish();
             }
         };
@@ -242,6 +248,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
             @Override
             protected void onError(VolleyError error) {
                 progress.setVisibility(View.INVISIBLE);
+                busy = false;
             }
         };
 

@@ -24,7 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User implements Serializable {
     @Id
     @Column(name = "USER_ID", nullable = false, unique = true)
@@ -90,6 +90,16 @@ public class User implements Serializable {
         this.role = role;
         this.userType = userType;
         this.level = level;
+    }
+
+    public User(Long id, String name, String mobile, String role, String userType, String level, Boolean active) {
+        this.id = id;
+        this.name = name;
+        this.mobile = mobile;
+        this.role = role;
+        this.userType = userType;
+        this.level = level;
+        this.active = active;
     }
 
     public Integer getRetryCount() {

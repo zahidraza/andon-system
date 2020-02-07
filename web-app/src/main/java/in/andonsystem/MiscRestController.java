@@ -144,7 +144,9 @@ public class MiscRestController {
         StringBuilder builder = new StringBuilder();
         designations.forEach(designation -> {
             designation.getUsers().forEach(user -> {
-                builder.append(user.getMobile()).append(",");
+                if (user.getActive()) {
+                    builder.append(user.getMobile()).append(",");
+                }
             });
         });
         if (builder.length()> 0) builder.setLength(builder.length()-1);

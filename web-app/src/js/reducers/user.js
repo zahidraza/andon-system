@@ -56,7 +56,13 @@ const handlers = {
   [c.USER_EDIT_SUCCESS]: (_, action) => {
     let users = _.users;
     let i = users.findIndex(u => u.id == action.payload.user.id);
-    users[i] = action.payload.user;
+    if (i != -1) {
+      if (action.payload.deactivate) {
+        users.splice(i, 1);
+      } else {
+        users[i] = action.payload.user;
+      }
+    }
     return ({editing: false,toggleStatus: !_.toggleStatus, users: users, busy: false});
   },
   [c.USER_EDIT_FAIL]: (_, action) => ({editing: false, busy: false}),

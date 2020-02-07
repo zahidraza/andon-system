@@ -66,7 +66,7 @@ public class MiscUtil {
         return new Date(time -((time + (5*60 + 30)*60*1000)%oneDayMillis + oneDayMillis));
     }
 
-    //public static Boolean sendSMS(String to,String message){return true;}
+//    public static Boolean sendSMS(String to,String message){return true;}
 
     public static Boolean sendSMS(String to,String message){
 
@@ -106,19 +106,6 @@ public class MiscUtil {
             logger.debug("sms send response: {}",response);
 
             JSONObject jsonResponse = new JSONObject(response);
-
-//            "status": "OK",
-//                    "data": [
-//            {
-//                "id": "bc430a8d-3a35-44b4-ae43-81b6f1227c70:1",
-//                    "customid": "",
-//                    "customid1": "",
-//                    "customid2": "",
-//                    "mobile": "8904360418",
-//                    "status": "AWAITED-DLR"
-//            }
-//    ],
-//            "message": "Campaign of 1 numbers Submitted successfully."
 
             try{
                 String status = jsonResponse.getString("status");
@@ -222,7 +209,7 @@ public class MiscUtil {
 
         List<User> users = designations.stream()
                 .flatMap(designation -> designation.getUsers().stream())
-                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .filter(user -> user.getActive() && user.getLevel().equalsIgnoreCase(level.getValue()))
                 .collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         if (users.size() > 0) {
@@ -242,7 +229,7 @@ public class MiscUtil {
     public static String getUserMobileNumbers(Buyer buyer, Level level){
         logger.debug("getUserMobileNumbers-2: level = {}", level.getValue());
         List<User> users = buyer.getUsers().stream()
-                .filter(user -> user.getLevel().equalsIgnoreCase(level.getValue()))
+                .filter(user -> user.getActive() && user.getLevel().equalsIgnoreCase(level.getValue()))
                 .collect(Collectors.toList());
 
         StringBuilder builder = new StringBuilder();

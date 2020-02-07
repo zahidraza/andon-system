@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { localeData } from '../../reducers/localization';
 import {initialize} from '../../actions/misc';
-import {removeUser}  from '../../actions/user';
+import {removeUser, updateUser}  from '../../actions/user';
 import {USER_CONSTANTS as c,USER_ROLE as ur, USER_TYPE as ut}  from '../../utils/constants';
 
 import Add from "grommet/components/icons/base/Add";
@@ -21,6 +21,7 @@ import Table from 'grommet/components/Table';
 import TableRow from 'grommet/components/TableRow';
 import TableHeader from 'grommet/components/TableHeader';
 import Trash from "grommet/components/icons/base/Trash";
+import ArchiveIcon from 'grommet/components/icons/base/Archive';
 import Title from 'grommet/components/Title';
 
 class User extends Component {
@@ -137,12 +138,32 @@ class User extends Component {
   }
 
   _onRemoveClick (index) {
+    const {users} = this.state;
+    const user = users[index];
+    if (user.role == 'ADMIN') {
+      alert('Admin User cannot be deleted.');
+      return;
+    }
     let value = confirm('Are you sure to delete this User?');
     if (!value) {
       return;
     }
-    const {users} = this.state;
     this.props.dispatch(removeUser(users[index]));
+  }
+
+  _onDeactivate (index) {
+    const {users} = this.state;
+    let user = users[index];
+    if (user.role == 'ADMIN') {
+      alert('Admin User cannot be deactivated.');
+      return;
+    }
+    let value = confirm('Are you sure to deactivate this User?');
+    if (!value) {
+      return;
+    }
+    user = {...user, active: false};
+    this.props.dispatch(updateUser(user, true));
   }
 
   _onEditClick (index) {
@@ -185,6 +206,7 @@ class User extends Component {
           <td style={{textAlign: 'right', padding: 0}}>
               <Button icon={<Edit />} onClick={this._onEditClick.bind(this,index)} />
               <Button icon={<Trash />} onClick={this._onRemoveClick.bind(this,index)} />
+              <Button icon={<ArchiveIcon />} onClick={this._onDeactivate.bind(this,index)} />
           </td>
         );
       }
