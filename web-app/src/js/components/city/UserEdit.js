@@ -139,7 +139,7 @@ class UserEdit extends Component {
 
     if (! layer.filterValue.includes('Select')) {   
       layer.filterItems = layer.filterItems.filter(b => b != layer.filterValue);
-      layer.selectedItems = buyers.filter(b => b.team == team && !layer.filterItems.includes(b.name));
+      layer.selectedItems = layer.selectedItems.concat(buyers.filter(b => b.team == team && b.name == layer.filterValue)) ;
     }
 
     layer.filterValue = 'Select Buyer';
@@ -184,8 +184,7 @@ class UserEdit extends Component {
 
     const team = event.value;
 
-    layer.filterItems = [];
-    layer.selectedItems = buyers.filter(b => b.team == team);
+    layer.filterItems = buyers.filter(b => b.team == team).filter(b => !layer.selectedItems.map(b2 => b2.name).includes(b.name)).map(b => b.name);
 
     layer.filterValue = 'Select Buyer';
     layer.show = false;

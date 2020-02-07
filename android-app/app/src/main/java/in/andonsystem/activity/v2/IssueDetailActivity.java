@@ -177,7 +177,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         desc.setText(issue.getDescription());
 
         /*////////// Adding ack or fix button ///////////////*/
-        if (user.getUserType().equalsIgnoreCase(Constants.USER_MERCHANDISING)){
+        if (user != null && Constants.USER_MERCHANDISING.equalsIgnoreCase(user.getUserType())){
             if(issue.getAckAt() == null){
                 if(user.getBuyers().contains(issue.getBuyer())){
                     if( issue.getProcessingAt() > 1){
@@ -205,7 +205,7 @@ public class IssueDetailActivity extends AppCompatActivity {
                     }
                 }
             }
-        }else if (user.getUserType().equalsIgnoreCase(Constants.USER_SAMPLING)) {
+        }else if (user != null && Constants.USER_SAMPLING.equalsIgnoreCase(user.getUserType())) {
             if (issue.getRaisedBy().equals(user.getId())) {
                 layout.addView(delButton);
             }
@@ -234,7 +234,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_ACK";
         JSONObject data = new JSONObject();
         try {
-            data.put("ackBy",user.getId());
+            data.put("ackBy", user != null ? user.getId() : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -263,7 +263,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         String url = Constants.API2_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_FIX";
         JSONObject data = new JSONObject();
         try {
-            data.put("fixBy",user.getId());
+            data.put("fixBy", user != null ? user.getId() : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }

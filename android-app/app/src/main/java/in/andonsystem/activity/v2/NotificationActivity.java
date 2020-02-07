@@ -92,7 +92,7 @@ public class NotificationActivity extends AppCompatActivity {
         String message;
         long timeAt;
 
-        if (user.getUserType().equalsIgnoreCase(Constants.USER_MERCHANDISING)) {
+        if (user != null && Constants.USER_MERCHANDISING.equalsIgnoreCase(user.getUserType())) {
             List<Issue2> issue2s = issueService2.findAllByBuyers(user.getBuyers());
 
             if (issue2s.size() > 0){
@@ -110,7 +110,7 @@ public class NotificationActivity extends AppCompatActivity {
                     }
                     else if(issue2.getAckAt() != null){
                         message = "Problem " +  issue2.getProblem() + " of " + issue2.getBuyer().getTeam() + ":" + issue2.getBuyer().getName() + " was acknowledged by "
-                                + (issue2.getAckBy() == user.getId() ? "you" : issue2.getAckByUser().getName());
+                                + (issue2.getAckBy().equals(user.getId()) ? "you" : issue2.getAckByUser().getName());
                         timeAt = currentTime - issue2.getAckAt().getTime();
                         list.add(new Notification(issue2.getId(),message,timeAt, 1));
                     }
@@ -122,7 +122,7 @@ public class NotificationActivity extends AppCompatActivity {
                 }
             }
         }
-        else if (user.getUserType().equalsIgnoreCase(Constants.USER_SAMPLING)) {
+        else if (user != null && Constants.USER_SAMPLING.equalsIgnoreCase(user.getUserType())) {
             List<Issue2> issue2s = issueService2.findAllByUser(user);
 
             if (issue2s.size() > 0) {

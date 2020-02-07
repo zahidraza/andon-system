@@ -91,7 +91,7 @@ public class NotificationActivity extends AppCompatActivity {
         }
         TreeSet<Notification> list = null;
         List<Issue1> issues;
-        if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)) {
+        if (user != null && Constants.USER_FACTORY.equalsIgnoreCase(user.getUserType())) {
 
             if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL0)) {
                 issues = issueService.findAllByUser(user);
@@ -145,15 +145,15 @@ public class NotificationActivity extends AppCompatActivity {
         Long timeAt;
         for (Issue1 issue : issues) {
             if (issue.getFixAt() != null) {
-                message = (issue.getFixByUser().getId() == user.getId() ? "You " : issue.getFixByUser().getName() ) + " fixed " + "problem " +  issue.getProblem().getName() + " of department  " + issue.getProblem().getDepartment();
+                message = (issue.getFixByUser().getId().equals(user.getId()) ? "You " : issue.getFixByUser().getName() ) + " fixed " + "problem " +  issue.getProblem().getName() + " of department  " + issue.getProblem().getDepartment();
                 timeAt = currentTime - issue.getAckAt().getTime();
                 list.add(new Notification(issue.getId(),message,timeAt, 2));
             }else if (issue.getAckAt() != null) {
-                message = (issue.getAckByUser().getId() == user.getId() ? "You " : issue.getAckByUser().getName() ) + " acknowledged " + "problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment();
+                message = (issue.getAckByUser().getId().equals(user.getId()) ? "You " : issue.getAckByUser().getName() ) + " acknowledged " + "problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment();
                 timeAt = currentTime - issue.getAckAt().getTime();
                 list.add(new Notification(issue.getId(),message,timeAt, 1));
             }else {
-                message = "Problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment() + " was raised by " + (issue.getRaisedByUser().getId() == user.getId() ? "you " : issue.getRaisedByUser().getName() );
+                message = "Problem " +  issue.getProblem().getName() + " of " + issue.getProblem().getDepartment() + " was raised by " + (issue.getRaisedByUser().getId().equals(user.getId()) ? "you " : issue.getRaisedByUser().getName() );
                 timeAt = currentTime - issue.getRaisedAt().getTime();
                 list.add(new Notification(issue.getId(),message,timeAt, 0));
             }

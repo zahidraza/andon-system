@@ -209,7 +209,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         Log.d(TAG, "is user concerned = " + usersConcerned.contains(user));
 
 
-        if (user.getUserType().equalsIgnoreCase(Constants.USER_FACTORY)) {
+        if (user != null && Constants.USER_FACTORY.equalsIgnoreCase(user.getUserType())) {
             if (user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL0)){
                 if (issue.getFixAt() == null) {
                     if (issue.getAckAt() == null) {
@@ -274,7 +274,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         String url = Constants.API1_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_ACK";
         JSONObject data = new JSONObject();
         try {
-            data.put("ackBy",user.getId());
+            data.put("ackBy", user != null ? user.getId() : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -302,7 +302,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         String url = Constants.API1_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_FIX";
         JSONObject data = new JSONObject();
         try {
-            data.put("fixBy",user.getId());
+            data.put("fixBy", user != null ? user.getId() : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -331,7 +331,7 @@ public class IssueDetailActivity extends AppCompatActivity {
         String url = Constants.API1_BASE_URL + "/issues/" + issue.getId() + "?operation=OP_SEEK_HELP";
         JSONObject data = new JSONObject();
         try {
-            data.put("seekHelp",user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL1) ? 1 : 2);
+            data.put("seekHelp", user != null && user.getLevel().equalsIgnoreCase(Constants.USER_LEVEL1) ? 1 : 2);
         } catch (JSONException e) {
             e.printStackTrace();
         }

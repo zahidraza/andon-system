@@ -179,7 +179,7 @@ public class RaiseIssueActivity extends AppCompatActivity {
             issue.put("buyerId",buyerId);
             issue.put("problem",problem);
             issue.put("description",desc);
-            issue.put("raisedBy", user.getId());
+            issue.put("raisedBy", user != null ? user.getId() : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
