@@ -3,6 +3,7 @@ package in.andonsystem.entity;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.JoinEntity;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
@@ -64,19 +65,19 @@ public class User {
                 String role, String userType, String level) {
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.email = email != null ? email.toLowerCase() : null;
         this.mobile = mobile;
         this.role = role;
         this.userType = userType;
         this.level = level;
     }
 
-    @Generated(hash = 1941081737)
-    public User(Long id, @NotNull String name, String email, String mobile,
-            String role, String userType, String level, Long desgnId) {
+    @Keep
+    public User(Long id, @NotNull String name, String email, String mobile, String role,
+            String userType, String level, Long desgnId) {
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.email = email != null ? email.toLowerCase() : null;
         this.mobile = mobile;
         this.role = role;
         this.userType = userType;
@@ -111,7 +112,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email != null ? email.toLowerCase() : null;
     }
 
     public String getMobile() {

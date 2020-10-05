@@ -27,8 +27,9 @@ public class UserService {
     }
 
     public User findByEmail(String email){
+        if (email == null) return null;
         return userDao.queryBuilder()
-                .where(UserDao.Properties.Email.eq(email))
+                .where(UserDao.Properties.Email.eq(email.toLowerCase()))
                 .unique();
     }
 
