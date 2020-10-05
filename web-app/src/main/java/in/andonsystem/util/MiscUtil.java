@@ -71,11 +71,11 @@ public class MiscUtil {
     public static Boolean sendSMS(String to,String message){
 
         logger.debug("sendSMS(): to = {}, message = {}", to, message);
-        Boolean result = false;
-        String apiKey = "A69ada3af0ac7634d81104ec97669b4f5";
-        String sender = "AndSys";
-        String urlString = "http://alerts.variforrmsolution.com/api/v4/?";
-        String body = "api_key="+apiKey+"&method=sms&to="+to+"&sender="+sender+"&message=" + message;
+        boolean result = false;
+        String apiKey = "7f60ad5ac8d06c099885ae3a1c763edc605d0fb5";
+        String sender = "LAGUNA";
+        String urlString = "http://alerts.variforrm.in/api?";
+        String body = "api_key="+apiKey+"&method=sms.normal&to="+to+"&sender="+sender+"&message=" + message+"&flash=0&unicode=0";
 
         try{
             URL url = new URL(urlString);
@@ -102,14 +102,13 @@ public class MiscUtil {
             br.close();
 
             String response = buffer.toString();
-
             logger.debug("sms send response: {}",response);
 
             JSONObject jsonResponse = new JSONObject(response);
 
             try{
-                String status = jsonResponse.getString("status");
-                if (status.equalsIgnoreCase("OK")){
+                int status = jsonResponse.getInt("status");
+                if (status == 200){
                     result = true;
                 }
             }catch(Exception e){
