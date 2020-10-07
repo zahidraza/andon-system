@@ -45,7 +45,8 @@ public class ConnectionPool {
             myProp.put("password",password);
 
             cpds = new ComboPooledDataSource();
-            cpds.setDriverClass(Constants.MYSQL_DRIVER); //loads the jdbc driver
+//            cpds.setDriverClass(Constants.MYSQL_DRIVER); //loads the jdbc driver
+            cpds.setDriverClass(POSTGRESQL_DRIVER); //loads the jdbc driver
             cpds.setJdbcUrl(url);
 
             // the settings below are optional -- c3p0 can work with defaults

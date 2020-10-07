@@ -13,6 +13,7 @@ public class Constants {
     public static final String DATASOURCE_USERNAME = "spring.datasource.username";
     public static final String DATASOURCE_PASSWORD = "spring.datasource.password";
     public static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    public static final String POSTGRESQL_DRIVER = "org.postgresql.Driver";
 
     public static final String INITIAL_POOL_SIZE = "c3p0.initialPoolSize";
     public static final String MIN_POOL_SIZE = "c3p0.minPoolSize";
