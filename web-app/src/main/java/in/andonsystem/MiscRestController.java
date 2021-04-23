@@ -151,7 +151,7 @@ public class MiscRestController {
         });
         if (builder.length()> 0) builder.setLength(builder.length()-1);
         if (builder.length() > 0) {
-            String message = "Line: " + styleCO.getLine() + " Changeover from " + styleCO.getFrom() + " to " + styleCO.getTo() + " Remarks: " + styleCO.getRemarks() + " Submitted by: " + styleCO.getSubmitBy();
+            String message = "Line: " + styleCO.getLine() + " Changeover from " + styleCO.getFrom() + " to " + styleCO.getTo() + " Remarks: " + styleCO.getRemarks() + " Submitted by: " + styleCO.getSubmitBy() + "\nLaguna";
 
             logger.info("Sending style change over message to: {},\n message: {}", builder.toString(),message);
             MiscUtil.sendSMS(builder.toString(), message);

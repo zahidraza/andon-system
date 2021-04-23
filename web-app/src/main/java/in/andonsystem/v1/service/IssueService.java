@@ -192,11 +192,12 @@ public class IssueService {
     private String generateMessage(Issue1 issue, Problem problem){
         StringBuilder builder = new StringBuilder();
         builder.append("Problem raised with details-");
-        builder.append("\nLine: " + issue.getLine());
-        builder.append("\nSection: " + issue.getSection());
-        builder.append("\nDepartment: " + problem.getDepartment());
-        builder.append("\nProblem: " + problem.getName());
-        builder.append("\nRemarks: " + issue.getDescription());
+        builder.append("\nLine: ").append(issue.getLine());
+        builder.append("\nSection: ").append(issue.getSection());
+        builder.append("\nDepartment: ").append(problem.getDepartment());
+        builder.append("\nProblem: ").append(problem.getName());
+        builder.append("\nRemarks: ").append(issue.getDescription());
+        builder.append("\nLaguna");
         return builder.toString();
     }
 
