@@ -37,10 +37,18 @@ public class MiscUtilTest {
         Assert.assertFalse(mobileNumbers.contains("9852704092"));
     }
 
-    //@Test
+//    @Test
     public void testSendSms() {
         String to = "8904360418";
-        String message = "Testing. Hello Md Zahid Raza";
-        Assert.assertTrue(MiscUtil.sendSMS(to,message));
+//        String message = "Testing. Hello Md Zahid Raza";
+        StringBuilder builder = new StringBuilder();
+        builder.append("Problem raised with details-");
+        builder.append("\nLine: Line 1");
+        builder.append("\nSection: Section 1");
+        builder.append("\nDepartment: Department 1");
+        builder.append("\nProblem: Problem 1");
+        builder.append("\nRemarks: Test Remarks");
+        builder.append("\nLAGUNA");
+        Assert.assertTrue(MiscUtil.sendSMS(to,builder.toString()));
     }
 }

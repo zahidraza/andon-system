@@ -197,7 +197,7 @@ public class IssueService {
         builder.append("\nDepartment: ").append(problem.getDepartment());
         builder.append("\nProblem: ").append(problem.getName());
         builder.append("\nRemarks: ").append(issue.getDescription());
-        builder.append("\nLaguna");
+        builder.append("\nLAGUNA");
         return builder.toString();
     }
 

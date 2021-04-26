@@ -261,11 +261,12 @@ public class IssueService {
     private String generateMessage(Issue2 issue, Buyer buyer){
         StringBuilder builder = new StringBuilder();
         builder.append("Problem raised with details-");
-        builder.append("\nTeam: " + buyer.getTeam());
-        builder.append("\nBuyer: " + buyer.getName());
-        builder.append("\nProblem: " + issue.getProblem());
-        builder.append("\nRaised By: " + issue.getRaisedBy().getName());
-        builder.append("\nRemarks: " + issue.getDescription());
+        builder.append("\nTeam: ").append(buyer.getTeam());
+        builder.append("\nBuyer: ").append(buyer.getName());
+        builder.append("\nProblem: ").append(issue.getProblem());
+        builder.append("\nRaised By: ").append(issue.getRaisedBy().getName());
+        builder.append("\nRemarks: ").append(issue.getDescription());
+        builder.append("\nLAGUNA");
         return builder.toString();
     }
 

@@ -143,7 +143,7 @@ public class UserService {
         String otp = MiscUtil.getOtp(6);
         User user = userRepository.findByEmail(email);
         user.setOtp(otp);
-        MiscUtil.sendSMS(user.getMobile(),"OTP to reset password in ANDON SYSTEM APPLICATION is: " + otp + "\nLaguna");
+        MiscUtil.sendSMS(user.getMobile(),"OTP to reset password in ANDON SYSTEM APPLICATION is: " + otp + "\nLAGUNA");
     }
 
     @Transactional
